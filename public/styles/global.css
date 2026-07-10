@@ -1,0 +1,228 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Share+Tech+Mono&display=swap');
+
+:root {
+  --black:   #060608;
+  --black2:  #0e0e10;
+  --black3:  #161618;
+  --carbon:  #1c1c1e;
+  --border:  rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.15);
+  --silver:  #d0d0d0;
+  --silver2: #f0f0f0;
+  --text:    #f0f0f0;
+  --text2:   #888888;
+  --text3:   #4a4a4a;
+
+  /* chrome gradient reusable */
+  --chrome: linear-gradient(180deg,#fff 0%,#e0e0e0 15%,#aaa 40%,#ccc 58%,#fff 72%,#999 88%,#e8e8e8 100%);
+  --chrome-subtle: linear-gradient(180deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.04) 40%,rgba(255,255,255,.1) 100%);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--black);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── Chrome / metallic text ──────────────────────────── */
+.chrome-text {
+  background: var(--chrome);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Brushed metal surface (horizontal) ─────────────── */
+.metal-bg {
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,0) 0px, rgba(255,255,255,.025) 1px, rgba(255,255,255,0) 2px, rgba(255,255,255,0) 6px),
+    linear-gradient(180deg, #1c1c1e 0%, #111 50%, #1a1a1c 100%);
+}
+
+/* ── Carbon fiber ────────────────────────────────────── */
+.carbon-bg {
+  background-color: var(--carbon);
+  background-image:
+    repeating-linear-gradient(45deg,  rgba(255,255,255,0.018) 0, rgba(255,255,255,0.018) 1px, transparent 1px, transparent 9px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,0.018) 0, rgba(255,255,255,0.018) 1px, transparent 1px, transparent 9px);
+}
+
+/* ── Layout ──────────────────────────────────────────── */
+.container { max-width: 1180px; margin: 0 auto; padding: 0 2rem; }
+.section    { padding: 8rem 0; }
+.section-sm { padding: 4rem 0; }
+
+/* ── Type ────────────────────────────────────────────── */
+h1 { font-size: clamp(3rem, 8vw, 7rem); font-weight: 900; letter-spacing: -0.04em; line-height: 0.92; }
+h2 { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+p  { color: var(--text2); }
+
+.mono  { font-family: 'Share Tech Mono', monospace; }
+.label {
+  display: block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--text3); margin-bottom: 0.75rem;
+}
+
+/* ── Lines ───────────────────────────────────────────── */
+.h-line { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent); border: none; }
+
+/* ── Chrome rule ─────────────────────────────────────── */
+.chrome-rule {
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,.08) 10%,
+    rgba(255,255,255,.55) 30%,
+    rgba(255,255,255,.9)  50%,
+    rgba(255,255,255,.55) 70%,
+    rgba(255,255,255,.08) 90%,
+    transparent 100%);
+}
+
+/* ── Card ────────────────────────────────────────────── */
+.card {
+  background: var(--black2);
+  border: 1px solid var(--border2);
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
+}
+.card:hover { border-color: rgba(255,255,255,.28); }
+
+/* Corner accents */
+.card-accented::after {
+  content: '';
+  position: absolute; bottom: 0; right: 0;
+  width: 18px; height: 18px;
+  border-bottom: 1px solid var(--silver); border-right: 1px solid var(--silver);
+}
+
+/* ── Tag ─────────────────────────────────────────────── */
+.tag {
+  display: inline-block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 0.08em;
+  padding: 0.18rem 0.55rem;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+}
+
+/* ── Buttons ─────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  cursor: pointer; border: none; transition: all 0.25s;
+  font-family: 'Share Tech Mono', monospace; text-decoration: none;
+}
+.btn-chrome {
+  background: linear-gradient(180deg,
+    #f0f0f0 0%, #d0d0d0 18%, #999 42%, #bbb 58%, #eee 72%, #aaa 88%, #ddd 100%);
+  color: #000;
+  box-shadow:
+    0 0 30px rgba(200,200,200,.15),
+    inset 0 1px 0 rgba(255,255,255,.8),
+    inset 0 -1px 0 rgba(0,0,0,.35),
+    0 2px 12px rgba(0,0,0,.5);
+}
+.btn-chrome:hover {
+  background: linear-gradient(180deg,
+    #fff 0%, #e8e8e8 18%, #bbb 42%, #d8d8d8 58%, #fff 72%, #ccc 88%, #f0f0f0 100%);
+  box-shadow:
+    0 0 55px rgba(220,220,220,.3),
+    inset 0 1px 0 rgba(255,255,255,1),
+    0 4px 20px rgba(0,0,0,.5);
+  color: #000;
+}
+.btn-outline {
+  background: transparent; color: var(--silver);
+  border: 1px solid var(--border2); text-decoration: none;
+}
+.btn-outline:hover { border-color: var(--silver); background: rgba(255,255,255,0.04); color: var(--silver); }
+
+/* ── Grids ───────────────────────────────────────────── */
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1px; background: var(--border); }
+.grid-2 > * { background: var(--black); }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1px; background: var(--border); }
+.grid-3 > * { background: var(--black); }
+
+/* ── Search ──────────────────────────────────────────── */
+.search-input {
+  width: 100%; max-width: 520px;
+  padding: 0.75rem 1.2rem;
+  background: var(--black2); border: 1px solid var(--border2);
+  color: var(--text); font-size: 0.85rem;
+  font-family: 'Share Tech Mono', monospace;
+  outline: none; transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--silver); }
+.search-input::placeholder { color: var(--text3); }
+
+.filter-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 1rem 0; }
+.filter-chip {
+  padding: 0.28rem 0.9rem;
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  font-family: 'Share Tech Mono', monospace;
+  background: transparent; color: var(--text3);
+  border: 1px solid var(--border); cursor: pointer; transition: all 0.2s;
+}
+.filter-chip:hover, .filter-chip.active { color: #000; background: var(--silver); border-color: var(--silver); }
+
+/* ── Page hero ───────────────────────────────────────── */
+.page-hero { padding: 9rem 0 4rem; border-bottom: 1px solid var(--border); }
+
+/* ── Utilities ───────────────────────────────────────── */
+.text-silver { color: var(--silver); }
+.text-muted  { color: var(--text2); }
+.text-dim    { color: var(--text3); }
+.flex { display: flex; } .flex-col { flex-direction: column; } .flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; } .justify-between { justify-content: space-between; }
+.gap-1{gap:.5rem} .gap-2{gap:1rem} .gap-3{gap:1.5rem}
+.mt-1{margin-top:.5rem} .mt-2{margin-top:1rem} .mt-3{margin-top:1.5rem} .mt-4{margin-top:2rem}
+.mb-1{margin-bottom:.5rem} .mb-2{margin-bottom:1rem} .mb-3{margin-bottom:1.5rem}
+.relative{position:relative} .overflow-hidden{overflow:hidden}
+
+/* GSAP initial states — opacity handled by JS only */
+.reveal       { }
+.reveal-left  { }
+.reveal-right { }
+.reveal-scale { }
+.reveal-line  { transform-origin: left; }
+
+/* ── Keyframes ───────────────────────────────────────── */
+@keyframes float    { 0%,100%{transform:translateY(0) rotate(var(--r,0deg))} 50%{transform:translateY(-18px) rotate(var(--r,0deg))} }
+@keyframes spin-slow{ from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+@keyframes spin-rev { from{transform:rotate(0deg)} to{transform:rotate(-360deg)} }
+@keyframes pulse-glow{ 0%,100%{opacity:.2} 50%{opacity:.6} }
+@keyframes scan     { 0%{top:-5%} 100%{top:105%} }
+@keyframes blink    { 0%,100%{opacity:1} 50%{opacity:0} }
+@keyframes shimmer  { 0%{background-position:-200% center} 100%{background-position:200% center} }
+@keyframes chrome-sweep {
+  0%   { opacity:.3; transform:translateX(-100%) skewX(-20deg); }
+  50%  { opacity:.7; }
+  100% { opacity:.3; transform:translateX(200%) skewX(-20deg); }
+}
+
+.float    { animation: float 7s ease-in-out infinite; }
+.float-2  { animation: float 9s ease-in-out infinite 1.5s; }
+.float-3  { animation: float 6s ease-in-out infinite 3s; }
+.spin-s   { animation: spin-slow 25s linear infinite; }
+.spin-r   { animation: spin-rev  18s linear infinite; }
+
+@media (max-width: 640px) {
+  .section { padding: 5rem 0; }
+  .page-hero { padding: 7rem 0 3rem; }
+}

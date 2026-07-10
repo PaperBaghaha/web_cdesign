@@ -1,0 +1,107 @@
+---
+import { ViewTransitions } from 'astro:transitions';
+export interface Props { title?: string; description?: string; isHome?: boolean; }
+const { title = 'Home', description = 'Convergence Design Lab — Purdue University', isHome = false } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title} · C Design Lab</title>
+  <meta name="description" content={description} />
+  <link rel="stylesheet" href="/styles/global.css" />
+  <ViewTransitions />
+</head>
+<body>
+
+  <!-- Inner page nav bar (not shown on home) -->
+  {!isHome && (
+    <nav class="inner-nav">
+      <div class="container inner-nav-inner">
+        <ul class="inner-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/research">Research</a></li>
+          <li><a href="/people">People</a></li>
+          <li><a href="/publications">Publications</a></li>
+          <li><a href="/news">News</a></li>
+          <li><a href="/courses">Courses</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+  )}
+
+  <main transition:animate="slide"><slot /></main>
+
+  <footer class="footer">
+    <div class="footer-rule"></div>
+    <div class="container footer-inner">
+      <div>
+        <p class="chrome-text" style="font-size:1.1rem;font-weight:900;letter-spacing:-.02em">C/DESIGN LAB</p>
+        <p class="text-dim mono mt-1" style="font-size:.58rem;letter-spacing:.16em">PURDUE UNIVERSITY · EST. 2000</p>
+      </div>
+      <div class="footer-links">
+        <a href="/research">Research</a>
+        <a href="/people">People</a>
+        <a href="/publications">Publications</a>
+        <a href="/contact">Contact</a>
+      </div>
+      <p class="text-dim mono" style="font-size:.55rem;letter-spacing:.1em;align-self:flex-end">
+        © {new Date().getFullYear()} CONVERGENCE DESIGN LAB
+      </p>
+    </div>
+  </footer>
+</body>
+</html>
+
+<style>
+/* ── Logo ─────────────────────────────── */
+.site-logo {
+  position: fixed; top: 1.5rem; left: 2rem; z-index: 200;
+}
+.logo-link {
+  font-size: .95rem; font-weight: 900; letter-spacing: -.02em;
+  text-decoration: none; display: flex; align-items: baseline;
+}
+.logo-sub { color: var(--text2); font-weight: 300; font-size: .85rem; letter-spacing: .04em; }
+
+/* ── Inner page nav ───────────────────── */
+.inner-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(6,6,8,.88); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+.inner-nav-inner { display: flex; align-items: center; justify-content: flex-end; height: 56px; }
+.inner-links { display: flex; list-style: none; gap: 2rem; }
+.inner-links a {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .65rem; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--text2); text-decoration: none; transition: color .2s;
+}
+.inner-links a:hover, .inner-links a.active { color: var(--silver); }
+
+/* ── Footer ───────────────────────────── */
+.footer { margin-top: 8rem; }
+.footer-rule { height: 1px; background: linear-gradient(90deg, var(--silver), transparent 60%); }
+.footer-inner {
+  display: flex; flex-wrap: wrap; gap: 3rem;
+  justify-content: space-between; align-items: flex-start; padding: 3rem 0;
+}
+.footer-links { display: flex; flex-direction: column; gap: .6rem; }
+.footer-links a {
+  color: var(--text2); font-size: .72rem;
+  font-family: 'Share Tech Mono', monospace; letter-spacing: .1em;
+  text-transform: uppercase; text-decoration: none; transition: color .2s;
+}
+.footer-links a:hover { color: var(--silver); }
+</style>
+
+<script>
+// Active state on inner nav
+const path = window.location.pathname;
+document.querySelectorAll('.inner-links a').forEach(a => {
+  const href = a.getAttribute('href');
+  a.classList.toggle('active', href === '/' ? path === '/' : path.startsWith(href!));
+});
+</script>

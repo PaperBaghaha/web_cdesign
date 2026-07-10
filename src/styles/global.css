@@ -1,0 +1,216 @@
+/* ── Theme tokens ───────────────────────────────────────────────── */
+
+/* Theme 1: Purdue Gold & Black (default) */
+:root, [data-theme="gold"] {
+  --bg:        #0a0a0a;
+  --bg2:       #141414;
+  --bg3:       #1e1e1e;
+  --border:    #2a2a2a;
+  --accent:    #CEB888;
+  --accent2:   #e8d5a3;
+  --text:      #f0f0f0;
+  --text2:     #a0a0a0;
+  --tag-bg:    #1e1c14;
+  --tag-text:  #CEB888;
+  --nav-bg:    rgba(10,10,10,0.92);
+}
+
+/* Theme 2: Clean White / Minimal */
+[data-theme="white"] {
+  --bg:        #ffffff;
+  --bg2:       #f5f5f5;
+  --bg3:       #ebebeb;
+  --border:    #d8d8d8;
+  --accent:    #1a1a1a;
+  --accent2:   #444444;
+  --text:      #111111;
+  --text2:     #555555;
+  --tag-bg:    #eeeeee;
+  --tag-text:  #333333;
+  --nav-bg:    rgba(255,255,255,0.92);
+}
+
+/* Theme 3: Deep Navy / Academic */
+[data-theme="navy"] {
+  --bg:        #0d1b2a;
+  --bg2:       #112236;
+  --bg3:       #1a3048;
+  --border:    #1e3a56;
+  --accent:    #4fc3f7;
+  --accent2:   #81d4fa;
+  --text:      #e8f4fd;
+  --text2:     #90b8d4;
+  --tag-bg:    #112236;
+  --tag-text:  #4fc3f7;
+  --nav-bg:    rgba(13,27,42,0.95);
+}
+
+/* ── Reset & base ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  transition: background 0.3s, color 0.3s;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent2); }
+
+img { max-width: 100%; display: block; }
+
+/* ── Layout ─────────────────────────────────────────────────────── */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+.section { padding: 5rem 0; }
+.section-sm { padding: 3rem 0; }
+
+/* ── Typography ─────────────────────────────────────────────────── */
+h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+h2 { font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 600; letter-spacing: -0.01em; }
+h3 { font-size: 1.15rem; font-weight: 600; }
+p  { color: var(--text2); }
+
+.label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+/* ── Cards ──────────────────────────────────────────────────────── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+/* ── Tags ───────────────────────────────────────────────────────── */
+.tag {
+  display: inline-block;
+  background: var(--tag-bg);
+  color: var(--tag-text);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+/* ── Buttons ────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+.btn-primary { background: var(--accent); color: var(--bg); }
+.btn-primary:hover { background: var(--accent2); color: var(--bg); }
+.btn-outline { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+.btn-outline:hover { background: var(--accent); color: var(--bg); }
+
+/* ── Grid ───────────────────────────────────────────────────────── */
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; }
+
+/* ── Divider ────────────────────────────────────────────────────── */
+.divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+/* ── Theme switcher ─────────────────────────────────────────────── */
+.theme-switcher {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.theme-btn {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.theme-btn:hover, .theme-btn.active { border-color: var(--accent); }
+.theme-btn[data-t="gold"]  { background: #CEB888; }
+.theme-btn[data-t="white"] { background: #ffffff; }
+.theme-btn[data-t="navy"]  { background: #4fc3f7; }
+
+/* ── Search / filter ────────────────────────────────────────────── */
+.search-input {
+  width: 100%;
+  max-width: 480px;
+  padding: 0.65rem 1rem;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--accent); }
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.filter-chip {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: var(--bg3);
+  color: var(--text2);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-chip:hover, .filter-chip.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+
+/* ── Page hero ──────────────────────────────────────────────────── */
+.page-hero {
+  padding: 6rem 0 3rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 3rem;
+}
+
+/* ── Utilities ──────────────────────────────────────────────────── */
+.text-accent { color: var(--accent); }
+.text-muted  { color: var(--text2); }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.flex { display: flex; }
+.gap-1 { gap: 0.5rem; }
+.gap-2 { gap: 1rem; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+
+@media (max-width: 640px) {
+  .section { padding: 3rem 0; }
+  .page-hero { padding: 4rem 0 2rem; }
+}

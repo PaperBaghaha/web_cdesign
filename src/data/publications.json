@@ -1,0 +1,2948 @@
+[
+  {
+    "title": "ConceptVis: Exploring and Visualizing Design Concepts With Large Language Models Using Interactive Knowledge Graph",
+    "year": "2026",
+    "authors": [
+      "Jingyu Shi",
+      "Karthik Ramani",
+      "Rahul Jain",
+      "Runlin Duan",
+      "Yuzhao Chen"
+    ],
+    "date": "2026-01-01"
+  },
+  {
+    "title": "Egocentric Hand Activity Video Dataset and Bidirectional Motion-Priors for Hand Action Recognition",
+    "year": "2026",
+    "authors": [
+      "Karthik Ramani"
+    ],
+    "date": "2026-01-12"
+  },
+  {
+    "title": "Canvas3D: Empowering Precise Spatial Control for Image Generation with Constraints from a 3D Virtual Canvas",
+    "year": "2026",
+    "authors": [
+      "Chenfei Zhu",
+      "Jingyu Shi",
+      "Karthik Ramani",
+      "Rahul Jain",
+      "Runlin Duan",
+      "Yuzhao Chen"
+    ],
+    "date": "2026-03-23"
+  },
+  {
+    "title": "AgentCoach: LLM-Based Adaptive Coaching Feedback for Motor Skill Learning",
+    "year": "2026",
+    "authors": [
+      "Dizhi Ma",
+      "Karthik Ramani",
+      "Xiyun Hu"
+    ],
+    "date": "2026-04-13"
+  },
+  {
+    "title": "AmIWrite: Exploring Scalable One-on-One Handwriting-Based Tutoring for Mathematical Problem-Solving with an LLM-Powered AI Tutor",
+    "year": "2026",
+    "authors": [
+      "Karthik Ramani",
+      "Runlin Duan",
+      "Xiyun Hu",
+      "Yuzhao Chen",
+      "Zhengzhe Zhu",
+      "Ziyi Liu"
+    ],
+    "date": "2026-04-13"
+  },
+  {
+    "title": "JustShape: Exploring Co-Speech Gestures for Multimodal LLM-Powered 3D Parametric Modeling",
+    "year": "2026",
+    "authors": [
+      "Chenfei Zhu",
+      "Dizhi Ma",
+      "Karthik Ramani",
+      "Runlin Duan",
+      "Xiyun Hu",
+      "Yuzhao Chen"
+    ],
+    "date": "2026-04-13"
+  },
+  {
+    "title": "ARify: Leveraging Narrated Instructional Videos to Create Augmented Reality Tutorials for Procedural Tasks",
+    "year": "2026",
+    "authors": [
+      "Chenfei Zhu",
+      "Dizhi Ma",
+      "Karthik Ramani",
+      "Rahul Jain",
+      "Shao-Kang Hsia",
+      "Xiyun Hu"
+    ],
+    "date": "2026-04-13"
+  },
+  {
+    "title": "Towards Design Guidelines for Natural-Language-Based Human-Multi-Robot Collaboration in Domestic Environments",
+    "year": "2026",
+    "authors": [
+      "Chenfei Zhu",
+      "Shao-Kang Hsia",
+      "Xinyi Wang",
+      "Xiyun Hu",
+      "Zhengzhe Zhu",
+      "Ziyi Liu"
+    ],
+    "date": "2026-04-13"
+  },
+  {
+    "title": "PACE: Physics Augmentation for Coordinated End-to-end Reinforcement Learning toward Versatile Humanoid Table Tennis",
+    "year": "2026",
+    "authors": [
+      "Dizhi Ma",
+      "Karthik Ramani"
+    ],
+    "date": "2026-03-21"
+  },
+  {
+    "title": "AssemblifyVR: An authoring system tool for instructional mechanical assembly animations",
+    "year": "2026",
+    "authors": [
+      "Asim Unmesh",
+      "Karthik Ramani",
+      "Mayank Patel",
+      "Rahul Jain",
+      "Recent Publications"
+    ],
+    "date": "2026-05-24"
+  },
+  {
+    "title": "Dual Neural Network (DuNN) method for elliptic partial differential equations and systems",
+    "year": "2025",
+    "authors": [
+      "Karthik Ramani",
+      "Min Liu"
+    ],
+    "date": "2025-03-11"
+  },
+  {
+    "title": "CATSplat: Context-Aware Transformer with Spatial Guidance for Generalizable 3D Gaussian Splatting from A Single-View Image",
+    "year": "2025",
+    "authors": [
+      "Karthik Ramani",
+      "Sangpil Kim",
+      "Seunggeun Chi"
+    ],
+    "date": "2025-02-03"
+  },
+  {
+    "title": "Investigating Creativity in Humans and Generative AI Through Circles Exercises",
+    "year": "2025",
+    "authors": [
+      "Karthik Ramani",
+      "Runlin Duan"
+    ],
+    "date": "2025-02-11"
+  },
+  {
+    "title": "Visualizing Causality in Mixed Reality for Manual Task Learning: A Study",
+    "year": "2025",
+    "authors": [
+      "Hyungjun Doh",
+      "Jingyu Shi",
+      "Karthik Ramani",
+      "Rahul Jain",
+      "Recent Publications",
+      "Subramanian Chidambaram"
+    ],
+    "date": "2025-02-24"
+  },
+  {
+    "title": "CARING-AI: Towards Authoring Context-aware Augmented Reality INstruction through Generative Artificial Intelligence",
+    "year": "2025",
+    "authors": [
+      "Hyunggun Chi",
+      "Hyungjun Doh",
+      "Jingyu Shi",
+      "Karthik Ramani",
+      "Rahul Jain",
+      "Recent Publications"
+    ],
+    "date": "2025-04-25"
+  },
+  {
+    "title": "Transparent Barriers: Natural Language Access Control Policies for XR-Enhanced Everyday Objects",
+    "year": "2025",
+    "authors": [
+      "Jingyu Shi",
+      "Karthik Ramani",
+      "Rahul Jain"
+    ],
+    "date": "2025-04-25"
+  },
+  {
+    "title": "Virtual Reality in Manufacturing Education: A Scoping Review Indicating State-of-the-Art, Benefits, and Challenges Across Domains, Levels, and Entities",
+    "year": "2025",
+    "authors": [
+      "Ananya Ipsita",
+      "Karthik Ramani",
+      "Runlin Duan",
+      "Ziyi Liu"
+    ],
+    "date": "2025-03-25"
+  },
+  {
+    "title": "pARametric: Empowering In Situ Parametric Modeling in Augmented Reality for Personal Fabrication",
+    "year": "2025",
+    "authors": [
+      "Jingyu Shi",
+      "Karthik Ramani",
+      "Min Liu",
+      "Runlin Duan",
+      "Xiyun Hu"
+    ],
+    "date": "2025-04-14"
+  },
+  {
+    "title": "Adopting Backward Design into a Constructionist Curriculum Design for IoT Skill Development in High Schoolers",
+    "year": "2025",
+    "authors": [
+      "Ananya Ipsita",
+      "Karthik Ramani",
+      "Terrell Glenn"
+    ],
+    "date": "2025-04-25"
+  },
+  {
+    "title": "GesPrompt: Leveraging Co-Speech Gestures to Augment LLM-Based Interaction in Virtual Reality",
+    "year": "2025",
+    "authors": [
+      "Dizhi Ma",
+      "Fengming He",
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Shao-Kang Hsia"
+    ],
+    "date": "2025-05-14"
+  },
+  {
+    "title": "DesignFromX:Empowering Consumer-Driven Design Space Exploration through Feature Composition of Referenced Products",
+    "year": "2025",
+    "authors": [
+      "Chenfei Zhu",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Runlin Duan",
+      "Yuzhao Chen"
+    ],
+    "date": "2025-07-05"
+  },
+  {
+    "title": "agentAR: Creating Augmented Reality Applications with Tool-Augmented LLM-based Autonomous Agents",
+    "year": "2025",
+    "authors": [
+      "Chenfei Zhu",
+      "Jingyu Shi",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Shao-Kang Hsia",
+      "Xiyun Hu"
+    ],
+    "date": "2025-09-30"
+  },
+  {
+    "title": "Occlusion-Aware Temporally Consistent Amodal Completion for 3D Human-Object Interaction Reconstruction",
+    "year": "2025",
+    "authors": [
+      "Hyungjun Doh",
+      "Karthik Ramani",
+      "Sangpil Kim",
+      "Seunggeun Chi"
+    ],
+    "date": "2025-10-27"
+  },
+  {
+    "title": "Extended Reality in Industry and Healthcare: Current Trends and Future Perspectives",
+    "year": "2025",
+    "authors": [
+      "Karthik Ramani"
+    ],
+    "date": "2025-12-01"
+  },
+  {
+    "title": "PowVRtool: a handheld haptic device for realistic power tool feedback in VR-based manufacturing training",
+    "year": "2025",
+    "authors": [
+      "Ananya Ipsita",
+      "Asim Unmesh",
+      "Jingyu Shi",
+      "Karthik Ramani",
+      "Mayank Patel",
+      "Rahul Jain"
+    ],
+    "date": "2025-12-08"
+  },
+  {
+    "title": "InfoGCN++: Learning Representation by Predicting the Future for Online Human Skeleton-based Action Recognition",
+    "year": "2024",
+    "authors": [
+      "Hyunggun Chi",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Seunggeun Chi"
+    ],
+    "date": "2024-09-18"
+  },
+  {
+    "title": "ClassMeta: Designing Interactive Virtual Classmate to Promote VR Classroom Participation",
+    "year": "2024",
+    "authors": [
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Xiyun Hu",
+      "Zhengzhe Zhu",
+      "Ziyi Liu"
+    ],
+    "date": "2024-05-11"
+  },
+  {
+    "title": "avaTTAR: Table Tennis Stroke Training with On-body and Detached Visualization in Augmented Reality",
+    "year": "2024",
+    "authors": [
+      "Dizhi Ma",
+      "Jingyu Shi",
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Rahul Jain",
+      "Recent Publications"
+    ],
+    "date": "2024-09-16"
+  },
+  {
+    "title": "M2D2M: Multi-Motion Generation from Text with Discrete Diffusion Models",
+    "year": "2024",
+    "authors": [
+      "Hyunggun Chi",
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Seunggeun Chi"
+    ],
+    "date": "2024-09-26"
+  },
+  {
+    "title": "Estimating Ego-Body Pose from Doubly Sparse Egocentric Video Data, Advances in Neural Information Processing Systems",
+    "year": "2024",
+    "authors": [
+      "Karthik Ramani",
+      "Recent Publications",
+      "Seunggeun Chi"
+    ],
+    "date": "2024-09-27"
+  },
+  {
+    "title": "AnnotateXR: An Extended Reality Workflow for Automating Data Annotation to Support Computer Vision Applications",
+    "year": "2024",
+    "authors": [
+      "Asim Unmesh",
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Rahul Jain",
+      "Recent Publications",
+      "Subramanian Chidambaram"
+    ],
+    "date": "2024-12-01"
+  },
+  {
+    "title": "Multi-Modal Representation Learning with Tactile Data",
+    "year": "2024",
+    "authors": [
+      "Hyunggun Chi",
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2024-10-24"
+  },
+  {
+    "title": "AdapTUI: Adaptation of Geometric-Feature-Based Tangible User Interfaces in Augmented Reality",
+    "year": "2024",
+    "authors": [
+      "Fengming He",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Xiyun Hu",
+      "Xun Qian",
+      "Zhengzhe Zhu"
+    ],
+    "date": "2024-10-24"
+  },
+  {
+    "title": "Authoring instructional flow in iVR learning units to promote outcome-oriented learning",
+    "year": "2024",
+    "authors": [
+      "Ananya Ipsita",
+      "Asim Unmesh",
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2024-12-01"
+  },
+  {
+    "title": "Ubi Edge: Authoring Edge-Based Opportunistic Tangible User Interfaces in Augmented Reality",
+    "year": "2023",
+    "authors": [
+      "Fengming He",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Xiyun Hu"
+    ],
+    "date": "2023-02-24"
+  },
+  {
+    "title": "Pose Relation Transformer: Refine Occlusions for Human Pose Estimation",
+    "year": "2023",
+    "authors": [
+      "Hyunggun Chi",
+      "Karthik Ramani",
+      "Seunggeun Chi"
+    ],
+    "date": "2023-02-24"
+  },
+  {
+    "title": "InstruMentAR: Auto-Generation of Augmented Reality Tutorials for Operating Digital Instruments Through Recording Embodied",
+    "year": "2023",
+    "authors": [
+      "Ana Villanueva",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Tianyi Wang",
+      "Xun Qian",
+      "Zhengzhe Zhu"
+    ],
+    "date": "2023-02-24"
+  },
+  {
+    "title": "LearnIoTVR: An End-to-End Virtual Reality Environment Providing Authentic Learning Experiences for Internet of Things",
+    "year": "2023",
+    "authors": [
+      "Karthik Ramani",
+      "Recent Publications",
+      "Zhengzhe Zhu",
+      "Ziyi Liu"
+    ],
+    "date": "2023-02-24"
+  },
+  {
+    "title": "Simplification of 3D CAD Model in Voxel Form for Mechanical Parts Using Generative Adversarial Networks",
+    "year": "2023",
+    "authors": [
+      "Hyunggun Chi",
+      "Karthik Ramani"
+    ],
+    "date": "2023-06-11"
+  },
+  {
+    "title": "Ubi-TOUCH: Ubiquitous Tangible Object Utilization through Consistent Hand-object interaction in Augmented Reality",
+    "year": "2023",
+    "authors": [
+      "Jingyu Shi",
+      "Karthik Ramani",
+      "Rahul Jain",
+      "Recent Publications",
+      "Runlin Duan",
+      "Xun Qian"
+    ],
+    "date": "2023-10-16"
+  },
+  {
+    "title": "The Design of a Virtual Prototyping System for Authoring Interactive Virtual Reality Environments From Real-World Scans",
+    "year": "2023",
+    "authors": [
+      "Ananya Ipsita",
+      "Karthik Ramani",
+      "Min Liu",
+      "Recent Publications",
+      "Runlin Duan",
+      "Subramanian Chidambaram"
+    ],
+    "date": "2023-10-16"
+  },
+  {
+    "title": "ImpersonatAR: Using Embodied Authoring and Evaluation to Prototype Multi-Scenario Use cases for Augmented Reality Applications",
+    "year": "2023",
+    "authors": [
+      "Ananya Ipsita",
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2023-10-16"
+  },
+  {
+    "title": "An HCI-Centric Survey and Taxonomy of Human-Generative-AI Interactions",
+    "year": "2023",
+    "authors": [
+      "Hyungjun Doh",
+      "Jingyu Shi",
+      "Karthik Ramani",
+      "Rahul Jain",
+      "Recent Publications"
+    ],
+    "date": "2023-10-18"
+  },
+  {
+    "title": "AdamsFormer for Spatial Action Localization in the Future",
+    "year": "2023",
+    "authors": [
+      "Hyunggun Chi",
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2023-10-16"
+  },
+  {
+    "title": "Deep Ritz Method with Adaptive Quadrature for Linear Elasticity",
+    "year": "2023",
+    "authors": [
+      "Karthik Ramani",
+      "Min Liu",
+      "Recent Publications"
+    ],
+    "date": "2023-10-17"
+  },
+  {
+    "title": "Interacting Objects: A dataset of object-object interactions for richer dynamic scene representations",
+    "year": "2023",
+    "authors": [
+      "Asim Unmesh",
+      "Jingyu Shi",
+      "Karthik Ramani",
+      "Rahul Jain",
+      "Recent Publications"
+    ],
+    "date": "2023-11-02"
+  },
+  {
+    "title": "AircraftVerse: A Large-Scale Multimodal Dataset of Aerial Vehicle Designs",
+    "year": "2023",
+    "authors": [
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2023-11-02"
+  },
+  {
+    "title": "ColabAR: A Toolkit for Remote Collaboration in Tangible Augmented Reality Laboratories",
+    "year": "2022",
+    "authors": [
+      "Ana Villanueva",
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Subramanian Chidambaram",
+      "Zhengzhe Zhu"
+    ],
+    "date": "2022-04-19"
+  },
+  {
+    "title": "InfoGCN: Representation Learning for Human Skeleton-based Action Recognition",
+    "year": "2022",
+    "authors": [
+      "Hyunggun Chi",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Seunggeun Chi"
+    ],
+    "date": "2022-04-19"
+  },
+  {
+    "title": "Towards Modeling of Virtual Reality Welding Simulators to Promote Accessible and Scalable Training",
+    "year": "2022",
+    "authors": [
+      "Ana Villanueva",
+      "Ananya Ipsita",
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2022-04-19"
+  },
+  {
+    "title": "ScalAR: Authoring Semantically Adaptive Augmented Reality Experiences in Virtual Reality",
+    "year": "2022",
+    "authors": [
+      "Ananya Ipsita",
+      "Fengming He",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Tianyi Wang",
+      "Xiyun Hu"
+    ],
+    "date": "2022-04-19"
+  },
+  {
+    "title": "StretchAR: Exploiting Touch and Stretch as a Method of Interaction for Smart Glasses Using Wearable Straps",
+    "year": "2022",
+    "authors": [
+      "Ananya Ipsita",
+      "Karthik Ramani",
+      "Luis Paredes",
+      "Recent Publications"
+    ],
+    "date": "2022-10-10"
+  },
+  {
+    "title": "Advanced modeling method for quantifying cumulative subjective fatigue in mid-air interaction",
+    "year": "2022",
+    "authors": [
+      "Ana Villanueva",
+      "Karthik Ramani",
+      "People",
+      "Recent Publications",
+      "Sujin Jang"
+    ],
+    "date": "2022-10-17"
+  },
+  {
+    "title": "EditAR: A Digital Twin Authoring Environment for Creation of AR/VR and Video Instructions from a Single Demonstration",
+    "year": "2022",
+    "authors": [
+      "Ana Villanueva",
+      "Ananya Ipsita",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Subramanian Chidambaram"
+    ],
+    "date": "2022-10-19"
+  },
+  {
+    "title": "ARnnotate: An Augmented Reality Interface for Collecting Custom Dataset of 3D Hand-Object Interaction Pose Estimation",
+    "year": "2022",
+    "authors": [
+      "Fengming He",
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Tianyi Wang",
+      "Xiyun Hu"
+    ],
+    "date": "2022-11-10"
+  },
+  {
+    "title": "MechARspace: An Authoring System Enabling Bidirectional Binding of Augmented Reality with Toys in Real-time",
+    "year": "2022",
+    "authors": [
+      "Ana Villanueva",
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Pashin Raja",
+      "Recent Publications",
+      "Tianyi Wang"
+    ],
+    "date": "2022-11-10"
+  },
+  {
+    "title": "VRFromX: From Scanned Reality to Interactive Virtual Experience with Human-in-the-Loop",
+    "year": "2021",
+    "authors": [
+      "Ananya Ipsita",
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Min Liu",
+      "Recent Publications",
+      "Subramanian Chidambaram"
+    ],
+    "date": "2021-06-05"
+  },
+  {
+    "title": "AdapTutAR: An Adaptive Tutoring System for Machine Tasks in Augmented Reality",
+    "year": "2021",
+    "authors": [
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Tianyi Wang",
+      "Xun Qian",
+      "Yuanzhi Cao"
+    ],
+    "date": "2021-06-06"
+  },
+  {
+    "title": "LightPaintAR: Assist Light Painting Photography with Augmented Reality",
+    "year": "2021",
+    "authors": [
+      "Fengming He",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Tianyi Wang",
+      "Xun Qian"
+    ],
+    "date": "2021-06-06"
+  },
+  {
+    "title": "RobotAR: An Augmented Reality Compatible Teleconsulting Robotics Toolkit for Augmented Makerspace Experiences",
+    "year": "2021",
+    "authors": [
+      "Ana Villanueva",
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Zhengzhe Zhu",
+      "Ziyi Liu"
+    ],
+    "date": "2021-06-07"
+  },
+  {
+    "title": "ProcessAR: An augmented reality-based tool to create in-situ procedural 2D/3D AR Instructions",
+    "year": "2021",
+    "authors": [
+      "Ana Villanueva",
+      "Fengming He",
+      "Hank Huang",
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2021-06-29"
+  },
+  {
+    "title": "Towards modeling of human skilling for electrical circuitry using augmented reality applications",
+    "year": "2021",
+    "authors": [
+      "Ana Villanueva",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Zhengzhe Zhu",
+      "Ziyi Liu"
+    ],
+    "date": "2021-06-23"
+  },
+  {
+    "title": "FabHandWear : An End-to-End Pipeline from Design to Fabrication of Customized Functional Hand Wearables",
+    "year": "2021",
+    "authors": [
+      "Devarajan Ramanujan",
+      "Karthik Ramani",
+      "Luis Paredes",
+      "Recent Publications",
+      "Subramanian Chidambaram",
+      "Yunbo Zhang"
+    ],
+    "date": "2021-06-28"
+  },
+  {
+    "title": "Towards a Comprehensive and Robust Micromanipulation System with Force-Sensing and VR Capabilities",
+    "year": "2021",
+    "authors": [
+      "Karthik Ramani",
+      "Recent Publications",
+      "Subramanian Chidambaram"
+    ],
+    "date": "2021-07-07"
+  },
+  {
+    "title": "GesturAR: An Authoring System for Creating Freehand Interactive Augmented Reality Applications",
+    "year": "2021",
+    "authors": [
+      "Fengming He",
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Tianyi Wang",
+      "Xiyun Hu"
+    ],
+    "date": "2021-10-12"
+  },
+  {
+    "title": "CHIMERA: Supporting Wearables Development across Multidisciplinary Perspectives",
+    "year": "2021",
+    "authors": [
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Luis Paredes",
+      "Recent Publications",
+      "Senthil Chandrasegaran"
+    ],
+    "date": "2022-01-11"
+  },
+  {
+    "title": "Using Social Interaction Traced Data and Context to Predict Collaboration Quality and Creative Fluency in Collaborative Design Learning Environments",
+    "year": "2020",
+    "authors": [
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2020-01-28"
+  },
+  {
+    "title": "Autonomous Robotic Exploration and Mapping of Smart Indoor Environments With UWB-IoT Devices",
+    "year": "2020",
+    "authors": [
+      "Karthik Ramani",
+      "Ke Huo",
+      "Recent Publications",
+      "Tianyi Wang"
+    ],
+    "date": "2020-02-09"
+  },
+  {
+    "title": "Meta-AR-App: An Authoring Platform for Collaborative Augmented Reality in STEM Classrooms",
+    "year": "2020",
+    "authors": [
+      "Ana Villanueva",
+      "Convergence Accelerator",
+      "Convergence Accelerator Phase I",
+      "Future of Work",
+      "Future of Work",
+      "Karthik Ramani"
+    ],
+    "date": "2020-03-01"
+  },
+  {
+    "title": "An Exploratory Study of Augmented Reality Presence for Tutoring Machine Tasks",
+    "year": "2020",
+    "authors": [
+      "Convergence Accelerator",
+      "Convergence Accelerator Phase I",
+      "Future of Work",
+      "Future of Work",
+      "Karthik Ramani",
+      "Ke Huo"
+    ],
+    "date": "2020-03-01"
+  },
+  {
+    "title": "Vipo: Spatial-Visual Programming with Functions for Robot-IoT Workflows",
+    "year": "2020",
+    "authors": [
+      "Convergence Accelerator",
+      "Convergence Accelerator Phase I",
+      "Future of Work",
+      "Future of Work",
+      "Karthik Ramani",
+      "NSF"
+    ],
+    "date": "2020-03-01"
+  },
+  {
+    "title": "StoryMakAR: Bringing Stories to Life with an Augmented Reality & Physical Prototyping Toolkit for Youth",
+    "year": "2020",
+    "authors": [
+      "Ananya Ipsita",
+      "Convergence Accelerator",
+      "Convergence Accelerator Phase I",
+      "Future of Work",
+      "Future of Work",
+      "Industrial Innovation and Partnerships"
+    ],
+    "date": "2020-04-09"
+  },
+  {
+    "title": "CAPturAR: An Augmented Reality Tool for Authoring Human-Involved Context-Aware Applications",
+    "year": "2020",
+    "authors": [
+      "Fengming He",
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Ke Huo",
+      "Recent Publications",
+      "Tianyi Wang"
+    ],
+    "date": "2020-07-03"
+  },
+  {
+    "title": "A Large-scale Annotated Mechanical Components Benchmark for Classification and Retrieval Tasks with Deep Neural Networks",
+    "year": "2020",
+    "authors": [
+      "CISE Research Infrastructure",
+      "CISE Research Infrastructure",
+      "Convergence Accelerator",
+      "Convergence Accelerator",
+      "European Conference on Computer Vision",
+      "Future of Work"
+    ],
+    "date": "2020-07-03"
+  },
+  {
+    "title": "First-Person View Hand Segmentation of Multi-Modal Hand Activity Video Dataset",
+    "year": "2020",
+    "authors": [
+      "BMVC",
+      "Convergence Accelerator",
+      "Convergence Accelerator",
+      "Future of Work",
+      "Future of Work",
+      "Hyunggun Chi"
+    ],
+    "date": "2020-08-07"
+  },
+  {
+    "title": "Object Synthesis by Learning Part Geometry with Surface and Volumetric Representations",
+    "year": "2020",
+    "authors": [
+      "CAD",
+      "Computer-Aided Design",
+      "Future of Work",
+      "Future of Work",
+      "Hyunggun Chi",
+      "Karthik Ramani"
+    ],
+    "date": "2020-08-28"
+  },
+  {
+    "title": "Deep Learning 3D Shapes Using ALT-AZ Anisotropic 2-Sphere Convolution",
+    "year": "2019",
+    "authors": [
+      "Fupin Yao",
+      "Karthik Ramani",
+      "Min Liu",
+      "Recent Publications"
+    ],
+    "date": "2019-02-11"
+  },
+  {
+    "title": "Shape Structuralizer: Design, Fabrication, and User-driven Iterative Refinement of 3D Mesh Models",
+    "year": "2019",
+    "authors": [
+      "Karthik Ramani",
+      "Recent Publications",
+      "Subramanian Chidambaram",
+      "Yunbo Zhang"
+    ],
+    "date": "2019-02-11"
+  },
+  {
+    "title": "Big data driven jobs remaining time prediction in discrete manufacturing system: a deep learning-based approach",
+    "year": "2019",
+    "authors": [
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2019-05-03"
+  },
+  {
+    "title": "V.Ra: An In-Situ Visual Authoring System for Robot-IoT Task Planning with Augmented Reality",
+    "year": "2019",
+    "authors": [
+      "Future of Work",
+      "Future of Work",
+      "Industrial Innovation and Partnerships",
+      "Industrial Innovation and Partnerships",
+      "Information and Intelligent Systems",
+      "Information and Intelligent Systems"
+    ],
+    "date": "2019-05-19"
+  },
+  {
+    "title": "Collaboration Requirement Planning Protocol for HUB-CI in Factories of the Future",
+    "year": "2019",
+    "authors": [
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2019-07-20"
+  },
+  {
+    "title": "GhostAR: A Time-space Editor for Embodied Authoring of Human-Robot Collaborative Task with Augmented Reality",
+    "year": "2019",
+    "authors": [
+      "Future of Work",
+      "Future of Work",
+      "Industrial Innovation and Partnerships",
+      "Industrial Innovation and Partnerships",
+      "Information and Intelligent Systems",
+      "Information and Intelligent Systems"
+    ],
+    "date": "2019-10-14"
+  },
+  {
+    "title": "Latent transformations neural network for object view synthesis",
+    "year": "2019",
+    "authors": [
+      "Hyunggun Chi",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Sangpil Kim"
+    ],
+    "date": "2019-11-15"
+  },
+  {
+    "title": "Ani-Bot: A Modular Robotics System Supporting Creation, Tweaking, and Usage with Mixed-Reality Interactions",
+    "year": "2018",
+    "authors": [
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Ke Huo",
+      "Recent Publications",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Tangibles"
+    ],
+    "date": "2018-04-10"
+  },
+  {
+    "title": "Plain2Fun: Augmenting Ordinary Objects with Interactive Functions by Auto-Fabricating Surface Painted Circuits",
+    "year": "2018",
+    "authors": [
+      "Fabrication",
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Ke Huo",
+      "Pratik Chawla",
+      "Tianyi Wang"
+    ],
+    "date": "2018-04-10"
+  },
+  {
+    "title": "Scenariot: Spatially Mapping Smart Things Within Augmented Reality Scenes",
+    "year": "2018",
+    "authors": [
+      "Ke Huo",
+      "Recent Publications",
+      "Sang Ho Yoon",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Yuanzhi Cao"
+    ],
+    "date": "2018-04-21"
+  },
+  {
+    "title": "Toying With Design: Experiencing Design for Rapid Prototyping Using Mini-Fabrication Exercises",
+    "year": "2018",
+    "authors": [
+      "Devarajan Ramanujan",
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2018-08-21"
+  },
+  {
+    "title": "Gauss\u2019s law for networks directly reveals community boundaries",
+    "year": "2018",
+    "authors": [
+      "Ayan Sinha",
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2018-08-22"
+  },
+  {
+    "title": "MultiSoft: Soft Sensor Enabling Real-Time Multimodal Sensing with Contact Localization and Deformation Classification",
+    "year": "2018",
+    "authors": [
+      "Embedded Input",
+      "Fabrication",
+      "Karthik Ramani",
+      "Ke Huo",
+      "Luis Paredes",
+      "Recent Publications"
+    ],
+    "date": "2018-09-30"
+  },
+  {
+    "title": "Integrating environmental sustainability in undergraduate mechanical engineering courses using guided discovery instruction",
+    "year": "2018",
+    "authors": [
+      "Devarajan Ramanujan",
+      "Karthik Ramani",
+      "Karthik Ramani"
+    ],
+    "date": "2018-10-06"
+  },
+  {
+    "title": "SynchronizAR: Instant Synchronization for Spontaneous and Spatial Collaborations in Augmented Reality",
+    "year": "2018",
+    "authors": [
+      "Ana Villanueva",
+      "Karthik Ramani",
+      "Ke Huo",
+      "Luis Paredes",
+      "Recent Publications",
+      "Tianyi Wang"
+    ],
+    "date": "2018-10-15"
+  },
+  {
+    "title": "Co-3Deator: A Team-First Collaborative 3D Design Ideation Tool",
+    "year": "2017",
+    "authors": [
+      "Cecil Piya",
+      "Design Collaboration",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Senthil Chandrasegaran",
+      "Vinayak"
+    ],
+    "date": "2016-12-26"
+  },
+  {
+    "title": "Modeling Cumulative Arm Fatigue in Mid-Air Interaction based on Perceived Exertion and Kinetics of Arm Motion",
+    "year": "2017",
+    "authors": [
+      "Karthik Ramani",
+      "Recent Publications",
+      "Spatial Analytics",
+      "Sujin Jang"
+    ],
+    "date": "2017-01-14"
+  },
+  {
+    "title": "Window-Shaping: 3D Design Ideation by Creating on, Borrowing from, and Looking at the Physical World",
+    "year": "2017",
+    "authors": [
+      "Karthik Ramani",
+      "Ke Huo",
+      "Recent Publications",
+      "Vinayak"
+    ],
+    "date": "2016-12-26"
+  },
+  {
+    "title": "WireFab: Mix-Dimensional Modeling and Fabrication for 3D Mesh Models",
+    "year": "2017",
+    "authors": [
+      "Fabrication",
+      "Jeff Alperovich",
+      "Jing Bai",
+      "Karthik Ramani",
+      "Min Liu",
+      "Recent Publications"
+    ],
+    "date": "2016-12-30"
+  },
+  {
+    "title": "VizScribe: A visual analytics approach to understand designer behavior",
+    "year": "2017",
+    "authors": [
+      "Design Collaboration",
+      "Design Learn",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Senthil Chandrasegaran"
+    ],
+    "date": "2017-01-16"
+  },
+  {
+    "title": "BikeGesture: User Elicitation and Performance of Micro Hand Gesture as Input for Cycling",
+    "year": "2017",
+    "authors": [
+      "Embedded Input",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Sang Ho Yoon",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Yanke Tan"
+    ],
+    "date": "2017-02-05"
+  },
+  {
+    "title": "Product personalization enabled by assembly architecture and cyber physical systems",
+    "year": "2017",
+    "authors": [
+      "Karthik Ramani"
+    ],
+    "date": "2017-02-14"
+  },
+  {
+    "title": "SurfNet: Generating 3D shape surfaces using deep residual networks",
+    "year": "2017",
+    "authors": [
+      "Asim Unmesh",
+      "Ayan Sinha",
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2017-03-24"
+  },
+  {
+    "title": "The Influence of Toy Design Activities on Middle School Students Understanding of the Engineering Design Processes",
+    "year": "2017",
+    "authors": [
+      "Jeff Alperovich",
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Senthil Chandrasegaran"
+    ],
+    "date": "2017-05-12"
+  },
+  {
+    "title": "Merging Sketches for Creative Design Exploration: An Evaluation of Physical and Cognitive Operations",
+    "year": "2017",
+    "authors": [
+      "Design Collaboration",
+      "Recent Publications",
+      "Senthil Chandrasegaran",
+      "Uncategorized"
+    ],
+    "date": "2017-05-16"
+  },
+  {
+    "title": "Integrating Visual Analytics Support for Grounded Theory Practice in Qualitative Text Analysis",
+    "year": "2017",
+    "authors": [
+      "Recent Publications",
+      "Senthil Chandrasegaran"
+    ],
+    "date": "2017-05-16"
+  },
+  {
+    "title": "Secure Collaboration in Engineering Systems Design",
+    "year": "2017",
+    "authors": [
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2017-06-29"
+  },
+  {
+    "title": "The Design for Additive Manufacturing Worksheet",
+    "year": "2017",
+    "authors": [
+      "Jeff Alperovich",
+      "Joran Booth",
+      "Karthik Ramani",
+      "Pratik Chawla",
+      "Recent Publications",
+      "Uncategorized"
+    ],
+    "date": "2017-08-03"
+  },
+  {
+    "title": "Visual Analytics Tools for Sustainable Lifecycle Design: Current Status, Challenges, and Future Opportunities.",
+    "year": "2017",
+    "authors": [
+      "Devarajan Ramanujan",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Senthil Chandrasegaran",
+      "William Z Bernstein"
+    ],
+    "date": "2017-08-03"
+  },
+  {
+    "title": "Design Patterns for Visualization-Based Tools in Sustainable Product Design",
+    "year": "2017",
+    "authors": [
+      "Devarajan Ramanujan",
+      "Karthik Ramani",
+      "Recent Publications",
+      "William Z Bernstein"
+    ],
+    "date": "2017-08-03"
+  },
+  {
+    "title": "Learning Hand Articulations by Hallucinating Heat Distribution",
+    "year": "2017",
+    "authors": [
+      "Chiho Choi",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Sangpil Kim",
+      "Shape Understanding"
+    ],
+    "date": "2017-08-07"
+  },
+  {
+    "title": "iSoft: A Customizable Soft Sensor with Real-time Continuous Contact and Stretching Sensing",
+    "year": "2017",
+    "authors": [
+      "Embedded Input",
+      "Fabrication",
+      "Karthik Ramani",
+      "Ke Huo",
+      "Luis Paredes",
+      "Recent Publications"
+    ],
+    "date": "2017-10-21"
+  },
+  {
+    "title": "Ani-Bot: A Mixed-Reality Ready Modular Robotics System",
+    "year": "2017",
+    "authors": [
+      "Karthik Ramani",
+      "Ke Huo",
+      "Recent Publications",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Terrell Glenn",
+      "Yuanzhi Cao"
+    ],
+    "date": "2017-11-06"
+  },
+  {
+    "title": "3D Object Classification via Spherical Projections",
+    "year": "2017",
+    "authors": [
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2017-11-06"
+  },
+  {
+    "title": "Robust Hand Pose Estimation during the Interaction with an Unknown Object",
+    "year": "2017",
+    "authors": [
+      "Chiho Choi",
+      "Chin-Ning Chen",
+      "Karthik Ramani",
+      "Sang Ho Yoon"
+    ],
+    "date": "2017-10-17"
+  },
+  {
+    "title": "TMotion: Embedded 3D Mobile Input using Magnetic Sensing Technique",
+    "year": "2016",
+    "authors": [
+      "Embedded Input",
+      "Karthik Ramani",
+      "Ke Huo",
+      "Recent Publications",
+      "Sang Ho Yoon",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES"
+    ],
+    "date": "2016-02-14"
+  },
+  {
+    "title": "Interventions for Teaching Sketching Skills and Reducing Inhibition for Novice Engineering Designers",
+    "year": "2016",
+    "authors": [
+      "Design Learn",
+      "Joran Booth",
+      "Karthik Ramani"
+    ],
+    "date": "2015-11-24"
+  },
+  {
+    "title": "MobiSweep: Exploring Spatial Design Ideation Using a Smartphone as a Hand-held Reference Plane",
+    "year": "2016",
+    "authors": [
+      "Cecil Piya",
+      "Devarajan Ramanujan",
+      "Karthik Ramani",
+      "Recent Publications",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Vinayak"
+    ],
+    "date": "2016-01-22"
+  },
+  {
+    "title": "DeepHand: Robust Hand Pose Estimation by Completing a Matrix Imputed with Deep Features",
+    "year": "2016",
+    "authors": [
+      "Ayan Sinha",
+      "Chiho Choi",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Shape Understanding"
+    ],
+    "date": "2016-06-21"
+  },
+  {
+    "title": "Cubimorph: Designing Modular Handheld Shape Changing Devices for End-Users",
+    "year": "2016",
+    "authors": [
+      "Karthik Ramani",
+      "Recent Publications",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Tangibles"
+    ],
+    "date": "2016-03-14"
+  },
+  {
+    "title": "Optimal Fitting of Strain-Controlled Flattenable Mesh Surfaces",
+    "year": "2016",
+    "authors": [
+      "Fabrication",
+      "Karthik Ramani",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Yunbo Zhang"
+    ],
+    "date": "2016-03-14"
+  },
+  {
+    "title": "CardBoardiZer: Creatively Customize, Articulate and Fold 3D Mesh Models",
+    "year": "2016",
+    "authors": [
+      "Fabrication",
+      "Karthik Ramani",
+      "Luis Paredes",
+      "Recent Publications",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Wei Gao"
+    ],
+    "date": "2016-05-05"
+  },
+  {
+    "title": "Wearable Textile Input Device with Multimodal Sensing for Eyes-Free Mobile Interaction during Daily Activities",
+    "year": "2016",
+    "authors": [
+      "Embedded Input",
+      "Karthik Ramani",
+      "Ke Huo",
+      "Recent Publications",
+      "Sang Ho Yoon",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES"
+    ],
+    "date": "2016-04-04"
+  },
+  {
+    "title": "RealFusion: An Interactive Workflow for Repurposing Real-World Objects towards Early-stage Creative Ideation",
+    "year": "2016",
+    "authors": [
+      "Cecil Piya",
+      "Karthik Ramani",
+      "Recent Publications",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Uncategorized",
+      "Vinayak"
+    ],
+    "date": "2016-05-17"
+  },
+  {
+    "title": "The Design For Additive Manufacturing Worksheet",
+    "year": "2016",
+    "authors": [
+      "Design Learn",
+      "Joran Booth",
+      "Karthik Ramani"
+    ],
+    "date": "2016-06-02"
+  },
+  {
+    "title": "Proto-TAI++: Exploring Perceptually Consistent Creation of Planar Shape Assemblies Through Multimodal Tangible Interactions",
+    "year": "2016",
+    "authors": [
+      "Cecil Piya",
+      "Karthik Ramani",
+      "Recent Publications",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Vinayak"
+    ],
+    "date": "2016-07-20"
+  },
+  {
+    "title": "The intrinsic geometric structure of protein-protein interaction networks for protein interaction prediction",
+    "year": "2016",
+    "authors": [
+      "Karthik Ramani",
+      "Recent Publications",
+      "Shape Understanding"
+    ],
+    "date": "2016-08-01"
+  },
+  {
+    "title": "TRing: Instant and Customizable Interactions with Objects Using an Embedded Magnet and a Finger-Worn Device",
+    "year": "2016",
+    "authors": [
+      "Embedded Input",
+      "Fabrication",
+      "Karthik Ramani",
+      "Ke Huo",
+      "Recent Publications",
+      "Sang Ho Yoon"
+    ],
+    "date": "2016-10-16"
+  },
+  {
+    "title": "FEAsy: A Sketch-Based Tool for Finite Element Analysis",
+    "year": "2016",
+    "authors": [
+      "Cecil Piya",
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2016-08-06"
+  },
+  {
+    "title": "Deep Learning 3D Shape Surfaces using Geometry Images",
+    "year": "2016",
+    "authors": [
+      "Ayan Sinha",
+      "Recent Publications",
+      "Shape Understanding",
+      "Spatial Analytics"
+    ],
+    "date": "2016-08-19"
+  },
+  {
+    "title": "Developing Middle School Students' Engineering Design Concepts through Toy Design Workshop",
+    "year": "2016",
+    "authors": [
+      "Design Collaboration",
+      "Design Learn",
+      "Senthil Chandrasegaran",
+      "Tarun George"
+    ],
+    "date": "2016-08-29"
+  },
+  {
+    "title": "Window-Shaping: 3D Design Ideation in Mixed Reality",
+    "year": "2016",
+    "authors": [
+      "Karthik Ramani",
+      "Ke Huo",
+      "Vinayak"
+    ],
+    "date": "2016-11-24"
+  },
+  {
+    "title": "Deconvolving Feedback Loops in Recommender Systems",
+    "year": "2016",
+    "authors": [
+      "Ayan Sinha",
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2016-12-03"
+  },
+  {
+    "title": "shapeSIFT: Evaluating InfoVis Tools for Eco-Conscious Design",
+    "year": "2016",
+    "authors": [
+      "Devarajan Ramanujan",
+      "Karthik Ramani",
+      "William Z Bernstein"
+    ],
+    "date": "2016-08-07"
+  },
+  {
+    "title": "The Design for Additive Manufacturing Worksheet (Conference)",
+    "year": "2016",
+    "authors": [
+      "Karthik Ramani"
+    ],
+    "date": "2017-08-03"
+  },
+  {
+    "title": "HandiMate: Create and Animate using everyday objects",
+    "year": "2015",
+    "authors": [
+      "Ansh Verma",
+      "Design Learn",
+      "Jasjeet Seehra",
+      "Jasjeet Seehra",
+      "Karthik Ramani",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES"
+    ],
+    "date": "2015-01-05"
+  },
+  {
+    "title": "TIMMi: Finger-worn Textile Input Device with Multimodal Sensing in Mobile Interaction",
+    "year": "2015",
+    "authors": [
+      "Embedded Input",
+      "Ke Huo",
+      "Sang Ho Yoon",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Vinh Nguyen"
+    ],
+    "date": "2014-12-02"
+  },
+  {
+    "title": "SOFTii: Soft Tangible Interface for Continuous Control of Virtual Objects with Pressure-based Input",
+    "year": "2015",
+    "authors": [
+      "Ansh Verma",
+      "Embedded Input",
+      "Sang Ho Yoon",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Vinh Nguyen",
+      "Vinh Nguyen"
+    ],
+    "date": "2014-12-01"
+  },
+  {
+    "title": "Heat-Passing Framework for Robust Interpretation of Data in Networks",
+    "year": "2015",
+    "authors": [
+      "Karthik Ramani",
+      "Yi Fang"
+    ],
+    "date": "2014-12-03"
+  },
+  {
+    "title": "Informing Early Design Via Crowd-based Co-creation",
+    "year": "2015",
+    "authors": [
+      "Devarajan Ramanujan",
+      "Karthik Ramani",
+      "Tahira Reid",
+      "Vinayak"
+    ],
+    "date": "2015-04-20"
+  },
+  {
+    "title": "Sketcholution: Interaction Histories for Sketching",
+    "year": "2015",
+    "authors": [
+      "Karthik Ramani",
+      "Niklas Elmqvist",
+      "Shape Understanding",
+      "William Benjamin"
+    ],
+    "date": "2015-05-12"
+  },
+  {
+    "title": "A Gesture-free Geometric Approach for Mid-Air Expression of Design Intent",
+    "year": "2015",
+    "authors": [
+      "Karthik Ramani",
+      "Vinayak"
+    ],
+    "date": "2015-05-17"
+  },
+  {
+    "title": "Hand Grasp and Motion for Intent Expression in Mid-Air Virtual Pottery",
+    "year": "2015",
+    "authors": [
+      "Karthik Ramani",
+      "Vinayak"
+    ],
+    "date": "2015-05-19"
+  },
+  {
+    "title": "The Status, Challenges, and Future of Additive Manufacturing in Engineering",
+    "year": "2015",
+    "authors": [
+      "Devarajan Ramanujan",
+      "Fabrication",
+      "Karthik Ramani",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Wei Gao",
+      "Yunbo Zhang"
+    ],
+    "date": "2015-05-19"
+  },
+  {
+    "title": "HandiMate: Exploring a Modular Robotics kit for Animating Crafted Toys",
+    "year": "2015",
+    "authors": [
+      "Ansh Verma",
+      "Design Learn",
+      "Sang Ho Yoon",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Tangibles"
+    ],
+    "date": "2015-06-17"
+  },
+  {
+    "title": "Mutually coordinated visualization of product and supply chain metadata for sustainable design",
+    "year": "2015",
+    "authors": [
+      "Devadatta Kulkarni",
+      "Devarajan Ramanujan",
+      "Fu Zhao",
+      "Jeffrey Tew",
+      "Karthik Ramani",
+      "Niklas Elmqvist"
+    ],
+    "date": "2015-07-17"
+  },
+  {
+    "title": "A framework for visualization-driven eco-conscious design exploration",
+    "year": "2015",
+    "authors": [
+      "dev",
+      "Devadatta Kulkarni",
+      "Devarajan Ramanujan",
+      "Jeffrey Tew",
+      "Karthik Ramani",
+      "Niklas Elmqvist"
+    ],
+    "date": "2015-07-17"
+  },
+  {
+    "title": "MotionFlow: Visual Abstraction and Aggregation of Sequential Patterns in Human Motion Tracking Data",
+    "year": "2015",
+    "authors": [
+      "Karthik Ramani",
+      "Niklas Elmqvist",
+      "Spatial Analytics",
+      "Sujin Jang"
+    ],
+    "date": "2015-07-17"
+  },
+  {
+    "title": "RevoMaker: Enabling Multi-directional and Functionally-embedded 3D Printing using a Rotational Cuboidal Platform",
+    "year": "2015",
+    "authors": [
+      "Fabrication",
+      "Shape Understanding",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Wei Gao",
+      "Yunbo Zhang"
+    ],
+    "date": "2015-11-05"
+  },
+  {
+    "title": "Comparing Functional Analysis Methods for Product Dissection Tasks",
+    "year": "2015",
+    "authors": [
+      "Design Learn",
+      "Joran Booth",
+      "Karthik Ramani"
+    ],
+    "date": "2015-08-10"
+  },
+  {
+    "title": "Empirical Studies of Functional Decomposition in Early Design",
+    "year": "2015",
+    "authors": [
+      "Design Learn",
+      "Joran Booth",
+      "Karthik Ramani",
+      "Recent Publications"
+    ],
+    "date": "2015-08-11"
+  },
+  {
+    "title": "A Collaborative Filtering Approach to Real-Time Hand Pose Estimation",
+    "year": "2015",
+    "authors": [
+      "Ayan Sinha",
+      "Chiho Choi",
+      "Karthik Ramani",
+      "Recent Publications",
+      "Shape Understanding",
+      "Sujin Jang"
+    ],
+    "date": "2015-08-31"
+  },
+  {
+    "title": "Extracting Hand Grasp &amp; Motion for Intent Expression in Mid-Air Shape Deformation: A Concrete &amp; Iterative Exploration through a Virtual Pottery Application",
+    "year": "2015",
+    "authors": [
+      "Karthik Ramani",
+      "Recent Publications",
+      "Uncategorized",
+      "Vinayak"
+    ],
+    "date": "2015-10-25"
+  },
+  {
+    "title": "Bridging The Gaps: Augmenting Design Learning Through Computer-Aided Exploration",
+    "year": "2015",
+    "authors": [
+      "Anirudh Sriram",
+      "Design Learn"
+    ],
+    "date": "2015-08-30"
+  },
+  {
+    "title": "skWiki: A Multimedia Sketching System for Collaborative Creativity",
+    "year": "2014",
+    "authors": [
+      "Design Collaboration",
+      "Karthik Ramani",
+      "Lorraine G. Kisselburgh",
+      "Niklas Elmqvist",
+      "Senthil Chandrasegaran"
+    ],
+    "date": "2014-01-20"
+  },
+  {
+    "title": "Juxtapoze: Supporting Serendipity and Creative Expression in Clipart Compositions",
+    "year": "2014",
+    "authors": [
+      "creativity",
+      "Devarajan Ramanujan",
+      "Karthik Ramani",
+      "Niklas Elmqvist",
+      "S. V. N. Vishwanathan",
+      "Senthil Chandrasegaran"
+    ],
+    "date": "2014-01-21"
+  },
+  {
+    "title": "Chiron: Interpreting signals from Capacitive Patterns and Inertial Sensors for intuitive Shape Modeling.",
+    "year": "2014",
+    "authors": [
+      "Ansh Verma",
+      "Embedded Input",
+      "Tangible Input Devices",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Wearable Computing"
+    ],
+    "date": "2014-02-17"
+  },
+  {
+    "title": "zPots : A Virtual Pottery Experience Through Spatial Interactions Using the Leap Motion Device",
+    "year": "2014",
+    "authors": [
+      "Computational Geometry",
+      "Conceptual Design",
+      "Hand-based Interaction",
+      "Karthik Ramani",
+      "Vinayak"
+    ],
+    "date": "2014-03-07"
+  },
+  {
+    "title": "Tracing and Sketching Performance using Blunt-tipped Styli on Direct-Touch Tablets",
+    "year": "2014",
+    "authors": [
+      "Karthik Ramani",
+      "Niklas Elmqvist",
+      "Senthil Chandrasegaran"
+    ],
+    "date": "2014-05-23"
+  },
+  {
+    "title": "PuppetX: A Framework for Gestural Interactions With User Constructed Playthings",
+    "year": "2014",
+    "authors": [
+      "Embedded Input",
+      "Karthik Ramani",
+      "Sujin Jang",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Tangibles"
+    ],
+    "date": "2014-05-28"
+  },
+  {
+    "title": "HexaMorph: A Reconfigurable and Foldable Hexapod Robot Inspired by Origami",
+    "year": "2014",
+    "authors": [
+      "Fabrication",
+      "folding",
+      "Hexapod Robot",
+      "Karthik Ramani",
+      "Ke Huo",
+      "Kinetogami"
+    ],
+    "date": "2014-06-20"
+  },
+  {
+    "title": "Remanufacturing of Turbine Blades by Laser Direct Deposition with Its Energy and Environmental Impact Analysis",
+    "year": "2014",
+    "authors": [
+      "Cecil Piya",
+      "Design for Environment",
+      "Digital shape reconstruction",
+      "Direct Metal Deposition (DMD)",
+      "Eco-design",
+      "Fu Zhao"
+    ],
+    "date": "2014-08-03"
+  },
+  {
+    "title": "ViSER: Visualizing supply chains for eco-conscious redesign",
+    "year": "2014",
+    "authors": [
+      "Devarajan Ramanujan",
+      "Fu Zhao",
+      "Karthik Ramani",
+      "Niklas Elmqvist",
+      "William Z Bernstein"
+    ],
+    "date": "2014-08-14"
+  },
+  {
+    "title": "Collaborative Sketching with skWiki: A Case Study",
+    "year": "2014",
+    "authors": [
+      "Design Collaboration",
+      "Karthik Ramani",
+      "Lorraine G. Kisselburgh",
+      "Niklas Elmqvist",
+      "Senthil Chandrasegaran"
+    ],
+    "date": "2014-08-14"
+  },
+  {
+    "title": "PROTO-TAI: Quick Design Prototyping using Tangible Assisted Interfaces",
+    "year": "2014",
+    "authors": [
+      "Cecil Piya",
+      "Embedded Input",
+      "Karthik Ramani",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES"
+    ],
+    "date": "2014-08-14"
+  },
+  {
+    "title": "Contextualizing Environmental Sustainability in Design Engineering Curricula",
+    "year": "2014",
+    "authors": [
+      "Design Learn",
+      "Devarajan Ramanujan",
+      "Karthik Ramani",
+      "Monica Cardella",
+      "William Z Bernstein"
+    ],
+    "date": "2014-08-15"
+  },
+  {
+    "title": "BendID: Flexible Interface for Localized Deformation Recognition",
+    "year": "2014",
+    "authors": [
+      "Ansh Verma",
+      "Embedded Input",
+      "Sang Ho Yoon",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Vinh Nguyen"
+    ],
+    "date": "2014-09-15"
+  },
+  {
+    "title": "Plex: Finger-Worn Textile Sensor for Mobile Interaction during Activities",
+    "year": "2014",
+    "authors": [
+      "Embedded Input",
+      "Ke Huo",
+      "Sang Ho Yoon",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES"
+    ],
+    "date": "2014-09-15"
+  },
+  {
+    "title": "Prioritizing Design for Environment Strategies Using a Stochastic Analytic Hierarchy Process",
+    "year": "2014",
+    "authors": [
+      "Devarajan Ramanujan",
+      "Fu Zhao",
+      "Karthik Ramani",
+      "William Z Bernstein"
+    ],
+    "date": "2014-08-29"
+  },
+  {
+    "title": "Evaluating the Bottom-Up Method for Functional Decomposition in Product Dissection Tasks",
+    "year": "2014",
+    "authors": [
+      "Design Learn",
+      "Joran Booth",
+      "Karthik Ramani",
+      "Tahira Reid"
+    ],
+    "date": "2014-09-08"
+  },
+  {
+    "title": "Art Meets Engineering Design: An Approach for Reducing Sketch Inhibition in Engineers During the Design Process",
+    "year": "2014",
+    "authors": [
+      "Joran Booth",
+      "Karthik Ramani"
+    ],
+    "date": "2014-09-08"
+  },
+  {
+    "title": "GestureAnalyzer: Visual Analytics for Pattern Analysis of  Mid-Air Hand Gestures",
+    "year": "2014",
+    "authors": [
+      "Karthik Ramani",
+      "Niklas Elmqvist",
+      "Spatial Analytics",
+      "Sujin Jang"
+    ],
+    "date": "2014-10-04"
+  },
+  {
+    "title": "ChiroBot: Modular-Robotic Manipulation via Spatial Hand Gestures.",
+    "year": "2014",
+    "authors": [
+      "All",
+      "Ansh Verma",
+      "Jasjeet Seehra",
+      "Karthik Ramani",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES",
+      "Tangibles"
+    ],
+    "date": "2014-06-17"
+  },
+  {
+    "title": "IDEA-Pen: Interactive Design and Analysis through a Pen-based Interface",
+    "year": "2014",
+    "authors": [
+      "Design Learn"
+    ],
+    "date": "2014-06-09"
+  },
+  {
+    "title": "The evolution, challenges, and future of knowledge representation in product design systems",
+    "year": "2013",
+    "authors": [
+      "Alain Bernard",
+      "collaborative engineering",
+      "computational tools",
+      "design rationale",
+      "Imre Horvath",
+      "Karthik Ramani"
+    ],
+    "date": "2012-08-31"
+  },
+  {
+    "title": "Shape-It-Up: Hand Gesture Based Creative Expression of 3D Shapes Using Intelligent Generalized Cylinders",
+    "year": "2013",
+    "authors": [
+      "Karthik Ramani",
+      "People",
+      "Sundar Murugappan",
+      "Vinayak"
+    ],
+    "date": "2013-05-10"
+  },
+  {
+    "title": "Multiscale Kernels using Random Walks",
+    "year": "2013",
+    "authors": [
+      "Ayan Sinha",
+      "Karthik Ramani",
+      "People",
+      "Shape Understanding"
+    ],
+    "date": "2013-07-10"
+  },
+  {
+    "title": "Understanding Brainstorming through Text Visualization",
+    "year": "2013",
+    "authors": [
+      "Karthik Ramani",
+      "Lorraine G. Kisselburgh",
+      "Senthil Chandrasegaran"
+    ],
+    "date": "2013-07-29"
+  },
+  {
+    "title": "shapeSift: Suggesting sustainable options in design reuse from part repositories",
+    "year": "2013",
+    "authors": [
+      "Devarajan Ramanujan",
+      "Karthik Ramani",
+      "Niklas Elmqvist",
+      "William Benjamin",
+      "William Z Bernstein"
+    ],
+    "date": "2013-08-11"
+  },
+  {
+    "title": "Profiling Energy Consumption of Smartphone Users for Environmentally Efficient Business Decisions",
+    "year": "2013",
+    "authors": [
+      "Devarajan Ramanujan",
+      "Fu Zhao",
+      "Karthik Ramani",
+      "William Z Bernstein"
+    ],
+    "date": "2013-08-20"
+  },
+  {
+    "title": "Understanding Abstraction In Design: A Comparison of Three Functional Analysis Methods for Product Dissection",
+    "year": "2013",
+    "authors": [
+      "Design Learn",
+      "Joran Booth",
+      "Karthik Ramani",
+      "Tahira Reid"
+    ],
+    "date": "2013-08-23"
+  },
+  {
+    "title": "KINETOGAMI, A Reconfigurable and Printable Sheet Folding",
+    "year": "2013",
+    "authors": [
+      "Fabrication",
+      "Foldability",
+      "multi-loop mechanism",
+      "multi-material printing",
+      "reconfigurability",
+      "TANGIBLE, EMBEDDED &amp; EMBODIED INTERFACES"
+    ],
+    "date": "2014-08-22"
+  },
+  {
+    "title": "Towards locally and globally shape-aware reverse 3D modeling",
+    "year": "2012",
+    "authors": [
+      "CAD model parameterization",
+      "Cecil Piya",
+      "Digital shape reconstruction",
+      "Karthik Ramani",
+      "Manish Goyal",
+      "Min Liu"
+    ],
+    "date": "2012-05-03"
+  },
+  {
+    "title": "Center-Shift: An Approach Towards Automatic Robust Mesh Segmentation (ARMS)",
+    "year": "2012",
+    "authors": [
+      "Karthik Ramani",
+      "mesh segmentation",
+      "Yi Fang"
+    ],
+    "date": "2012-05-14"
+  },
+  {
+    "title": "Teaching Design for Environment through Critique within a Project Based Product Design Course",
+    "year": "2012",
+    "authors": [
+      "Contextual Learning",
+      "Design for Environment",
+      "Design Learn",
+      "Design Learning",
+      "Devarajan Ramanujan",
+      "Fu Zhao"
+    ],
+    "date": "2012-05-15"
+  },
+  {
+    "title": "Discovering Material Recovery Scenarios for Industrial Machinery",
+    "year": "2012",
+    "authors": [
+      "Design for Environment",
+      "Devarajan Ramanujan",
+      "EOL options",
+      "Fu Zhao",
+      "Karthik Ramani",
+      "Material recycling"
+    ],
+    "date": "2012-05-15"
+  },
+  {
+    "title": "Designing-in Sustainability by Linking Engineering Curricula with K-12 Science Projects",
+    "year": "2012",
+    "authors": [
+      "Arjun Ramani",
+      "Design Learn",
+      "Devarajan Ramanujan",
+      "Engineering Education",
+      "Environmental Sustainability",
+      "K-12 Science Projects"
+    ],
+    "date": "2012-05-15"
+  },
+  {
+    "title": "3DMolNavi: A web-based retrieval and navigation tool for flexible molecular shape comparison",
+    "year": "2012",
+    "authors": [
+      "3DMolNavi",
+      "Jean-Claude Paul",
+      "Karthik Ramani",
+      "Meng Wang",
+      "molecular shape comparison",
+      "navigation"
+    ],
+    "date": "2012-03-16"
+  },
+  {
+    "title": "Kaleidogami: Multi-Primitive Reconfigurable Artistic Structures",
+    "year": "2012",
+    "authors": [
+      "artisitic structure",
+      "folding",
+      "Kaleidogami",
+      "Karthik Ramani",
+      "Reconfiguration",
+      "Wei Gao"
+    ],
+    "date": "2012-05-29"
+  },
+  {
+    "title": "ME 444: Redesigning a Toy Design Course.",
+    "year": "2012",
+    "authors": [
+      "Design Learn",
+      "Elkin Taborda",
+      "Karthik Ramani",
+      "Senthil Chandrasegaran"
+    ],
+    "date": "2012-05-07"
+  },
+  {
+    "title": "Product and production systems life cycle and interaction",
+    "year": "2012",
+    "authors": [
+      "Devarajan Ramanujan",
+      "Mikko Koho",
+      "William Z Bernstein"
+    ],
+    "date": "2012-04-24"
+  },
+  {
+    "title": "Handy-Potter: Rapid 3D Shape Exploration Through Natural Hand Motions",
+    "year": "2012",
+    "authors": [
+      "All",
+      "Cecil Piya",
+      "Karthik Ramani",
+      "Sundar Murugappan",
+      "Vinayak"
+    ],
+    "date": "2012-08-07"
+  },
+  {
+    "title": "Enhancing Visual Thinking in a Toy Design Course Using Freehand Sketching",
+    "year": "2012",
+    "authors": [
+      "Design Learn",
+      "Elkin Taborda",
+      "Karthik Ramani",
+      "Lorraine G. Kisselburgh",
+      "Senthil Chandrasegaran",
+      "Tahira Reid"
+    ],
+    "date": "2012-08-31"
+  },
+  {
+    "title": "A Proposed Platform to Simplify the Integration of Electronics into a Mechanical Engineering Design Course",
+    "year": "2012",
+    "authors": [
+      "Brett Skaloud",
+      "Design Learn",
+      "Karthik Ramani",
+      "Senthil Chandrasegaran"
+    ],
+    "date": "2012-08-31"
+  },
+  {
+    "title": "ACTIVE-Hand: Automatic Configurable Tactile Interaction in Virtual Environment",
+    "year": "2012",
+    "authors": [
+      "Embedded Input",
+      "John Strong",
+      "Karthik Ramani",
+      "Lara Schmidt",
+      "Matthew Parker",
+      "Michael Bruns"
+    ],
+    "date": "2012-09-04"
+  },
+  {
+    "title": "Extended Multitouch: Recovering Touch Posture & Identity Using Depth Cameras on a Pen+Touch Tabletop Interface",
+    "year": "2012",
+    "authors": [
+      "Karthik Ramani",
+      "Niklas Elmqvist",
+      "Sundar Murugappan",
+      "Vinayak"
+    ],
+    "date": "2012-10-03"
+  },
+  {
+    "title": "Addressing Uncertainties within Product Redesign for Sustainability: A Function Based Framework",
+    "year": "2011",
+    "authors": [
+      "Decision making",
+      "Devarajan Ramanujan",
+      "Eco-design",
+      "Fu Zhao",
+      "Function Impact Method",
+      "Info-gap decision theory"
+    ],
+    "date": "2011-03-03"
+  },
+  {
+    "title": "Evaluating Wikis as a Communicative Medium for Collaboration Within Colocated and Distributed Engineering Design Teams",
+    "year": "2011",
+    "authors": [
+      "Carolynn J. Walthall",
+      "Design Collaboration",
+      "Design Learn",
+      "E. Daniel Hirleman",
+      "Karthik Ramani",
+      "Lorraine G. Kisselburgh"
+    ],
+    "date": "2011-05-10"
+  },
+  {
+    "title": "HeatWalk: Robust Salient Segmentation of Non-rigid Shapes",
+    "year": "2011",
+    "authors": [
+      "Computational Geometry",
+      "Geometric algorithms languages and systems",
+      "Karthik Ramani",
+      "Object Modeling",
+      "S. V. N. Vishwanathan",
+      "Shape Understanding"
+    ],
+    "date": "2011-07-10"
+  },
+  {
+    "title": "Heat-Mapping: A Robust Approach Toward Perceptually Consistent Mesh Segmentation",
+    "year": "2011",
+    "authors": [
+      "Assumption Free",
+      "Deformable Shapes",
+      "Diffusion Geometry",
+      "Heat Diffusion",
+      "Heat Kernel",
+      "Karthik Ramani"
+    ],
+    "date": "2011-05-14"
+  },
+  {
+    "title": "Global Geometric Affinity for Revealing High Fidelity Protein Interaction Network",
+    "year": "2011",
+    "authors": [
+      "diffusion distance",
+      "Diffusion Geometry",
+      "Heat Diffusion",
+      "Heat Kernel",
+      "Karthik Ramani",
+      "Network Analysis"
+    ],
+    "date": "2011-05-14"
+  },
+  {
+    "title": "APIX: Analysis from Pixellated Inputs in Early Design Using a Pen-based Interface",
+    "year": "2011",
+    "authors": [
+      "Karthik Ramani",
+      "Maria Yang",
+      "Shape Understanding",
+      "Sundar Murugappan",
+      "Vinayak"
+    ],
+    "date": "2011-05-14"
+  },
+  {
+    "title": "Temperature Distribution Descriptor for Robust 3D Shape Retrieval",
+    "year": "2011",
+    "authors": [
+      "Diffusion Geometry",
+      "Heat Diffusion",
+      "Heat Kernel",
+      "Karthik Ramani",
+      "Laplace Beltrami",
+      "Shape Analysis"
+    ],
+    "date": "2011-05-14"
+  },
+  {
+    "title": "sLLE: Spherical Locally Linear Embedding with Applications to Tomography",
+    "year": "2011",
+    "authors": [
+      "Karthik Ramani",
+      "S. V. N. Vishwanathan",
+      "Shape Understanding",
+      "Yi Fang"
+    ],
+    "date": "2011-05-15"
+  },
+  {
+    "title": "Computing the Inner Distances of Volumetric Models for Articulated Shape Description with a Visibility Graph",
+    "year": "2011",
+    "authors": [
+      "articulated shape descriptor",
+      "Inner distance",
+      "Karthik Ramani",
+      "Min Liu",
+      "Shape Understanding",
+      "visibility graph"
+    ],
+    "date": "2011-12-10"
+  },
+  {
+    "title": "Towards Enabling Visual Design Exploration Involving Multiple Abstractions of Design Descriptions",
+    "year": "2011",
+    "authors": [
+      "Karthik Ramani",
+      "Srikanth Devanathan"
+    ],
+    "date": "2011-08-10"
+  },
+  {
+    "title": "Virtual Repair: Geometric Reconstruction for Remanufacturing Gas Turbine Blades",
+    "year": "2011",
+    "authors": [
+      "Cecil Piya",
+      "Direct Metal Deposition (DMD)",
+      "Gas turbine blade remanufacturing",
+      "J. Michael Wilson",
+      "Karthik Ramani",
+      "Prominent Cross Sections (PCS)"
+    ],
+    "date": "2011-08-14"
+  },
+  {
+    "title": "Implementing Design Critique for Teaching Sustainable Concept Generation",
+    "year": "2011",
+    "authors": [
+      "Design for Environment",
+      "Design Learn",
+      "Devarajan Ramanujan",
+      "Engineering Education",
+      "Fu Zhao",
+      "John W. Sutherland"
+    ],
+    "date": "2011-08-15"
+  },
+  {
+    "title": "Function Impact Matrix for Sustainable Concept Generation: A Designer's Perspective",
+    "year": "2010",
+    "authors": [
+      "Design for Environment",
+      "Devarajan Ramanujan",
+      "Eco-design",
+      "Fu Zhao",
+      "Function Impact Method",
+      "John W. Sutherland"
+    ],
+    "date": "2010-05-15"
+  },
+  {
+    "title": "Guiding Concept Generation Based on Ontology for Customer Preference Modeling",
+    "year": "2010",
+    "authors": [
+      "Dongxing Cao",
+      "Karthik Ramani",
+      "Ontology",
+      "Product Design",
+      "Zhanjun Li"
+    ],
+    "date": "2010-04-12"
+  },
+  {
+    "title": "Integrated Sustainable Lifecycle Design: A Review",
+    "year": "2010",
+    "authors": [
+      "Carol Handwerker",
+      "Deborah Thurston",
+      "Design for Environment",
+      "Devarajan Ramanujan",
+      "Eco-design",
+      "Fu Zhao"
+    ],
+    "date": "2010-09-15"
+  },
+  {
+    "title": "Integration of Sustainability Into Early Design through the Function Impact Matrix",
+    "year": "2010",
+    "authors": [
+      "Devarajan Ramanujan",
+      "Eco-design",
+      "Fu Zhao",
+      "Function Impact Method",
+      "Karthik Ramani",
+      "Life Cycle Assessment"
+    ],
+    "date": "2010-08-15"
+  },
+  {
+    "title": "Development of a Framework for Sustainable Conceptual Design",
+    "year": "2010",
+    "authors": [
+      "Conceptual Design",
+      "Devarajan Ramanujan",
+      "Environmental Sustainability",
+      "Fu Zhao",
+      "Function Impact Method",
+      "John W. Sutherland"
+    ],
+    "date": "2010-05-15"
+  },
+  {
+    "title": "PCS: Prominent Cross-Sections for Mesh Models",
+    "year": "2010",
+    "authors": [
+      "Christoph M. Hoffman",
+      "Karthik Ramani",
+      "Manish Goyal",
+      "Ramanathan Muthuganapathy",
+      "Shape Understanding",
+      "Subramani Sellamani"
+    ],
+    "date": "2010-07-15"
+  },
+  {
+    "title": "Developing Customer Preferences for Concept Generation by Using Engineering Ontologies",
+    "year": "2010",
+    "authors": [
+      "Design",
+      "Dongxing Cao",
+      "Karthik Ramani",
+      "Knowledge model",
+      "Ontology",
+      "Victor Raskin"
+    ],
+    "date": "2010-08-15"
+  },
+  {
+    "title": "Understanding Innovation in Student Design Projects",
+    "year": "2010",
+    "authors": [
+      "Design",
+      "Design Collaboration",
+      "Design Learn",
+      "Design Learning",
+      "E. Daniel Hirleman",
+      "Innovation"
+    ],
+    "date": "2010-08-15"
+  },
+  {
+    "title": "Using Diffusion Distances for Flexible Molecular Shape Comparison",
+    "year": "2010",
+    "authors": [
+      "diffusion distance",
+      "Diffusion Geometry",
+      "Guo-Qin Zheng",
+      "Heat Kernel",
+      "Karthik Ramani",
+      "Protein interaction"
+    ],
+    "date": "2010-10-15"
+  },
+  {
+    "title": "Creating Polytope Representations of Design Spaces for Visual Exploration Using Consistency Techniques",
+    "year": "2010",
+    "authors": [
+      "Computational Geometry",
+      "Design",
+      "Karthik Ramani",
+      "Srikanth Devanathan"
+    ],
+    "date": "2010-08-15"
+  },
+  {
+    "title": "A Port-based Agent Approach to Guiding Concept Generation for Customizing Modular Varieties",
+    "year": "2010",
+    "authors": [
+      "Agent-based modeling",
+      "Design",
+      "Dongxing Cao",
+      "Karthik Ramani",
+      "Ming Wang Fu",
+      "Runli Zhang"
+    ],
+    "date": "2010-08-15"
+  },
+  {
+    "title": "Estimating view parameters from random projections for Tomography using spherical MDS",
+    "year": "2010",
+    "authors": [
+      "Karthik Ramani",
+      "Shape Understanding",
+      "spherical multidimensional scaling",
+      "Sundar Murugappan",
+      "Yi Fang"
+    ],
+    "date": "2010-10-12"
+  },
+  {
+    "title": "Developing Engineering Ontology for Information Retrieval",
+    "year": "2009",
+    "authors": [
+      "Information retrieval",
+      "Karthik Ramani",
+      "Maria Yang",
+      "Ontology",
+      "Zhanjun Li"
+    ],
+    "date": "2008-08-16"
+  },
+  {
+    "title": "FEAsy:A Sketch-based Interface Integrating Structural Analysis In Early Design",
+    "year": "2009",
+    "authors": [
+      "Design Learn",
+      "FEAsy",
+      "freehand sketching",
+      "Karthik Ramani",
+      "Sundar Murugappan"
+    ],
+    "date": "2009-09-16"
+  },
+  {
+    "title": "Towards Beautification of Freehand Sketches using Suggestions",
+    "year": "2009",
+    "authors": [
+      "Beautification",
+      "freehand sketching",
+      "Karthik Ramani",
+      "Shape Understanding",
+      "Subramani Sellamani",
+      "Sundar Murugappan"
+    ],
+    "date": "2009-05-16"
+  },
+  {
+    "title": "Shape-based clustering for 3D CAD objects: A comparative study of effectiveness",
+    "year": "2009",
+    "authors": [
+      "Clustering effectiveness",
+      "Karthik Ramani",
+      "Shape",
+      "Shape Understanding",
+      "Shape-based clustering",
+      "Subramaniam Jayanti"
+    ],
+    "date": "2009-12-16"
+  },
+  {
+    "title": "Integration of Sustainability into Early Design through Working Knowledge Model and Visual Tools",
+    "year": "2009",
+    "authors": [
+      "Fu Zhao",
+      "Karthik Ramani",
+      "Pranav Koushik",
+      "Srikanth Devanathan",
+      "Sustainable Design",
+      "working knowledge model"
+    ],
+    "date": "2009-10-16"
+  },
+  {
+    "title": "IDSS: deformation invariant signatures for molecular shape comparison",
+    "year": "2009",
+    "authors": [
+      "IDSS",
+      "Karthik Ramani",
+      "molecular shape comparison",
+      "Shape Understanding",
+      "Yi Fang",
+      "Yu-Shen Liu"
+    ],
+    "date": "2009-05-16"
+  },
+  {
+    "title": "Using least median of squares for structural superposition of flexible proteins",
+    "year": "2009",
+    "authors": [
+      "Karthik Ramani",
+      "LMS",
+      "proteins",
+      "Shape Understanding",
+      "Yi Fang",
+      "Yu-Shen Liu"
+    ],
+    "date": "2009-05-16"
+  },
+  {
+    "title": "Port-based Ontology Semantic Similarities for Module Concept Creation",
+    "year": "2009",
+    "authors": [
+      "Dongxing Cao",
+      "Karthik Ramani",
+      "Ming Wang Fu",
+      "modularity",
+      "Ontology",
+      "Runli Zhang"
+    ],
+    "date": "2009-09-16"
+  },
+  {
+    "title": "A method for measuring part similarity using ontology and a multi-criteria decision making method",
+    "year": "2009",
+    "authors": [
+      "Duhwan Mun",
+      "Junmyon Cho",
+      "Karthik Ramani",
+      "MCDM",
+      "Ontology",
+      "Part Similarity"
+    ],
+    "date": "2009-09-16"
+  },
+  {
+    "title": "Three dimensional shape comparison of flexible protein using the local-diameter descriptor",
+    "year": "2009",
+    "authors": [
+      "Karthik Ramani",
+      "local diameter",
+      "molecular shape comparison",
+      "Shape Analysis",
+      "Shape Understanding",
+      "Yi Fang"
+    ],
+    "date": "2009-09-16"
+  },
+  {
+    "title": "Survey of Wikis as a Design Support Tool",
+    "year": "2009",
+    "authors": [
+      "Albert Albers",
+      "Carolynn J. Walthall",
+      "Christian Sauter",
+      "collaboration",
+      "Conceptual Design",
+      "design education"
+    ],
+    "date": "2009-05-16"
+  },
+  {
+    "title": "A Framework for evaluating wikis as a medium for communication within engineering design teams",
+    "year": "2009",
+    "authors": [
+      "Carolynn J. Walthall",
+      "Design Learn",
+      "E. Daniel Hirleman",
+      "Karthik Ramani",
+      "Lorraine G. Kisselburgh",
+      "Srikanth Devanathan"
+    ],
+    "date": "2009-09-02"
+  },
+  {
+    "title": "Robust principal axes determination for point-based shapes using least median of squares",
+    "year": "2009",
+    "authors": [
+      "Forward search",
+      "Karthik Ramani",
+      "Least median of squares",
+      "Point-based shapes",
+      "Principal axes",
+      "Principal component analysis"
+    ],
+    "date": "2009-04-16"
+  },
+  {
+    "title": "Computing global visibility maps for regions on the boundaries of polyhedra using Minkowski sums",
+    "year": "2009",
+    "authors": [
+      "Global occlusion map",
+      "Global visibility map",
+      "Karthik Ramani",
+      "Local visibility map",
+      "Min Liu",
+      "Minkowski sum"
+    ],
+    "date": "2009-09-16"
+  },
+  {
+    "title": "Joran's Publications",
+    "year": "",
+    "authors": [
+      "Joran Booth"
+    ],
+    "date": "1999-06-27"
+  },
+  {
+    "title": "Ayan's Publications",
+    "year": "",
+    "authors": [
+      "Ayan Sinha"
+    ],
+    "date": "1999-06-27"
+  },
+  {
+    "title": "Sketching Workshop for College Mentors for Kids",
+    "year": "",
+    "authors": [
+      "Joran Booth",
+      "none"
+    ],
+    "date": "2011-05-19"
+  },
+  {
+    "title": "ME553 - Product and Process Design",
+    "year": "",
+    "authors": [
+      "Uncategorized"
+    ],
+    "date": "2012-05-10"
+  },
+  {
+    "title": "NERF Blaster Dissections",
+    "year": "",
+    "authors": [
+      "Joran Booth",
+      "ME297",
+      "NERF",
+      "none",
+      "toy dissection",
+      "workshop"
+    ],
+    "date": "2012-05-19"
+  },
+  {
+    "title": "Makers' Faire 2012",
+    "year": "",
+    "authors": [
+      "Elkin Taborda",
+      "Joran Booth",
+      "Karthik Ramani",
+      "none"
+    ],
+    "date": "2012-05-19"
+  },
+  {
+    "title": "Franklin Township Middle School Outreach - February 23rd, 2013",
+    "year": "",
+    "authors": [],
+    "date": "2013-02-23"
+  },
+  {
+    "title": "MakerFaire Bay Area",
+    "year": "",
+    "authors": [],
+    "date": "2013-05-09"
+  },
+  {
+    "title": "ME444 - Computer Aided Design and Rapid Prototyping",
+    "year": "",
+    "authors": [
+      "Uncategorized"
+    ],
+    "date": "2013-09-08"
+  },
+  {
+    "title": "ME554 - Intellectual Property",
+    "year": "",
+    "authors": [
+      "Uncategorized"
+    ],
+    "date": "2013-09-08"
+  },
+  {
+    "title": "TCS/Purdue Follow up information 27SEP13",
+    "year": "",
+    "authors": [
+      "Uncategorized"
+    ],
+    "date": "2013-09-27"
+  },
+  {
+    "title": "Toy Makers Fair - December 5th 2013",
+    "year": "",
+    "authors": [],
+    "date": "2013-12-05"
+  },
+  {
+    "title": "Design Workshop, September 2013",
+    "year": "",
+    "authors": [],
+    "date": "2013-09-10"
+  },
+  {
+    "title": "Design Lab - October 22nd, 2013",
+    "year": "",
+    "authors": [],
+    "date": "2013-10-22"
+  },
+  {
+    "title": "First Robotics",
+    "year": "",
+    "authors": [],
+    "date": "2013-10-10"
+  },
+  {
+    "title": "Lafayette Christian School Visit",
+    "year": "",
+    "authors": [],
+    "date": "2014-02-14"
+  },
+  {
+    "title": "LSAMP Program at 2014",
+    "year": "",
+    "authors": [],
+    "date": "2014-10-08"
+  },
+  {
+    "title": "Video: Mapping product architecture to supply chain networks for sustainable design",
+    "year": "",
+    "authors": [
+      "Uncategorized"
+    ],
+    "date": "2014-11-14"
+  },
+  {
+    "title": "TCS Purdue share-files",
+    "year": "",
+    "authors": [
+      "Uncategorized"
+    ],
+    "date": "2015-01-28"
+  },
+  {
+    "title": "Test for icons 1",
+    "year": "",
+    "authors": [
+      "Uncategorized"
+    ],
+    "date": "2015-06-30"
+  },
+  {
+    "title": "Test Icons 2",
+    "year": "",
+    "authors": [
+      "Uncategorized"
+    ],
+    "date": "2015-06-30"
+  },
+  {
+    "title": "Test Icons 3",
+    "year": "",
+    "authors": [
+      "Uncategorized"
+    ],
+    "date": "2015-06-30"
+  },
+  {
+    "title": "Toy Design Lab in Mechanical Engineering: GERI 2015 Summer Outreach Program",
+    "year": "",
+    "authors": [],
+    "date": "2015-07-07"
+  },
+  {
+    "title": "Multiscale kernels using random walks",
+    "year": "",
+    "authors": [
+      "Recent Publications"
+    ],
+    "date": "2015-07-17"
+  },
+  {
+    "title": "Science and Engineering: Heat, Light and Power",
+    "year": "",
+    "authors": [],
+    "date": "2015-07-25"
+  },
+  {
+    "title": "Ziro goes to The Bier Brewery",
+    "year": "",
+    "authors": [],
+    "date": "2016-05-23"
+  },
+  {
+    "title": "Ziro meets with children at The Children's Museum of Indianapolis",
+    "year": "",
+    "authors": [
+      "Luis Paredes"
+    ],
+    "date": "2016-05-23"
+  },
+  {
+    "title": "Toy Design Workshops",
+    "year": "",
+    "authors": [
+      "Karthik Ramani",
+      "Luis Paredes"
+    ],
+    "date": "2017-05-05"
+  },
+  {
+    "title": "GERI 2018 Summer Workshops",
+    "year": "",
+    "authors": [
+      "Karthik Ramani",
+      "Karthik Ramani",
+      "Terrell Glenn"
+    ],
+    "date": "2018-10-15"
+  },
+  {
+    "title": "[C-Blog] Purdue Engineering Blog - What the Media Gets Wrong about Robots - by Dr. Karthik Ramani",
+    "year": "",
+    "authors": [
+      "Karthik Ramani"
+    ],
+    "date": "2019-03-08"
+  },
+  {
+    "title": "[C-Blog] Purdue Engineering Blog - Upskilling America to Restore Global Competitiveness - by Dr. Karthik Ramani",
+    "year": "",
+    "authors": [
+      "Karthik Ramani"
+    ],
+    "date": "2019-07-29"
+  },
+  {
+    "title": "College recognizes Dr. Karthik Ramani as one of the Spring 2021 teachers with top evaluation scores",
+    "year": "",
+    "authors": [
+      "Uncategorized"
+    ],
+    "date": "2021-08-25"
+  }
+]

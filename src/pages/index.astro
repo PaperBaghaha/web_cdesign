@@ -1,0 +1,998 @@
+---
+import Layout from '../layouts/Layout.astro';
+import pubs from '../data/publications.json';
+import news from '../data/news.json';
+
+const recentPubs = pubs.slice(0, 6);
+const recentNews = news.slice(0, 3);
+
+// group pubs by year
+const pubsByYear: Record<string, typeof pubs> = {};
+pubs.forEach(p => { const y = String(p.year||'Unknown'); if(!pubsByYear[y]) pubsByYear[y]=[]; pubsByYear[y].push(p); });
+const pubYears = Object.keys(pubsByYear).sort((a,b)=>Number(b)-Number(a));
+
+// group news by year
+const newsByYear: Record<string, typeof news> = {};
+news.forEach(n => { const y = n.date ? n.date.slice(0,4) : 'Unknown'; if(!newsByYear[y]) newsByYear[y]=[]; newsByYear[y].push(n); });
+const newsYears = Object.keys(newsByYear).sort((a,b)=>Number(b)-Number(a));
+
+const sections = [
+  { id:'hero',         label:'HOME'         },
+  { id:'research',     label:'RESEARCH'     },
+  { id:'people',       label:'PEOPLE'       },
+  { id:'publications', label:'PUBLICATIONS' },
+  { id:'news',         label:'NEWS'         },
+  { id:'contact',      label:'CONTACT'      },
+];
+
+const areas = [
+  { code:'01', title:'AR / VR / MR',           desc:'Immersive skill transfer, spatial computing, and mixed reality interfaces for the future of work and education.', detail:'We develop AR/VR platforms like SkillXR that enable knowledge transfer in industrial and educational contexts. Our work spans holographic overlays, gesture-driven interfaces, and full-body immersive environments across manufacturing, surgery, and STEM learning.' },
+  { code:'02', title:'AI & Computer Vision',    desc:'Visual understanding, pose estimation, and generative models applied to design and manufacturing.', detail:'Our CV research tackles real-time object recognition, 6-DoF pose estimation, hand and body tracking, and generative AI for shape synthesis. We deploy these systems in robotics pipelines and smart factory environments.' },
+  { code:'03', title:'Human-Shape Interaction', desc:'Mid-air gestures, multi-touch, and freehand sketch interaction with 3D objects and digital environments.', detail:'We pioneer sketch-based 3D modeling, mid-air dexterous manipulation, and touch+pen hybrid interaction. Our tools let designers fluidly reshape geometry using natural hand motion rather than menus and parameters.' },
+  { code:'04', title:'Geometric Deep Learning', desc:'Machine learning on 3D point clouds, meshes, and implicit surfaces for shape analysis and reconstruction.', detail:'We train neural networks directly on 3D representations — point clouds, SDFs, and meshes — for tasks like part segmentation, shape completion, and cross-modal retrieval between sketches and 3D models.' },
+  { code:'05', title:'Smart Product Design',    desc:'Intelligent wearables, robotics, and IoT devices that sense, adapt, and collaborate with their users.', detail:'We build sensor-rich wearables and collaborative robots that learn user intent and context. Projects include EMG-driven prosthetics, tactile feedback gloves, and autonomous co-design agents.' },
+  { code:'06', title:'Design Learning',         desc:'Educational platforms, maker culture, outreach programs, and next-generation design thinking frameworks.', detail:'We create curriculum, tools, and communities that democratize engineering design — from MCB maker programs for K-12 students to AI-assisted design coaching platforms used in Purdue courses and globally.' },
+];
+
+const people = [
+  { name:'Karthik Ramani',  role:'Principal Investigator', tag:'PI'  },
+  { name:'Jingyu Shi',      role:'PhD Student',            tag:'PhD' },
+  { name:'Rahul Jain',      role:'PhD Student',            tag:'PhD' },
+  { name:'Runlin Duan',     role:'PhD Student',            tag:'PhD' },
+  { name:'Yuzhao Chen',     role:'PhD Student',            tag:'PhD' },
+  { name:'Dizhi Ma',        role:'PhD Student',            tag:'PhD' },
+  { name:'Hyungjun Doh',    role:'PhD Student',            tag:'PhD' },
+  { name:'Mayank Patel',    role:'PhD Student',            tag:'PhD' },
+  { name:'Chenfei Zhu',     role:'PhD Student',            tag:'PhD' },
+  { name:'Seunggeun Chi',   role:'PhD Student',            tag:'PhD' },
+  { name:'Ziyi Liu',        role:'PhD Student',            tag:'PhD' },
+  { name:'Ananya Ipsita',   role:'PhD Student',            tag:'PhD' },
+  { name:'Fengming He',     role:'PhD Student',            tag:'PhD' },
+  { name:'Pashin Raja',     role:'PhD Student',            tag:'PhD' },
+  { name:'Xiyun Hu',        role:'PhD Student',            tag:'PhD' },
+];
+
+function initials(n:string){ return n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+---
+<Layout title="Home" isHome={true}>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-track">
+    {sections.map((s) => (
+      <a href={`#${s.id}`} class="sb-item" data-section={s.id}>
+        <span class="sb-pip"></span>
+        <span class="sb-label mono">{s.label}</span>
+      </a>
+    ))}
+  </div>
+  <div class="sb-rule"></div>
+</aside>
+
+<!-- ══ SCENE 1 · HERO ══════════════════════════════════ -->
+<section class="scene" id="hero">
+  <svg class="scene-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="cr1" x1="0" y1="0" x2="0.18" y2="1">
+        <stop offset="0%"   stop-color="#ffffff"/><stop offset="5%"  stop-color="#e8e8e8"/>
+        <stop offset="12%"  stop-color="#181818"/><stop offset="20%" stop-color="#a8a8a8"/>
+        <stop offset="28%"  stop-color="#ffffff"/><stop offset="36%" stop-color="#d0d0d0"/>
+        <stop offset="44%"  stop-color="#303030"/><stop offset="53%" stop-color="#b8b8b8"/>
+        <stop offset="62%"  stop-color="#ffffff"/><stop offset="70%" stop-color="#606060"/>
+        <stop offset="78%"  stop-color="#d8d8d8"/><stop offset="86%" stop-color="#ffffff"/>
+        <stop offset="93%"  stop-color="#909090"/><stop offset="100%" stop-color="#c0c0c0"/>
+      </linearGradient>
+      <linearGradient id="cr2" x1="1" y1="0" x2="0.05" y2="1">
+        <stop offset="0%"   stop-color="#f8f8f8"/><stop offset="6%"  stop-color="#282828"/>
+        <stop offset="14%"  stop-color="#c8c8c8"/><stop offset="22%" stop-color="#ffffff"/>
+        <stop offset="30%"  stop-color="#484848"/><stop offset="40%" stop-color="#d8d8d8"/>
+        <stop offset="50%"  stop-color="#ffffff"/><stop offset="60%" stop-color="#383838"/>
+        <stop offset="70%"  stop-color="#c0c0c0"/><stop offset="80%" stop-color="#ffffff"/>
+        <stop offset="90%"  stop-color="#808080"/><stop offset="100%" stop-color="#e0e0e0"/>
+      </linearGradient>
+      <linearGradient id="cr3" x1="0.15" y1="0.05" x2="0.85" y2="0.95">
+        <stop offset="0%"   stop-color="#e8e8e8"/><stop offset="7%"  stop-color="#080808"/>
+        <stop offset="15%"  stop-color="#b0b0b0"/><stop offset="23%" stop-color="#ffffff"/>
+        <stop offset="32%"  stop-color="#202020"/><stop offset="42%" stop-color="#c8c8c8"/>
+        <stop offset="52%"  stop-color="#f8f8f8"/><stop offset="62%" stop-color="#404040"/>
+        <stop offset="72%"  stop-color="#d0d0d0"/><stop offset="82%" stop-color="#ffffff"/>
+        <stop offset="92%"  stop-color="#909090"/><stop offset="100%" stop-color="#d8d8d8"/>
+      </linearGradient>
+      <linearGradient id="cr4" x1="0" y1="0.9" x2="1" y2="0.1">
+        <stop offset="0%"   stop-color="#d0d0d0"/><stop offset="8%"  stop-color="#ffffff"/>
+        <stop offset="16%"  stop-color="#101010"/><stop offset="26%" stop-color="#b8b8b8"/>
+        <stop offset="36%"  stop-color="#ffffff"/><stop offset="46%" stop-color="#303030"/>
+        <stop offset="56%"  stop-color="#d8d8d8"/><stop offset="66%" stop-color="#f0f0f0"/>
+        <stop offset="76%"  stop-color="#505050"/><stop offset="86%" stop-color="#e0e0e0"/>
+        <stop offset="100%" stop-color="#f8f8f8"/>
+      </linearGradient>
+      <linearGradient id="tint" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%"   stop-color="#88bbff" stop-opacity="0.12"/>
+        <stop offset="45%"  stop-color="#9966ff" stop-opacity="0.14"/>
+        <stop offset="75%"  stop-color="#ff55cc" stop-opacity="0.09"/>
+        <stop offset="100%" stop-color="#44ccff" stop-opacity="0.07"/>
+      </linearGradient>
+      <filter id="glow-i" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur stdDeviation="10" result="b"/>
+        <feColorMatrix in="b" type="matrix" values="0.3 0 0.8 0 0.05 0.05 0.1 0.9 0 0.05 0.6 0 1.5 0 0.1 0 0 0 0.55 0" result="col"/>
+        <feMerge><feMergeNode in="col"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-w" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="5" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+
+    <!-- ambient centre glow -->
+    <ellipse cx="720" cy="450" rx="520" ry="310" fill="rgba(255,255,255,0.04)"/>
+
+    <!-- ── LEFT CLAW CLUSTER ── -->
+    <!-- shadows -->
+    <g fill="#000" opacity="0.5" transform="translate(7,10)">
+      <path d="M 0,900 C 45,700 82,488 120,328 C 150,204 176,112 192,55 C 200,26 200,5 188,0 C 176,-5 162,16 148,58 C 128,120 102,218 80,350 C 54,510 24,714 58,900 Z"/>
+      <path d="M 108,408 C 195,380 300,372 376,396 C 420,412 445,446 443,480 C 441,514 418,532 390,524 C 362,516 349,490 358,464 C 350,476 352,494 364,506 C 378,518 398,512 408,492 C 418,472 414,447 396,428 C 372,404 310,390 238,390 C 178,390 126,402 108,418 Z"/>
+      <path d="M 0,792 C 58,766 124,758 170,780 C 206,796 218,828 206,856 C 194,882 162,892 130,878 C 96,862 58,834 24,824 L 0,818 Z"/>
+    </g>
+    <!-- main tall blade -->
+    <path d="M 0,900 C 45,700 82,488 120,328 C 150,204 176,112 192,55 C 200,26 200,5 188,0 C 176,-5 162,16 148,58 C 128,120 102,218 80,350 C 54,510 24,714 58,900 Z" fill="url(#cr1)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 0,900 C 45,700 82,488 120,328 C 150,204 176,112 192,55 C 200,26 200,5 188,0 C 176,-5 162,16 148,58 C 128,120 102,218 80,350 C 54,510 24,714 58,900 Z" fill="url(#tint)"/>
+    <path d="M 120,328 C 150,204 176,112 192,55 C 200,26 200,5 188,0" fill="none" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" opacity="0.92"/>
+    <!-- hook arm -->
+    <path d="M 108,408 C 195,380 300,372 376,396 C 420,412 445,446 443,480 C 441,514 418,532 390,524 C 362,516 349,490 358,464 C 350,476 352,494 364,506 C 378,518 398,512 408,492 C 418,472 414,447 396,428 C 372,404 310,390 238,390 C 178,390 126,402 108,418 Z" fill="url(#cr3)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 108,408 C 195,380 300,372 376,396 C 420,412 445,446 443,480 C 441,514 418,532 390,524 C 362,516 349,490 358,464 C 350,476 352,494 364,506 C 378,518 398,512 408,492 C 418,472 414,447 396,428 C 372,404 310,390 238,390 C 178,390 126,402 108,418 Z" fill="url(#tint)"/>
+    <path d="M 108,408 C 195,380 300,372 376,396 C 420,412 445,446 443,480" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.88"/>
+    <!-- lower talon -->
+    <path d="M 0,792 C 58,766 124,758 170,780 C 206,796 218,828 206,856 C 194,882 162,892 130,878 C 96,862 58,834 24,824 L 0,818 Z" fill="url(#cr2)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 0,792 C 58,766 124,758 170,780 C 206,796 218,828 206,856 C 194,882 162,892 130,878" fill="none" stroke="#ffffff" stroke-width="1.1" stroke-linecap="round" opacity="0.85"/>
+
+    <!-- ── RIGHT CLAW CLUSTER (mirror) ── -->
+    <g transform="translate(1440,0) scale(-1,1)">
+      <g fill="#000" opacity="0.5" transform="translate(7,10)">
+        <path d="M 0,900 C 45,700 82,488 120,328 C 150,204 176,112 192,55 C 200,26 200,5 188,0 C 176,-5 162,16 148,58 C 128,120 102,218 80,350 C 54,510 24,714 58,900 Z"/>
+        <path d="M 108,408 C 195,380 300,372 376,396 C 420,412 445,446 443,480 C 441,514 418,532 390,524 C 362,516 349,490 358,464 C 350,476 352,494 364,506 C 378,518 398,512 408,492 C 418,472 414,447 396,428 C 372,404 310,390 238,390 C 178,390 126,402 108,418 Z"/>
+        <path d="M 0,792 C 58,766 124,758 170,780 C 206,796 218,828 206,856 C 194,882 162,892 130,878 C 96,862 58,834 24,824 L 0,818 Z"/>
+      </g>
+      <path d="M 0,900 C 45,700 82,488 120,328 C 150,204 176,112 192,55 C 200,26 200,5 188,0 C 176,-5 162,16 148,58 C 128,120 102,218 80,350 C 54,510 24,714 58,900 Z" fill="url(#cr2)" stroke="#0a0a0c" stroke-width="1.5"/>
+      <path d="M 0,900 C 45,700 82,488 120,328 C 150,204 176,112 192,55 C 200,26 200,5 188,0 C 176,-5 162,16 148,58 C 128,120 102,218 80,350 C 54,510 24,714 58,900 Z" fill="url(#tint)"/>
+      <path d="M 120,328 C 150,204 176,112 192,55 C 200,26 200,5 188,0" fill="none" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" opacity="0.92"/>
+      <path d="M 108,408 C 195,380 300,372 376,396 C 420,412 445,446 443,480 C 441,514 418,532 390,524 C 362,516 349,490 358,464 C 350,476 352,494 364,506 C 378,518 398,512 408,492 C 418,472 414,447 396,428 C 372,404 310,390 238,390 C 178,390 126,402 108,418 Z" fill="url(#cr4)" stroke="#0a0a0c" stroke-width="1.5"/>
+      <path d="M 108,408 C 195,380 300,372 376,396 C 420,412 445,446 443,480 C 441,514 418,532 390,524 C 362,516 349,490 358,464 C 350,476 352,494 364,506 C 378,518 398,512 408,492 C 418,472 414,447 396,428 C 372,404 310,390 238,390 C 178,390 126,402 108,418 Z" fill="url(#tint)"/>
+      <path d="M 108,408 C 195,380 300,372 376,396 C 420,412 445,446 443,480" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.88"/>
+      <path d="M 0,792 C 58,766 124,758 170,780 C 206,796 218,828 206,856 C 194,882 162,892 130,878 C 96,862 58,834 24,824 L 0,818 Z" fill="url(#cr1)" stroke="#0a0a0c" stroke-width="1.5"/>
+      <path d="M 0,792 C 58,766 124,758 170,780 C 206,796 218,828 206,856 C 194,882 162,892 130,878" fill="none" stroke="#ffffff" stroke-width="1.1" stroke-linecap="round" opacity="0.85"/>
+    </g>
+
+    <!-- ── CENTER NEEDLE BLADE ── -->
+    <g id="h-blade">
+      <path d="M 0,10 C 7,10 7,10 7,10" fill="#000" opacity="0" transform="translate(714,0)"/>
+      <path d="M 698,0 C 706,90 713,196 716,290 C 718,326 718,348 718,358 C 718,348 722,326 724,290 C 727,196 734,90 742,0 Z" fill="url(#cr4)" stroke="#0a0a0c" stroke-width="1.5"/>
+      <path d="M 698,0 C 706,90 713,196 716,290 C 718,326 718,348 718,358 C 718,348 722,326 724,290 C 727,196 734,90 742,0 Z" fill="url(#tint)"/>
+      <path d="M 698,0 C 706,90 713,196 716,290 C 718,326 718,348 718,358" fill="none" stroke="#ffffff" stroke-width="1.1" stroke-linecap="round" opacity="0.9"/>
+    </g>
+
+    <!-- ── FLOATING ACCENT SHARDS ── -->
+    <g filter="url(#glow-i)">
+      <path id="h-d1" d="M 720,406 L 738,446 L 720,484 L 702,446 Z" fill="url(#cr1)" stroke="#ffffff" stroke-width="1" opacity="0.9"/>
+      <path id="h-d2" d="M 270,196 L 284,224 L 270,252 L 256,224 Z" fill="url(#cr3)" stroke="#ffffff" stroke-width="0.9" opacity="0.85"/>
+      <path id="h-d3" d="M 1170,196 L 1184,224 L 1170,252 L 1156,224 Z" fill="url(#cr3)" stroke="#ffffff" stroke-width="0.9" opacity="0.85"/>
+      <path id="h-d4" d="M 130,520 L 146,552 L 130,584 L 114,552 Z" fill="url(#cr2)" stroke="#ffffff" stroke-width="0.8" opacity="0.8"/>
+      <path id="h-d5" d="M 1310,520 L 1326,552 L 1310,584 L 1294,552 Z" fill="url(#cr2)" stroke="#ffffff" stroke-width="0.8" opacity="0.8"/>
+    </g>
+  </svg>
+
+  <div class="hero-glow"></div>
+  <div class="scene-body center-body" id="s-hero">
+    <span class="scene-eyebrow" id="h-eyebrow">PURDUE UNIVERSITY · WEST LAFAYETTE, IN · EST. 2000</span>
+    <h1 class="hero-h1" id="h-title">
+      <span class="chrome-text">CONVERGENCE</span>
+      <span class="chrome-text">DESIGN LAB</span>
+    </h1>
+    <p class="hero-sub" id="h-sub">AR · VR · AI · HCI · GEOMETRIC DEEP LEARNING · ROBOTICS</p>
+    <a href="#research" class="btn btn-chrome mt-3" id="h-cta">Explore ↓</a>
+  </div>
+
+  <div class="splitter-bar" id="h-stats">
+    {[['262+','PUBLICATIONS'],['30+','RESEARCHERS'],['6','RESEARCH AREAS'],['20+','YEARS ACTIVE']].map(([n,l])=>(
+      <div class="sstat">
+        <span class="sstat-n chrome-text" data-val={n}>{n}</span>
+        <span class="sstat-l">{l}</span>
+      </div>
+    ))}
+  </div>
+
+  <div class="scroll-hint">
+    <div class="sh-line"></div>
+    <span class="mono sh-text">SCROLL</span>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap" aria-hidden="true">
+  <div class="mq-chrome-top"></div>
+  <div class="marquee-track">
+    {Array.from({length:4}).map(()=>(
+      <>
+        <span class="mq">AR/VR/MR</span><span class="mq-d">◆</span>
+        <span class="mq">ARTIFICIAL INTELLIGENCE</span><span class="mq-d">◆</span>
+        <span class="mq">COMPUTER VISION</span><span class="mq-d">◆</span>
+        <span class="mq">GEOMETRIC DEEP LEARNING</span><span class="mq-d">◆</span>
+        <span class="mq">HUMAN-SHAPE INTERACTION</span><span class="mq-d">◆</span>
+        <span class="mq">SMART PRODUCT DESIGN</span><span class="mq-d">◆</span>
+        <span class="mq">DESIGN RESEARCH</span><span class="mq-d">◆</span>
+      </>
+    ))}
+  </div>
+  <div class="mq-chrome-bot"></div>
+</div>
+
+<!-- ══ SCENE 2 · RESEARCH ═══════════════════════════════ -->
+<section class="scene" id="research">
+  <svg class="scene-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <!-- shadows -->
+    <g fill="#000" opacity="0.5" transform="translate(7,10)">
+      <path d="M 1440,0 C 1380,80 1318,200 1295,340 C 1272,478 1290,598 1310,718 C 1328,822 1345,878 1326,900 L 1440,900 Z"/>
+      <path d="M 1440,200 C 1390,220 1330,250 1295,298 C 1258,348 1252,408 1270,458 C 1288,508 1325,532 1352,520 C 1380,508 1392,480 1385,454 C 1390,468 1382,490 1362,498 C 1342,506 1316,492 1302,464 C 1286,432 1290,382 1316,340 C 1342,298 1390,272 1440,255 Z"/>
+      <path d="M 1440,580 C 1408,562 1368,554 1338,570 C 1308,586 1296,616 1305,642 C 1314,668 1340,678 1364,668 C 1388,658 1402,634 1398,610 C 1400,622 1390,642 1370,648 C 1350,654 1326,644 1318,622 C 1310,598 1322,572 1346,560 C 1370,548 1406,554 1440,568 Z"/>
+    </g>
+    <!-- right wall main blade -->
+    <path d="M 1440,0 C 1380,80 1318,200 1295,340 C 1272,478 1290,598 1310,718 C 1328,822 1345,878 1326,900 L 1440,900 Z" fill="url(#cr1)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 1440,0 C 1380,80 1318,200 1295,340 C 1272,478 1290,598 1310,718 C 1328,822 1345,878 1326,900 L 1440,900 Z" fill="url(#tint)"/>
+    <path d="M 1440,0 C 1380,80 1318,200 1295,340 C 1272,478 1290,598 1310,718 C 1328,822 1345,878 1326,900" fill="none" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" opacity="0.9"/>
+    <!-- right hook arm -->
+    <path d="M 1440,200 C 1390,220 1330,250 1295,298 C 1258,348 1252,408 1270,458 C 1288,508 1325,532 1352,520 C 1380,508 1392,480 1385,454 C 1390,468 1382,490 1362,498 C 1342,506 1316,492 1302,464 C 1286,432 1290,382 1316,340 C 1342,298 1390,272 1440,255 Z" fill="url(#cr3)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 1440,200 C 1390,220 1330,250 1295,298 C 1258,348 1252,408 1270,458 C 1288,508 1325,532 1352,520 C 1380,508 1392,480 1385,454 C 1390,468 1382,490 1362,498 C 1342,506 1316,492 1302,464 C 1286,432 1290,382 1316,340 C 1342,298 1390,272 1440,255 Z" fill="url(#tint)"/>
+    <path d="M 1440,200 C 1390,220 1330,250 1295,298 C 1258,348 1252,408 1270,458 C 1288,508 1325,532 1352,520" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.88"/>
+    <!-- small lower hook -->
+    <path d="M 1440,580 C 1408,562 1368,554 1338,570 C 1308,586 1296,616 1305,642 C 1314,668 1340,678 1364,668 C 1388,658 1402,634 1398,610 C 1400,622 1390,642 1370,648 C 1350,654 1326,644 1318,622 C 1310,598 1322,572 1346,560 C 1370,548 1406,554 1440,568 Z" fill="url(#cr2)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 1440,580 C 1408,562 1368,554 1338,570 C 1308,586 1296,616 1305,642 C 1314,668 1340,678 1364,668" fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="round" opacity="0.85"/>
+    <!-- floating shards -->
+    <g filter="url(#glow-i)">
+      <path id="r-d1" d="M 900,136 L 918,178 L 900,220 L 882,178 Z" fill="url(#cr1)" stroke="#ffffff" stroke-width="1" opacity="0.88"/>
+      <path id="r-d2" d="M 340,714 L 358,748 L 340,782 L 322,748 Z" fill="url(#cr3)" stroke="#ffffff" stroke-width="0.9" opacity="0.8"/>
+    </g>
+  </svg>
+
+  <div class="scene-body scene-body-split">
+    <div class="scene-left">
+      <span class="scene-eyebrow">WHAT WE DO</span>
+      <h2 class="scene-h2 chrome-text">Research<br/>Areas</h2>
+      <p class="scene-desc mt-2">Six interconnected domains at the frontier of human–machine collaboration.</p>
+      <div class="chrome-rule mt-3"></div>
+    </div>
+    <div class="area-list">
+      {areas.map((a,i)=>(
+        <div class="area-row">
+          <span class="ar-code mono">{a.code}</span>
+          <div class="ar-body">
+            <div class="ar-top">
+              <h3 class="ar-title">{a.title}</h3>
+              <button class="ar-more-btn" data-idx={String(i)} aria-expanded="false">
+                <span class="ar-btn-label">MORE</span>
+                <span class="ar-btn-icon">+</span>
+              </button>
+            </div>
+            <p class="ar-desc">{a.desc}</p>
+            <div class="ar-detail" id={`detail-${i}`}>{a.detail}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- ══ SCENE 3 · PEOPLE ══════════════════════════════════ -->
+<section class="scene scene-alt" id="people">
+  <svg class="scene-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <!-- shadows -->
+    <g fill="#000" opacity="0.5" transform="translate(7,10)">
+      <path d="M 0,0 C 60,80 122,200 145,340 C 168,478 150,598 130,718 C 112,822 95,878 114,900 L 0,900 Z"/>
+      <path d="M 0,200 C 50,220 110,250 145,298 C 182,348 188,408 170,458 C 152,508 115,532 88,520 C 60,508 48,480 55,454 C 50,468 58,490 78,498 C 98,506 124,492 138,464 C 154,432 150,382 124,340 C 98,298 50,272 0,255 Z"/>
+      <path d="M 0,580 C 32,562 72,554 102,570 C 132,586 144,616 135,642 C 126,668 100,678 76,668 C 52,658 38,634 42,610 C 40,622 50,642 70,648 C 90,654 114,644 122,622 C 130,598 118,572 94,560 C 70,548 34,554 0,568 Z"/>
+    </g>
+    <!-- left wall main blade -->
+    <path d="M 0,0 C 60,80 122,200 145,340 C 168,478 150,598 130,718 C 112,822 95,878 114,900 L 0,900 Z" fill="url(#cr2)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 0,0 C 60,80 122,200 145,340 C 168,478 150,598 130,718 C 112,822 95,878 114,900 L 0,900 Z" fill="url(#tint)"/>
+    <path d="M 0,0 C 60,80 122,200 145,340 C 168,478 150,598 130,718 C 112,822 95,878 114,900" fill="none" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" opacity="0.9"/>
+    <!-- left hook arm -->
+    <path d="M 0,200 C 50,220 110,250 145,298 C 182,348 188,408 170,458 C 152,508 115,532 88,520 C 60,508 48,480 55,454 C 50,468 58,490 78,498 C 98,506 124,492 138,464 C 154,432 150,382 124,340 C 98,298 50,272 0,255 Z" fill="url(#cr4)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 0,200 C 50,220 110,250 145,298 C 182,348 188,408 170,458 C 152,508 115,532 88,520 C 60,508 48,480 55,454 C 50,468 58,490 78,498" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.88"/>
+    <!-- left small lower hook -->
+    <path d="M 0,580 C 32,562 72,554 102,570 C 132,586 144,616 135,642 C 126,668 100,678 76,668 C 52,658 38,634 42,610 C 40,622 50,642 70,648 C 90,654 114,644 122,622 C 130,598 118,572 94,560 C 70,548 34,554 0,568 Z" fill="url(#cr1)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 0,580 C 32,562 72,554 102,570 C 132,586 144,616 135,642 C 126,668 100,678 76,668" fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="round" opacity="0.85"/>
+    <!-- right floating blade -->
+    <g id="p-bl">
+      <path d="M 1440,180 C 1390,220 1310,300 1280,380 C 1255,448 1262,510 1288,550 C 1310,584 1348,596 1375,582 C 1400,570 1414,540 1408,510 C 1404,526 1396,550 1376,558 C 1356,566 1330,554 1318,526 C 1304,494 1314,448 1338,402 C 1362,356 1406,296 1440,256 Z" fill="url(#cr3)" stroke="#0a0a0c" stroke-width="1.5"/>
+      <path d="M 1440,180 C 1390,220 1310,300 1280,380 C 1255,448 1262,510 1288,550 C 1310,584 1348,596 1375,582" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.88"/>
+      <path d="M 1440,180 C 1390,220 1310,300 1280,380 C 1255,448 1262,510 1288,550" fill="url(#tint)"/>
+    </g>
+    <!-- floating shards -->
+    <g filter="url(#glow-i)">
+      <path id="p-d1" d="M 1100,84 L 1118,124 L 1100,164 L 1082,124 Z" fill="url(#cr1)" stroke="#ffffff" stroke-width="1" opacity="0.88"/>
+      <path id="p-dl" d="M 1240,280 L 1302,450 L 1240,620 L 1178,450 Z" fill="url(#cr3)" stroke="#ffffff" stroke-width="1.2" opacity="0.7"/>
+    </g>
+  </svg>
+
+  <div class="scene-body">
+    <span class="scene-eyebrow">THE TEAM</span>
+    <h2 class="scene-h2 chrome-text">People</h2>
+    <p class="scene-desc mt-2" style="max-width:500px">Researchers advancing the frontiers of design and AI at Purdue.</p>
+    <div class="people-grid mt-3">
+      {people.map(p=>(
+        <div class={`person-card ${p.tag==='PI'?'person-pi':''}`}>
+          <div class="person-av">{initials(p.name)}</div>
+          <div class="person-info">
+            <span class="person-name">{p.name}</span>
+            <span class="person-role mono">{p.role}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- ══ SCENE 4 · PUBLICATIONS ════════════════════════════ -->
+<section class="scene" id="publications">
+  <svg class="scene-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <!-- top-left corner claw -->
+    <g fill="#000" opacity="0.45" transform="translate(6,9)">
+      <path d="M 0,0 C 80,20 185,58 255,118 C 318,172 348,240 330,298 C 312,354 268,378 228,364 C 188,350 168,310 178,272 C 170,292 176,328 210,342 C 244,356 282,334 296,284 C 312,228 282,162 222,112 C 162,62 78,30 0,12 Z"/>
+    </g>
+    <path d="M 0,0 C 80,20 185,58 255,118 C 318,172 348,240 330,298 C 312,354 268,378 228,364 C 188,350 168,310 178,272 C 170,292 176,328 210,342 C 244,356 282,334 296,284 C 312,228 282,162 222,112 C 162,62 78,30 0,12 Z" fill="url(#cr1)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 0,0 C 80,20 185,58 255,118 C 318,172 348,240 330,298 C 312,354 268,378 228,364 C 188,350 168,310 178,272" fill="url(#tint)"/>
+    <path d="M 0,0 C 80,20 185,58 255,118 C 318,172 348,240 330,298 C 312,354 268,378 228,364" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-linecap="round" opacity="0.9"/>
+    <!-- top-right corner claw (mirror) -->
+    <g transform="translate(1440,0) scale(-1,1)">
+      <g fill="#000" opacity="0.45" transform="translate(6,9)">
+        <path d="M 0,0 C 80,20 185,58 255,118 C 318,172 348,240 330,298 C 312,354 268,378 228,364 C 188,350 168,310 178,272 C 170,292 176,328 210,342 C 244,356 282,334 296,284 C 312,228 282,162 222,112 C 162,62 78,30 0,12 Z"/>
+      </g>
+      <path d="M 0,0 C 80,20 185,58 255,118 C 318,172 348,240 330,298 C 312,354 268,378 228,364 C 188,350 168,310 178,272 C 170,292 176,328 210,342 C 244,356 282,334 296,284 C 312,228 282,162 222,112 C 162,62 78,30 0,12 Z" fill="url(#cr2)" stroke="#0a0a0c" stroke-width="1.5"/>
+      <path d="M 0,0 C 80,20 185,58 255,118 C 318,172 348,240 330,298 C 312,354 268,378 228,364" fill="url(#tint)"/>
+      <path d="M 0,0 C 80,20 185,58 255,118 C 318,172 348,240 330,298 C 312,354 268,378 228,364" fill="none" stroke="#ffffff" stroke-width="1.3" stroke-linecap="round" opacity="0.9"/>
+    </g>
+    <!-- bottom-left upward blade -->
+    <g fill="#000" opacity="0.45" transform="translate(6,9)">
+      <path d="M 0,900 C 48,800 88,668 108,558 C 124,470 118,400 102,352 C 88,310 66,292 58,308 C 50,324 58,360 78,388 C 70,370 62,338 70,318 C 78,298 100,294 114,342 C 130,396 134,474 118,568 C 100,680 62,816 0,920 Z"/>
+    </g>
+    <path d="M 0,900 C 48,800 88,668 108,558 C 124,470 118,400 102,352 C 88,310 66,292 58,308 C 50,324 58,360 78,388 C 70,370 62,338 70,318 C 78,298 100,294 114,342 C 130,396 134,474 118,568 C 100,680 62,816 0,920 Z" fill="url(#cr3)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 0,900 C 48,800 88,668 108,558 C 124,470 118,400 102,352 C 88,310 66,292 58,308" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.88"/>
+    <!-- bottom-right upward blade (mirror) -->
+    <g transform="translate(1440,0) scale(-1,1)">
+      <path d="M 0,900 C 48,800 88,668 108,558 C 124,470 118,400 102,352 C 88,310 66,292 58,308 C 50,324 58,360 78,388 C 70,370 62,338 70,318 C 78,298 100,294 114,342 C 130,396 134,474 118,568 C 100,680 62,816 0,920 Z" fill="url(#cr4)" stroke="#0a0a0c" stroke-width="1.5"/>
+      <path d="M 0,900 C 48,800 88,668 108,558 C 124,470 118,400 102,352 C 88,310 66,292 58,308" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.88"/>
+    </g>
+    <!-- floating shards -->
+    <g filter="url(#glow-i)">
+      <path id="pb-d1" d="M 240,158 L 258,194 L 240,230 L 222,194 Z" fill="url(#cr1)" stroke="#ffffff" stroke-width="1" opacity="0.88"/>
+      <path id="pb-d2" d="M 1200,158 L 1218,194 L 1200,230 L 1182,194 Z" fill="url(#cr2)" stroke="#ffffff" stroke-width="1" opacity="0.88"/>
+    </g>
+  </svg>
+
+  <div class="scene-body">
+    <div class="pub-header">
+      <div>
+        <span class="scene-eyebrow">RESEARCH OUTPUT</span>
+        <h2 class="scene-h2 chrome-text">Publications</h2>
+      </div>
+      <span class="chrome-badge">262+</span>
+    </div>
+    <div class="pub-table mt-3">
+      {recentPubs.map((p,i)=>(
+        <div class="pub-row">
+          <span class="pub-i mono">{String(i+1).padStart(2,'0')}</span>
+          <span class="pub-y mono">{p.year||'—'}</span>
+          <div class="pub-bd">
+            <span class="pub-t">{p.title}</span>
+            {p.authors.length>0&&<span class="pub-a mono">{p.authors.slice(0,3).join(' · ')}</span>}
+          </div>
+        </div>
+      ))}
+    </div>
+    <button class="view-all-btn mt-3" id="pub-expand">
+      <span class="va-label">VIEW ALL {pubs.length} PUBLICATIONS</span>
+      <span class="va-icon">+</span>
+    </button>
+  </div>
+</section>
+
+<!-- ══ PUB FULL PANEL ════════════════════════════════════ -->
+<div class="full-panel" id="pub-panel" aria-hidden="true">
+  <div class="fp-topbar">
+    <span class="fp-topbar-title mono">{pubs.length} PUBLICATIONS</span>
+    <button class="fp-minimize-btn" data-panel="pub-panel" data-expand="pub-expand" data-label={`VIEW ALL ${pubs.length} PUBLICATIONS`}>
+      MINIMIZE <span>−</span>
+    </button>
+  </div>
+  <div class="fp-inner">
+    <aside class="fp-years">
+      <span class="label">BY YEAR</span>
+      {pubYears.map(y=>(
+        <button class="fp-year-link mono" data-target={`pub-yr-${y}`}>
+          <span>{y}</span><span class="fp-ycount">{pubsByYear[y].length}</span>
+        </button>
+      ))}
+    </aside>
+    <div class="fp-list" id="pub-full-list">
+      {pubYears.map(y=>(
+        <div class="fp-year-group" id={`pub-yr-${y}`}>
+          <button class="fp-year-toggle">
+            <span class="fyt-year mono">{y}</span>
+            <span class="fyt-count mono">{pubsByYear[y].length} papers</span>
+            <span class="fyt-icon">+</span>
+          </button>
+          <div class="fyg-rows">
+            {pubsByYear[y].map((p,i)=>(
+              <div class="pub-row fp-pub-row" data-text={`${p.title} ${p.authors.join(' ')} ${p.year}`}>
+                <span class="pub-i mono">{String(i+1).padStart(2,'0')}</span>
+                <span class="pub-y mono">{p.year||'—'}</span>
+                <div class="pub-bd">
+                  <span class="pub-t">{p.title}</span>
+                  {p.authors.length>0&&<span class="pub-a mono">{p.authors.slice(0,3).join(' · ')}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+    <div class="fp-search-col">
+      <span class="label">SEARCH</span>
+      <input type="text" id="pub-search" class="search-input fp-search" placeholder="Title, author, year…"/>
+      <p class="fp-search-hint mono" id="pub-search-count">{pubs.length} PUBLICATIONS</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCENE 5 · NEWS ════════════════════════════════════ -->
+<section class="scene scene-alt" id="news">
+  <svg class="scene-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <!-- bottom row of upward claws -->
+    <g fill="#000" opacity="0.4" transform="translate(6,9)">
+      <path d="M 0,900 C 28,820 48,718 55,632 C 60,568 55,518 44,498 C 36,482 24,484 18,500 C 12,518 18,550 30,572 C 22,552 16,522 22,502 C 28,482 44,482 52,506 C 62,536 64,592 58,660 C 50,748 28,850 0,935 Z"/>
+      <path d="M 240,900 C 268,820 288,718 295,632 C 300,568 295,518 284,498 C 276,482 264,484 258,500 C 252,518 258,550 270,572 C 262,552 256,522 262,502 C 268,482 284,482 292,506 C 302,536 304,592 298,660 C 290,748 268,850 240,935 Z"/>
+      <path d="M 480,900 C 508,820 528,718 535,632 C 540,568 535,518 524,498 C 516,482 504,484 498,500 C 492,518 498,550 510,572 C 502,552 496,522 502,502 C 508,482 524,482 532,506 C 542,536 544,592 538,660 C 530,748 508,850 480,935 Z"/>
+      <path d="M 960,900 C 988,820 1008,718 1015,632 C 1020,568 1015,518 1004,498 C 996,482 984,484 978,500 C 972,518 978,550 990,572 C 982,552 976,522 982,502 C 988,482 1004,482 1012,506 C 1022,536 1024,592 1018,660 C 1010,748 988,850 960,935 Z"/>
+      <path d="M 1200,900 C 1228,820 1248,718 1255,632 C 1260,568 1255,518 1244,498 C 1236,482 1224,484 1218,500 C 1212,518 1218,550 1230,572 C 1222,552 1216,522 1222,502 C 1228,482 1244,482 1252,506 C 1262,536 1264,592 1258,660 C 1250,748 1228,850 1200,935 Z"/>
+      <path d="M 1440,900 C 1412,820 1392,718 1385,632 C 1380,568 1385,518 1396,498 C 1404,482 1416,484 1422,500 C 1428,518 1422,550 1410,572 C 1418,552 1424,522 1418,502 C 1412,482 1396,482 1388,506 C 1378,536 1376,592 1382,660 C 1390,748 1412,850 1440,935 Z"/>
+    </g>
+    <path d="M 0,900 C 28,820 48,718 55,632 C 60,568 55,518 44,498 C 36,482 24,484 18,500 C 12,518 18,550 30,572 C 22,552 16,522 22,502 C 28,482 44,482 52,506 C 62,536 64,592 58,660 C 50,748 28,850 0,935 Z" fill="url(#cr1)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 240,900 C 268,820 288,718 295,632 C 300,568 295,518 284,498 C 276,482 264,484 258,500 C 252,518 258,550 270,572 C 262,552 256,522 262,502 C 268,482 284,482 292,506 C 302,536 304,592 298,660 C 290,748 268,850 240,935 Z" fill="url(#cr3)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 480,900 C 508,820 528,718 535,632 C 540,568 535,518 524,498 C 516,482 504,484 498,500 C 492,518 498,550 510,572 C 502,552 496,522 502,502 C 508,482 524,482 532,506 C 542,536 544,592 538,660 C 530,748 508,850 480,935 Z" fill="url(#cr2)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 960,900 C 988,820 1008,718 1015,632 C 1020,568 1015,518 1004,498 C 996,482 984,484 978,500 C 972,518 978,550 990,572 C 982,552 976,522 982,502 C 988,482 1004,482 1012,506 C 1022,536 1024,592 1018,660 C 1010,748 988,850 960,935 Z" fill="url(#cr4)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 1200,900 C 1228,820 1248,718 1255,632 C 1260,568 1255,518 1244,498 C 1236,482 1224,484 1218,500 C 1212,518 1218,550 1230,572 C 1222,552 1216,522 1222,502 C 1228,482 1244,482 1252,506 C 1262,536 1264,592 1258,660 C 1250,748 1228,850 1200,935 Z" fill="url(#cr1)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 1440,900 C 1412,820 1392,718 1385,632 C 1380,568 1385,518 1396,498 C 1404,482 1416,484 1422,500 C 1428,518 1422,550 1410,572 C 1418,552 1424,522 1418,502 C 1412,482 1396,482 1388,506 C 1378,536 1376,592 1382,660 C 1390,748 1412,850 1440,935 Z" fill="url(#cr3)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <!-- tint overlay on all -->
+    <rect x="0" y="400" width="1440" height="500" fill="url(#tint)" opacity="1.5"/>
+    <!-- edge highlight lines -->
+    <path d="M 55,632 C 60,568 55,518 44,498 C 36,482 24,484 18,500" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.85"/>
+    <path d="M 295,632 C 300,568 295,518 284,498 C 276,482 264,484 258,500" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.85"/>
+    <path d="M 535,632 C 540,568 535,518 524,498 C 516,482 504,484 498,500" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.85"/>
+    <path d="M 1015,632 C 1020,568 1015,518 1004,498 C 996,482 984,484 978,500" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.85"/>
+    <path d="M 1255,632 C 1260,568 1255,518 1244,498 C 1236,482 1224,484 1218,500" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.85"/>
+    <!-- central large diamond -->
+    <g filter="url(#glow-i)">
+      <path id="n-dl" d="M 720,265 L 830,450 L 720,635 L 610,450 Z" fill="url(#cr3)" stroke="#0a0a0c" stroke-width="1.5"/>
+      <path d="M 720,265 L 830,450 L 720,635 L 610,450 Z" fill="url(#tint)"/>
+      <path d="M 720,265 L 830,450 L 720,635" fill="none" stroke="#ffffff" stroke-width="1.2" opacity="0.88"/>
+    </g>
+    <!-- floating shards -->
+    <g filter="url(#glow-i)">
+      <path id="n-d1" d="M 180,174 L 196,210 L 180,246 L 164,210 Z" fill="url(#cr1)" stroke="#ffffff" stroke-width="0.9" opacity="0.85"/>
+      <path id="n-d2" d="M 1260,174 L 1276,210 L 1260,246 L 1244,210 Z" fill="url(#cr2)" stroke="#ffffff" stroke-width="0.9" opacity="0.85"/>
+    </g>
+  </svg>
+
+  <div class="scene-body">
+    <span class="scene-eyebrow">LATEST UPDATES</span>
+    <h2 class="scene-h2 chrome-text">News</h2>
+    <div class="news-grid mt-3">
+      {recentNews.map(item=>(
+        <div class="news-card">
+          <div class="nc-chrome-bar"></div>
+          <div class="nc-corner"></div>
+          <span class="nc-date mono">{item.date}</span>
+          <h3 class="nc-title">{item.title}</h3>
+        </div>
+      ))}
+    </div>
+    <button class="view-all-btn mt-3" id="news-expand">
+      <span class="va-label">VIEW ALL {news.length} NEWS ITEMS</span>
+      <span class="va-icon">+</span>
+    </button>
+  </div>
+</section>
+
+<!-- ══ NEWS FULL PANEL ═══════════════════════════════════ -->
+<div class="full-panel" id="news-panel" aria-hidden="true">
+  <div class="fp-topbar">
+    <span class="fp-topbar-title mono">{news.length} NEWS ITEMS</span>
+    <button class="fp-minimize-btn" data-panel="news-panel" data-expand="news-expand" data-label={`VIEW ALL ${news.length} NEWS ITEMS`}>
+      MINIMIZE <span>−</span>
+    </button>
+  </div>
+  <div class="fp-inner">
+    <aside class="fp-years">
+      <span class="label">BY YEAR</span>
+      {newsYears.map(y=>(
+        <button class="fp-year-link mono" data-target={`news-yr-${y}`}>
+          <span>{y}</span><span class="fp-ycount">{newsByYear[y].length}</span>
+        </button>
+      ))}
+    </aside>
+    <div class="fp-list" id="news-full-list">
+      {newsYears.map(y=>(
+        <div class="fp-year-group" id={`news-yr-${y}`}>
+          <button class="fp-year-toggle">
+            <span class="fyt-year mono">{y}</span>
+            <span class="fyt-count mono">{newsByYear[y].length} items</span>
+            <span class="fyt-icon">+</span>
+          </button>
+          <div class="fyg-rows">
+            {newsByYear[y].map(item=>(
+              <div class="news-card fp-news-row" data-text={`${item.title} ${item.date}`}>
+                <div class="nc-chrome-bar"></div>
+                <div class="nc-corner"></div>
+                <span class="nc-date mono">{item.date}</span>
+                <h3 class="nc-title">{item.title}</h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+    <div class="fp-search-col">
+      <span class="label">SEARCH</span>
+      <input type="text" id="news-search" class="search-input fp-search" placeholder="Keyword…"/>
+      <p class="fp-search-hint mono" id="news-search-count">{news.length} NEWS ITEMS</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCENE 6 · CONTACT ═════════════════════════════════ -->
+<section class="scene" id="contact">
+  <svg class="scene-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <!-- shadows -->
+    <g fill="#000" opacity="0.5" transform="translate(7,10)">
+      <path d="M 1440,0 C 1380,80 1318,200 1295,340 C 1272,478 1290,598 1310,718 C 1328,822 1345,878 1326,900 L 1440,900 Z"/>
+      <path d="M 1440,380 C 1400,355 1348,348 1312,368 C 1274,390 1258,432 1270,468 C 1282,504 1316,518 1346,506 C 1376,494 1392,464 1386,434 C 1388,450 1378,474 1356,482 C 1334,490 1308,476 1298,450 C 1286,420 1300,382 1328,362 C 1356,342 1400,344 1440,362 Z"/>
+    </g>
+    <g fill="#000" opacity="0.45" transform="translate(6,9)">
+      <path d="M 0,900 C 48,800 88,668 108,558 C 124,470 118,400 102,352 C 88,310 66,292 58,308 C 50,324 58,360 78,388 C 70,370 62,338 70,318 C 78,298 100,294 114,342 C 130,396 134,474 118,568 C 100,680 62,816 0,920 Z"/>
+    </g>
+    <!-- right wall main blade -->
+    <path d="M 1440,0 C 1380,80 1318,200 1295,340 C 1272,478 1290,598 1310,718 C 1328,822 1345,878 1326,900 L 1440,900 Z" fill="url(#cr2)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 1440,0 C 1380,80 1318,200 1295,340 C 1272,478 1290,598 1310,718 C 1328,822 1345,878 1326,900 L 1440,900 Z" fill="url(#tint)"/>
+    <path d="M 1440,0 C 1380,80 1318,200 1295,340 C 1272,478 1290,598 1310,718 C 1328,822 1345,878 1326,900" fill="none" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round" opacity="0.9"/>
+    <!-- right wall hook -->
+    <path d="M 1440,380 C 1400,355 1348,348 1312,368 C 1274,390 1258,432 1270,468 C 1282,504 1316,518 1346,506 C 1376,494 1392,464 1386,434 C 1388,450 1378,474 1356,482 C 1334,490 1308,476 1298,450 C 1286,420 1300,382 1328,362 C 1356,342 1400,344 1440,362 Z" fill="url(#cr4)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 1440,380 C 1400,355 1348,348 1312,368 C 1274,390 1258,432 1270,468 C 1282,504 1316,518 1346,506 C 1376,494 1392,464 1386,434" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.88"/>
+    <path d="M 1440,380 C 1400,355 1348,348 1312,368 C 1274,390 1258,432 1270,468" fill="url(#tint)"/>
+    <!-- left upward blade -->
+    <path d="M 0,900 C 48,800 88,668 108,558 C 124,470 118,400 102,352 C 88,310 66,292 58,308 C 50,324 58,360 78,388 C 70,370 62,338 70,318 C 78,298 100,294 114,342 C 130,396 134,474 118,568 C 100,680 62,816 0,920 Z" fill="url(#cr1)" stroke="#0a0a0c" stroke-width="1.5"/>
+    <path d="M 0,900 C 48,800 88,668 108,558 C 124,470 118,400 102,352 C 88,310 66,292 58,308" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.88"/>
+    <!-- floating shards -->
+    <g filter="url(#glow-i)">
+      <path id="c-dl" d="M 1220,210 L 1322,450 L 1220,690 L 1118,450 Z" fill="url(#cr3)" stroke="#0a0a0c" stroke-width="1.5"/>
+      <path d="M 1220,210 L 1322,450 L 1220,690 L 1118,450 Z" fill="url(#tint)"/>
+      <path d="M 1220,210 L 1322,450 L 1220,690" fill="none" stroke="#ffffff" stroke-width="1.2" opacity="0.88"/>
+      <path id="c-d1" d="M 280,94 L 298,132 L 280,170 L 262,132 Z" fill="url(#cr1)" stroke="#ffffff" stroke-width="1" opacity="0.88"/>
+    </g>
+  </svg>
+
+  <div class="scene-body">
+    <span class="scene-eyebrow">GET IN TOUCH</span>
+    <h2 class="scene-h2 chrome-text">Contact</h2>
+    <div class="chrome-rule mt-2 mb-3" style="max-width:400px"></div>
+    <div class="contact-block">
+      <div class="contact-row">
+        <span class="cr-label mono">DIRECTOR</span>
+        <span class="cr-val">Prof. Karthik Ramani</span>
+      </div>
+      <div class="contact-row">
+        <span class="cr-label mono">TITLE</span>
+        <span class="cr-val">Donald W. Feddersen Professor of ME</span>
+      </div>
+      <div class="contact-row">
+        <span class="cr-label mono">EMAIL</span>
+        <a href="mailto:ramani@purdue.edu" class="cr-val cr-link">ramani@purdue.edu</a>
+      </div>
+      <div class="contact-row">
+        <span class="cr-label mono">LAB</span>
+        <a href="mailto:cdesign-lab@purdue.edu" class="cr-val cr-link">cdesign-lab@purdue.edu</a>
+      </div>
+      <div class="contact-row">
+        <span class="cr-label mono">LOCATION</span>
+        <span class="cr-val">Purdue University · West Lafayette, IN 47907</span>
+      </div>
+    </div>
+    <p class="mono text-dim mt-4" style="font-size:.58rem;letter-spacing:.18em;max-width:420px;line-height:1.8">
+      PROSPECTIVE PHD STUDENTS: EMAIL PROF. RAMANI WITH YOUR CV AND RESEARCH INTERESTS.
+    </p>
+  </div>
+</section>
+
+</Layout>
+
+<style>
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:72px;z-index:150;display:flex;align-items:center;justify-content:center;border-right:1px solid rgba(255,255,255,.06);background:rgba(6,6,8,.88);backdrop-filter:blur(20px);}
+.sb-rule{position:absolute;right:0;top:8%;bottom:8%;width:1px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.5) 50%,transparent);}
+.sb-track{display:flex;flex-direction:column;gap:.6rem;align-items:center;}
+.sb-item{display:flex;flex-direction:column;align-items:center;gap:.35rem;padding:.5rem .3rem;cursor:pointer;text-decoration:none;transition:all .2s;}
+.sb-pip{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.18);transition:all .3s;}
+.sb-label{font-size:.52rem;letter-spacing:.14em;color:transparent;writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);transition:color .25s,max-height .3s;max-height:0;overflow:hidden;white-space:nowrap;}
+.sb-item.active .sb-pip{width:6px;height:6px;background:linear-gradient(180deg,#fff,#9988ff,#4422cc);box-shadow:0 0 14px rgba(120,80,255,.8);}
+.sb-item.active .sb-label{color:rgba(200,180,255,.95);max-height:80px;}
+.sb-item:hover .sb-pip{background:rgba(255,255,255,.5);}
+.sb-item:hover .sb-label{color:rgba(220,220,220,.6);max-height:80px;}
+
+.scene{min-height:100vh;position:relative;overflow:hidden;display:flex;align-items:center;border-bottom:1px solid rgba(255,255,255,.05);padding-left:72px;}
+.scene-alt{background:var(--black2);}
+.scene-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+
+.scene-body{position:relative;z-index:2;max-width:1100px;margin:0 auto;width:100%;padding:7rem 3rem 7rem 4rem;}
+.center-body{display:flex;flex-direction:column;align-items:flex-start;}
+.scene-body-split{display:grid;grid-template-columns:300px 1fr;gap:4rem;align-items:start;}
+.scene-left{position:relative;z-index:3;}
+.scene-eyebrow{display:block;font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:.22em;color:var(--text3);margin-bottom:1.5rem;}
+.scene-h2{font-size:clamp(3rem,6.5vw,5.5rem);font-weight:900;letter-spacing:-.04em;line-height:.9;}
+.scene-desc{color:var(--text2);font-size:1.05rem;line-height:1.6;max-width:280px;}
+
+.hero-h1{font-size:clamp(3.5rem,9vw,8rem);font-weight:900;letter-spacing:-.05em;line-height:.87;display:flex;flex-direction:column;margin-bottom:1.5rem;}
+.hero-sub{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:.22em;color:var(--text3);}
+.hero-glow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 55% 45% at 50% 55%,rgba(100,80,200,.07) 0%,transparent 70%);}
+
+.splitter-bar{position:absolute;bottom:0;left:52px;right:0;z-index:2;display:flex;border-top:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);}
+.splitter-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.7) 50%,transparent);}
+.sstat{flex:1;padding:1.2rem 2rem;border-right:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;gap:.2rem;}
+.sstat:last-child{border-right:none;}
+.sstat-n{font-size:2rem;font-weight:900;line-height:1;}
+.sstat-l{font-family:'Share Tech Mono',monospace;font-size:.5rem;letter-spacing:.15em;color:var(--text3);}
+.scroll-hint{position:absolute;bottom:90px;right:2.5rem;z-index:2;display:flex;flex-direction:column;align-items:center;gap:.5rem;}
+.sh-line{width:1px;height:56px;background:linear-gradient(180deg,rgba(255,255,255,.35),transparent);}
+.sh-text{font-size:.5rem;letter-spacing:.2em;color:var(--text3);}
+
+.marquee-wrap{overflow:hidden;background:var(--black2);position:relative;padding:.75rem 0;padding-left:52px;}
+.mq-chrome-top,.mq-chrome-bot{position:absolute;left:52px;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55) 50%,transparent);}
+.mq-chrome-top{top:0;}.mq-chrome-bot{bottom:0;}
+.marquee-track{display:flex;gap:2rem;width:max-content;animation:marquee 45s linear infinite;}
+.mq{font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:.2em;color:var(--text3);white-space:nowrap;}
+.mq-d{color:var(--text3);font-size:.45rem;align-self:center;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-25%)}}
+
+.area-list{display:flex;flex-direction:column;}
+.area-row{display:grid;grid-template-columns:48px 1fr;gap:1.25rem;align-items:flex-start;padding:1.2rem 0;border-bottom:1px solid var(--border);transition:padding-left .25s;position:relative;overflow:visible;}
+.area-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,#fff,#9977ff,transparent);transform:scaleY(0);transform-origin:top;transition:transform .35s;}
+.area-row:first-child{border-top:1px solid var(--border);}
+.area-row:hover::before{transform:scaleY(1);}
+.area-row:hover{padding-left:.5rem;}
+.ar-code{font-family:'Share Tech Mono',monospace;font-size:.68rem;letter-spacing:.1em;color:var(--text3);padding-top:.25rem;}
+.ar-top{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.3rem;}
+.ar-title{font-size:1.1rem;font-weight:600;color:var(--text);}
+.ar-desc{font-size:.92rem;color:var(--text2);line-height:1.55;}
+
+.ar-more-btn{display:flex;align-items:center;gap:.35rem;flex-shrink:0;background:none;border:1px solid rgba(120,90,255,.45);cursor:pointer;padding:.22rem .75rem;transition:all .2s;}
+.ar-btn-label{font-family:'Share Tech Mono',monospace;font-size:.52rem;letter-spacing:.14em;color:rgba(160,130,255,.95);}
+.ar-btn-icon{font-size:.75rem;color:rgba(160,130,255,.95);transition:transform .25s;line-height:1;display:inline-block;}
+.ar-more-btn:hover{border-color:rgba(180,150,255,.85);background:rgba(80,50,180,.12);}
+.ar-more-btn.expanded .ar-btn-icon{transform:rotate(45deg);}
+
+.ar-detail{max-height:0;overflow:hidden;font-size:.8rem;color:rgba(190,170,255,.85);line-height:1.65;transition:max-height .45s ease,opacity .4s ease,margin-top .3s;opacity:0;margin-top:0;border-left:2px solid rgba(110,80,230,.45);padding-left:.9rem;}
+.ar-detail.open{max-height:400px;opacity:1;margin-top:.8rem;}
+
+.people-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1px;background:var(--border);}
+.person-card{background:var(--black);padding:1.25rem;display:flex;align-items:center;gap:.85rem;transition:background .2s;position:relative;}
+.person-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);}
+.person-card:hover{background:var(--black2);}
+.person-av{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;letter-spacing:.05em;background:linear-gradient(145deg,#f0f0f0,#ccc 20%,#888 45%,#bbb 60%,#eee 75%,#999 90%);color:#111;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 2px 10px rgba(0,0,0,.5);}
+.person-pi .person-av{width:52px;height:52px;font-size:.9rem;background:linear-gradient(145deg,#fff,#ddd 18%,#9977ff 42%,#ccc 58%,#fff 72%,#9977ff 88%);box-shadow:inset 0 2px 0 #fff,0 4px 16px rgba(80,40,200,.3),0 0 0 1px rgba(140,100,255,.3);}
+.person-pi{background:var(--black2);}
+.person-name{font-size:.82rem;font-weight:600;color:var(--text);display:block;}
+.person-role{font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.1em;color:var(--text3);display:block;margin-top:.2rem;}
+
+.pub-header{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.chrome-badge{font-size:3.5rem;font-weight:900;letter-spacing:-.04em;background:linear-gradient(180deg,#fff,#cce 25%,#99f 48%,#ccf 62%,#fff 76%,#99f 90%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 14px rgba(100,60,220,.35));}
+.pub-table{display:flex;flex-direction:column;}
+.pub-row{display:grid;grid-template-columns:36px 48px 1fr;gap:1.25rem;align-items:center;padding:1.1rem 0;border-bottom:1px solid var(--border);transition:background .2s,padding-left .2s;}
+.pub-row:last-child{border-bottom:none;}
+.pub-row:hover{background:rgba(255,255,255,.015);padding-left:.4rem;}
+.pub-i,.pub-y{font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:.08em;color:var(--text3);}
+.pub-t{font-size:.95rem;font-weight:500;color:var(--text);line-height:1.4;display:block;}
+.pub-a{font-size:.68rem;color:var(--text3);letter-spacing:.04em;display:block;margin-top:.2rem;}
+
+.news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1px;background:var(--border2);}
+.news-card{background:var(--black2);padding:2rem;position:relative;overflow:hidden;transition:background .2s;}
+.news-card:hover{background:var(--black3);}
+.nc-chrome-bar{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(150,100,255,.9) 40%,rgba(255,220,255,.9) 50%,rgba(150,100,255,.9) 60%,transparent);transform:scaleX(0);transform-origin:left;transition:transform .4s;}
+.news-card:hover .nc-chrome-bar{transform:scaleX(1);}
+.nc-corner{position:absolute;bottom:0;right:0;width:22px;height:22px;border-bottom:1px solid rgba(120,90,255,.4);border-right:1px solid rgba(120,90,255,.4);}
+.nc-date{font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.14em;color:var(--text3);display:block;margin-bottom:.75rem;}
+.nc-title{font-size:.92rem;font-weight:500;color:var(--text);line-height:1.45;}
+
+.contact-block{display:flex;flex-direction:column;max-width:580px;}
+.contact-row{display:grid;grid-template-columns:140px 1fr;gap:1.5rem;padding:.9rem 0;border-bottom:1px solid var(--border);align-items:baseline;}
+.contact-row:last-child{border-bottom:none;}
+.cr-label{font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:.15em;color:var(--text3);}
+.cr-val{font-size:.9rem;color:var(--text);}
+.cr-link{color:var(--silver);text-decoration:none;transition:color .2s;}
+.cr-link:hover{color:#fff;}
+
+.btn-chrome{background:linear-gradient(180deg,#f0f0f0,#d8d8d8 18%,#a0a0a0 40%,#c0c0c0 56%,#eee 70%,#b0b0b0 86%,#e0e0e0);box-shadow:0 0 30px rgba(200,200,200,.15),inset 0 2px 0 rgba(255,255,255,.9),0 4px 16px rgba(0,0,0,.5);}
+.btn-chrome:hover{background:linear-gradient(180deg,#fff,#eee 18%,#bbb 40%,#ddd 56%,#fff 70%,#ccc 86%,#f8f8f8);box-shadow:0 0 60px rgba(140,100,255,.35),inset 0 2px 0 #fff;color:#000;}
+
+.chrome-rule{height:1px;background:linear-gradient(90deg,rgba(140,100,255,.1),rgba(140,100,255,.7) 30%,rgba(255,255,255,.95) 50%,rgba(140,100,255,.7) 70%,rgba(140,100,255,.1));}
+.mb-3{margin-bottom:1.5rem;}
+
+.view-all-btn{
+  display:inline-flex;align-items:center;gap:.6rem;
+  background:none;border:1px solid rgba(255,255,255,.18);
+  padding:.6rem 1.4rem;cursor:pointer;transition:all .2s;
+}
+.view-all-btn:hover{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.04);}
+.va-label{font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:.16em;color:var(--text2);}
+.va-icon{font-size:.9rem;color:var(--text2);transition:transform .25s;line-height:1;}
+.view-all-btn.open .va-icon{transform:rotate(45deg);}
+.view-all-btn.open .va-label{color:var(--silver);}
+
+/* ── Full panels ── */
+.full-panel{display:none;background:var(--black2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.full-panel.open{display:block;}
+
+.fp-topbar{
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.7rem 2rem .7rem calc(72px + 2rem);
+  background:rgba(14,14,16,.96);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.fp-topbar-title{font-size:.65rem;letter-spacing:.18em;color:var(--text3);}
+.fp-minimize-btn{
+  display:inline-flex;align-items:center;gap:.4rem;background:none;
+  border:1px solid var(--border2);padding:.3rem .85rem;cursor:pointer;
+  font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:.12em;
+  color:var(--text2);transition:all .2s;
+}
+.fp-minimize-btn:hover{border-color:var(--silver);color:var(--silver);}
+
+.fp-inner{
+  display:grid;grid-template-columns:180px 1fr 260px;gap:0;
+  padding-left:72px;min-height:50vh;
+}
+.fp-years{
+  position:sticky;top:44px;align-self:start;height:calc(100vh - 44px);overflow-y:auto;
+  display:flex;flex-direction:column;gap:.05rem;padding:1.5rem 1rem;
+  border-right:1px solid var(--border);
+}
+.fp-year-link{
+  font-size:.65rem;letter-spacing:.1em;color:var(--text3);
+  background:none;border:none;border-left:2px solid transparent;
+  padding:.35rem .6rem;cursor:pointer;text-align:left;
+  display:flex;justify-content:space-between;align-items:center;
+  transition:all .18s;width:100%;
+}
+.fp-year-link:hover,.fp-year-link.active{color:var(--silver);border-left-color:var(--silver);background:rgba(255,255,255,.03);}
+.fp-ycount{font-size:.58rem;color:var(--text3);opacity:.6;font-family:'Share Tech Mono',monospace;}
+
+.fp-list{display:flex;flex-direction:column;padding:1.5rem 2.5rem;}
+.fp-year-group.all-hidden{display:none;}
+
+.fp-year-toggle{
+  display:flex;align-items:center;gap:1rem;width:100%;
+  background:none;border:none;border-bottom:1px solid var(--border);
+  padding:1rem 0;cursor:pointer;text-align:left;transition:background .15s;
+}
+.fp-year-toggle:hover{background:rgba(255,255,255,.02);}
+.fyt-year{font-size:1.05rem;font-weight:700;color:var(--silver);font-family:'Share Tech Mono',monospace;letter-spacing:.04em;}
+.fyt-count{font-size:.62rem;color:var(--text3);font-family:'Share Tech Mono',monospace;letter-spacing:.08em;}
+.fyt-icon{margin-left:auto;font-size:.9rem;color:var(--text2);transition:transform .22s;line-height:1;}
+.fp-year-group.open .fyt-icon{transform:rotate(45deg);}
+.fyg-rows{display:none;padding:.25rem 0 1rem;}
+.fp-year-group.open .fyg-rows{display:block;}
+.fp-pub-row{display:grid;grid-template-columns:40px 52px 1fr;gap:1.25rem;align-items:start;padding:.85rem 0;border-bottom:1px solid var(--border);}
+.fp-pub-row.hidden,.fp-news-row.hidden{display:none;}
+.fyg-rows .news-card{margin-bottom:1px;}
+
+.fp-search-col{
+  position:sticky;top:44px;align-self:start;
+  height:calc(100vh - 44px);overflow-y:auto;
+  display:flex;flex-direction:column;gap:.85rem;
+  padding:1.5rem 1.5rem;border-left:1px solid var(--border);
+}
+.fp-search{max-width:100%;}
+.fp-search-hint{font-size:.6rem;letter-spacing:.12em;color:var(--text3);}
+
+@media(max-width:860px){
+  .fp-inner{grid-template-columns:1fr;padding-left:0;}
+  .fp-years{position:static;height:auto;flex-direction:row;flex-wrap:wrap;gap:.4rem;border-right:none;border-bottom:1px solid var(--border);}
+  .fp-search-col{position:static;height:auto;border-left:none;border-top:1px solid var(--border);}
+  .fp-topbar{padding-left:1rem;}
+  .full-panel{padding-left:0;}
+}
+
+@media(max-width:860px){
+  .scene{padding-left:0;}.sidebar{display:none;}
+  .marquee-wrap,.splitter-bar{padding-left:0;left:0;}
+  .sstat{min-width:50%;}
+  .scene-body-split{grid-template-columns:1fr;gap:2.5rem;}
+  .scene-h2{font-size:clamp(2.5rem,10vw,5rem);}
+  .hero-h1{font-size:clamp(3rem,13vw,6rem);}
+}
+</style>
+
+<script>
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+gsap.registerPlugin(ScrollTrigger);
+
+/* ── Hero entrance ── */
+gsap.from('#h-eyebrow',{y:20,autoAlpha:0,duration:.7,delay:.15,ease:'power3.out'});
+gsap.from('#h-title',  {y:70,autoAlpha:0,duration:1.1,delay:.3, ease:'power4.out'});
+gsap.from('#h-sub',    {y:20,autoAlpha:0,duration:.7, delay:.7, ease:'power3.out'});
+gsap.from('#h-cta',    {y:15,autoAlpha:0,duration:.6, delay:.9, ease:'power3.out'});
+gsap.from('#h-stats',  {y:30,autoAlpha:0,duration:.8, delay:1.1,ease:'power3.out'});
+
+/* count-up */
+document.querySelectorAll('.sstat-n').forEach(function(el) {
+  var raw = (el as HTMLElement).dataset.val || '';
+  var num = parseInt(raw.replace(/\D/g,''));
+  var sfx = raw.replace(/\d/g,'');
+  if (!num) return;
+  el.textContent = '0'+sfx;
+  gsap.to({v:0},{v:num,duration:1.8,delay:1.2,ease:'power2.out',
+    onUpdate:function(){ el.textContent=Math.round((this.targets()[0] as any).v)+sfx; }
+  });
+});
+
+/* ── Continuous floating on named elements ── */
+function fl(sel:string,y:number,x:number,r:number,dur:number,del:number){
+  var els = document.querySelectorAll(sel);
+  if (!els.length) return;
+  gsap.to(sel,{y,x,rotation:r,duration:dur,delay:del,ease:'sine.inOut',repeat:-1,yoyo:true});
+}
+fl('#h-d1',  -16, 0,  10,  4.2, 0  );
+fl('#h-d2',  -10, 0, -7,   5.1, .6 );
+fl('#h-d3',  -10, 0,  7,   5.4, 1  );
+fl('#h-d4',  -8,  0,  14,  3.8, .2 );
+fl('#h-d5',  -8,  0, -14,  4.0, .9 );
+fl('#h-blade',-20, 0, .5,  5.5, .3 );
+fl('#r-d1',  -12, 0,  9,   4.5, .1 );
+fl('#r-d2',  -9,  0, -7,   5.0, .8 );
+fl('#p-bl',  -18,-6,  1,   6.0, .4 );
+fl('#p-d1',  -12, 0,  9,   4.8, .2 );
+fl('#p-dl',  -16, 0,  1.2, 7.5, .3 );
+fl('#pb-d1', -10, 0,  11,  4.4, .3 );
+fl('#pb-d2', -10, 0, -9,   4.8, .7 );
+fl('#n-dl',  -18, 0,  1.5, 7.2, .2 );
+fl('#n-d1',  -10, 0,  12,  4.5, .4 );
+fl('#n-d2',  -10, 0, -10,  4.8, .8 );
+fl('#c-dl',  -20, 0,  1,   7.8, .3 );
+fl('#c-d1',  -12, 0,  10,  4.4, .1 );
+
+/* ── Scroll reveals — play AND reverse ── */
+function revealSection(id:string, items:string, fromX:number, fromY:number){
+  gsap.fromTo(items,
+    {autoAlpha:0,x:fromX,y:fromY},
+    {autoAlpha:1,x:0,y:0,duration:.6,stagger:.07,ease:'power2.out',
+     scrollTrigger:{trigger:'#'+id,start:'top 75%',end:'bottom 20%',
+       toggleActions:'play none none none'}});
+}
+revealSection('research', '.scene-left, .area-row', -40, 0);
+revealSection('people',   '.people-grid .person-card', 0, 40);
+revealSection('publications', '.pub-header, .pub-row', 0, 30);
+revealSection('news',     '.news-card', 0, 40);
+revealSection('contact',  '.contact-row', -30, 0);
+
+/* ── Sidebar active ── */
+['hero','research','people','publications','news','contact'].forEach(function(id){
+  ScrollTrigger.create({trigger:'#'+id,start:'top center',end:'bottom center',
+    onEnter:function(){setActive(id);},onEnterBack:function(){setActive(id);}});
+});
+function setActive(id:string){
+  document.querySelectorAll('.sb-item').forEach(function(el){
+    el.classList.toggle('active',(el as HTMLElement).dataset.section===id);
+  });
+}
+
+/* ── Full panel logic ── */
+function setupPanel(expandBtnId, panelId, rowSel, countId, typeLabel) {
+  var expandBtn = document.getElementById(expandBtnId);
+  var panel = document.getElementById(panelId);
+  if (!expandBtn || !panel) return;
+
+  function openPanel() {
+    panel.classList.add('open');
+    panel.setAttribute('aria-hidden','false');
+    expandBtn.classList.add('open');
+    var lbl = expandBtn.querySelector('.va-label');
+    if (lbl) lbl.textContent = 'SHOW LESS';
+    setTimeout(function(){ panel.scrollIntoView({behavior:'smooth',block:'start'}); }, 60);
+  }
+  function closePanel() {
+    panel.classList.remove('open');
+    panel.setAttribute('aria-hidden','true');
+    expandBtn.classList.remove('open');
+    var lbl = expandBtn.querySelector('.va-label');
+    if (lbl) lbl.textContent = expandBtn.getAttribute('data-closed-label') || 'VIEW ALL';
+  }
+
+  // store original label
+  var origLabel = expandBtn.querySelector('.va-label')?.textContent || '';
+  expandBtn.setAttribute('data-closed-label', origLabel);
+  expandBtn.addEventListener('click', function() {
+    panel.classList.contains('open') ? closePanel() : openPanel();
+  });
+
+  // minimize button inside panel
+  var minBtn = panel.querySelector('.fp-minimize-btn');
+  if (minBtn) minBtn.addEventListener('click', function() {
+    closePanel();
+    setTimeout(function(){ expandBtn.scrollIntoView({behavior:'smooth',block:'center'}); }, 60);
+  });
+
+  // year toggle accordion
+  panel.querySelectorAll('.fp-year-toggle').forEach(function(toggle) {
+    toggle.addEventListener('click', function() {
+      var grp = toggle.closest('.fp-year-group');
+      var wasOpen = grp.classList.contains('open');
+      grp.classList.toggle('open', !wasOpen);
+      // sync sidebar
+      var grpId = grp.id;
+      panel.querySelectorAll('.fp-year-link').forEach(function(a) {
+        a.classList.toggle('active', a.getAttribute('data-target') === grpId && !wasOpen);
+      });
+    });
+  });
+
+  // sidebar year buttons → expand group + scroll
+  panel.querySelectorAll('.fp-year-link').forEach(function(a) {
+    a.addEventListener('click', function() {
+      var target = a.getAttribute('data-target');
+      var grp = document.getElementById(target);
+      if (!grp) return;
+      if (!grp.classList.contains('open')) grp.classList.add('open');
+      panel.querySelectorAll('.fp-year-link').forEach(function(x){ x.classList.remove('active'); });
+      a.classList.add('active');
+      setTimeout(function(){ grp.scrollIntoView({behavior:'smooth',block:'start'}); }, 50);
+    });
+  });
+
+  // search
+  var searchEl = panel.querySelector('.fp-search');
+  var countEl = document.getElementById(countId);
+  if (searchEl) {
+    searchEl.addEventListener('input', function() {
+      var q = this.value.toLowerCase().trim();
+      var visible = 0;
+      panel.querySelectorAll('.fp-year-group').forEach(function(grp) {
+        var rows = grp.querySelectorAll(rowSel);
+        var groupMatch = false;
+        rows.forEach(function(row) {
+          var match = !q || (row.getAttribute('data-text')||'').toLowerCase().includes(q);
+          row.classList.toggle('hidden', !match);
+          if (match) { visible++; groupMatch = true; }
+        });
+        grp.classList.toggle('all-hidden', !groupMatch);
+        if (q && groupMatch) grp.classList.add('open');
+      });
+      if (countEl) countEl.textContent = visible + ' ' + typeLabel;
+    });
+  }
+}
+
+setupPanel('pub-expand',  'pub-panel',  '.fp-pub-row',  'pub-search-count',  'PUBLICATIONS');
+setupPanel('news-expand', 'news-panel', '.fp-news-row', 'news-search-count', 'NEWS ITEMS');
+
+/* ── MORE buttons ── */
+document.querySelectorAll('.ar-more-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var idx = (btn as HTMLElement).getAttribute('data-idx');
+    var panel = document.getElementById('detail-' + idx);
+    if (!panel) return;
+    var isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open', !isOpen);
+    (btn as HTMLElement).classList.toggle('expanded', !isOpen);
+    var label = btn.querySelector('.ar-btn-label');
+    if (label) label.textContent = isOpen ? 'MORE' : 'LESS';
+  });
+});
+
+/* ── Parallax ── */
+gsap.to('#hero .scene-svg',{y:-70,ease:'none',scrollTrigger:{trigger:'#hero',scrub:1.5}});
+</script>
