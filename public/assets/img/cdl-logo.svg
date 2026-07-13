@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#111111"/>
+  <g fill="none" stroke="#e8e8e8" stroke-width="14" stroke-linecap="round">
+    <path d="M 250 110 A 95 95 0 1 0 250 290"/>
+    <path d="M 200 60 L 200 20" stroke-width="8" opacity="0.5"/>
+    <path d="M 200 380 L 200 340" stroke-width="8" opacity="0.5"/>
+  </g>
+  <g fill="#e8e8e8" font-family="Georgia, 'Times New Roman', serif">
+    <text x="200" y="228" font-size="86" font-weight="bold" text-anchor="middle" letter-spacing="2">CDL</text>
+  </g>
+  <g fill="#888888" font-family="Arial, Helvetica, sans-serif">
+    <text x="200" y="268" font-size="21" text-anchor="middle" letter-spacing="6">PURDUE</text>
+  </g>
+</svg>
