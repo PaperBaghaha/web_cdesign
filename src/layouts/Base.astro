@@ -323,5 +323,87 @@ const personJsonLd = isHome ? JSON.stringify({
         updateVisibility();
       });
     </script>
+
+    <!-- Micro-interactions: scroll reveal, count-up stats, navbar elevation -->
+    <script>
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      // Gate the hidden pre-reveal state on this class so content stays
+      // visible if this script never runs (see _effects.css).
+      document.documentElement.classList.add('js-reveal');
+
+      let fxController: AbortController | null = null;
+
+      function animateCount(el: HTMLElement): void {
+        const target = parseInt(el.dataset.countup ?? '0', 10);
+        const suffix = el.dataset.suffix ?? '';
+        if (reduceMotion || !Number.isFinite(target)) {
+          el.textContent = `${target}${suffix}`;
+          return;
+        }
+        const duration = 1300;
+        const start = performance.now();
+        const tick = (now: number) => {
+          const p = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = `${Math.round(eased * target)}${suffix}`;
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }
+
+      function initEffects(): void {
+        fxController?.abort();
+        fxController = new AbortController();
+        const { signal } = fxController;
+
+        // ── Reveal on scroll + count-up numbers ─────────────────────────
+        // Plain rect checks on scroll instead of IntersectionObserver:
+        // a handful of elements per page, and it degrades gracefully in
+        // embedded/throttled browsers where IO callbacks never fire.
+        function sweep(): void {
+          const vh = window.innerHeight;
+
+          document.querySelectorAll('[data-reveal]:not(.revealed)').forEach((el) => {
+            const r = el.getBoundingClientRect();
+            if (r.top < vh - 40 && r.bottom > 0) el.classList.add('revealed');
+          });
+
+          document
+            .querySelectorAll<HTMLElement>('[data-countup]:not([data-counted])')
+            .forEach((el) => {
+              const r = el.getBoundingClientRect();
+              if (r.top < vh && r.bottom > 0) {
+                el.setAttribute('data-counted', 'true');
+                animateCount(el);
+              }
+            });
+        }
+
+        if (reduceMotion) {
+          document
+            .querySelectorAll('[data-reveal]')
+            .forEach((el) => el.classList.add('revealed'));
+          document
+            .querySelectorAll<HTMLElement>('[data-countup]:not([data-counted])')
+            .forEach((el) => {
+              el.setAttribute('data-counted', 'true');
+              animateCount(el);
+            });
+        } else {
+          window.addEventListener('scroll', sweep, { passive: true, signal });
+          window.addEventListener('resize', sweep, { passive: true, signal });
+          sweep();
+        }
+
+        // ── Navbar shadow once scrolled ─────────────────────────────────
+        const nav = document.querySelector('.navbar');
+        const elevate = () => nav?.classList.toggle('scrolled', window.scrollY > 8);
+        window.addEventListener('scroll', elevate, { passive: true, signal });
+        elevate();
+      }
+
+      initEffects();
+      document.addEventListener('astro:after-swap', initEffects);
+    </script>
   </body>
 </html>

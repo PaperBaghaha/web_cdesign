@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import './_colors.css';
 @import './_typography.css';
+@import './_effects.css';
 /* KaTeX math CSS — bundled locally so it's always available (no CDN dependency) */
 @import 'katex/dist/katex.min.css';
 

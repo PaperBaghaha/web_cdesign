@@ -32,9 +32,18 @@ const formatDate = (d: Date) =>
   d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
 // Selected publications
+const bibEntries = parseBibtex(bibRaw);
 const selectedPapers = site.selectedPapers.enabled
-  ? parseBibtex(bibRaw).filter((e) => getBoolField(e, 'selected'))
+  ? bibEntries.filter((e) => getBoolField(e, 'selected'))
   : [];
+
+// Lab-at-a-glance stats + research-area quick links
+const peopleCount = (await getCollection('people')).length;
+const researchAreas = (await getCollection('projects')).sort(
+  (a, b) => a.data.importance - b.data.importance,
+);
+const pubYears = bibEntries.map((e) => getYear(e)).filter((y) => y > 1900);
+const yearsActive = pubYears.length > 0 ? new Date().getFullYear() - Math.min(...pubYears) : 0;
 
 // Pre-render announcement content
 const renderedAnnouncements = await Promise.all(
@@ -44,11 +53,9 @@ const renderedAnnouncements = await Promise.all(
 
 <Base isHome={true}>
   <div class="post page-container py-8">
-    <header class="post-header">
-      <h1
-        class="post-title"
-        style="font-family: var(--font-sans); color: var(--global-text-color);"
-      >
+    <header class="post-header hero" data-reveal>
+      <div class="hero-dots" aria-hidden="true"></div>
+      <h1 class="post-title hero-title" style="font-family: var(--font-sans);">
         {(site.title as string) === 'blank' ? site.author.name : site.title}
       </h1>
       {
@@ -73,6 +80,48 @@ const renderedAnnouncements = await Promise.all(
         </div>
       </div>
 
+      <!-- Research area quick links -->
+      {
+        researchAreas.length > 0 && (
+          <div class="chip-row mt-6" data-reveal style="--reveal-delay: 0.05s;">
+            {researchAreas.map((p) => (
+              <a class="chip" href={`${site.base}/projects/${p.id}/`}>
+                {p.data.title}
+              </a>
+            ))}
+          </div>
+        )
+      }
+
+      <!-- Lab at a glance -->
+      <section
+        class="stat-grid mt-8"
+        data-reveal
+        style="--reveal-delay: 0.1s;"
+        aria-label="Lab at a glance"
+      >
+        <a class="stat-tile" href={`${site.base}/publications/`}>
+          <span class="stat-num" data-countup={bibEntries.length} data-suffix="+">
+            {bibEntries.length}+
+          </span>
+          <span class="stat-label">Publications</span>
+        </a>
+        <a class="stat-tile" href={`${site.base}/projects/`}>
+          <span class="stat-num" data-countup={researchAreas.length}>{researchAreas.length}</span>
+          <span class="stat-label">Research Areas</span>
+        </a>
+        <a class="stat-tile" href={`${site.base}/people/`}>
+          <span class="stat-num" data-countup={peopleCount}>{peopleCount}</span>
+          <span class="stat-label">Lab Members</span>
+        </a>
+        <a class="stat-tile" href={`${site.base}/news/`}>
+          <span class="stat-num" data-countup={yearsActive} data-suffix="+">
+            {yearsActive}+
+          </span>
+          <span class="stat-label">Years of Research</span>
+        </a>
+      </section>
+
       <!-- Social icons -->
       {
         site.socials && (
@@ -87,14 +136,14 @@ const renderedAnnouncements = await Promise.all(
       <!-- Announcements / News -->
       {
         site.announcements.enabled && allAnnouncements.length > 0 && (
-          <section class="mt-8">
+          <section class="mt-8" data-reveal>
             <h2 style="color: var(--global-text-color); border-bottom: 1px solid var(--global-divider-color); padding-bottom: 0.3rem;">
               <a href={`${site.base}/news/`} style="color: inherit; text-decoration: none;">
                 news
               </a>
             </h2>
             <div class={site.announcements.scrollable ? 'scrollable-list' : ''}>
-              <table style="width: 100%; border-collapse: collapse;">
+              <table class="news-table" style="width: 100%; border-collapse: collapse;">
                 <tbody>
                   {renderedAnnouncements.map(({ item, rendered: { Content } }) => (
                     <tr style="border-bottom: 1px solid var(--global-divider-color);">
@@ -150,13 +199,13 @@ const renderedAnnouncements = await Promise.all(
       <!-- Selected publications -->
       {
         site.selectedPapers.enabled && selectedPapers.length > 0 && (
-          <section class="mt-8">
+          <section class="mt-8" data-reveal>
             <h2 style="color: var(--global-text-color); border-bottom: 1px solid var(--global-divider-color); padding-bottom: 0.3rem;">
               <a href={`${site.base}/publications/`} style="color: inherit; text-decoration: none;">
                 selected publications
               </a>
             </h2>
-            <ol class="m-0 list-none p-0">
+            <ol class="sel-pubs m-0 list-none p-0">
               {selectedPapers.map((entry) => {
                 const title = getTitle(entry);
                 const authors = getAuthors(entry);

@@ -39,7 +39,7 @@ const items = site.navbar.items;
     <!-- Brand -->
     <a
       href={`${site.base}/`}
-      class="text-lg font-bold"
+      class="navbar-brand text-lg font-bold"
       style="color: var(--global-text-color); text-decoration: none;"
     >
       {site.author.name}
@@ -54,7 +54,7 @@ const items = site.navbar.items;
             return (
               <a
                 href={`${site.base}${item.href}`}
-                class={`px-3 py-1 text-sm transition-colors ${active ? 'font-bold' : ''}`}
+                class={`nav-link px-3 py-1 text-sm transition-colors ${active ? 'active font-bold' : ''}`}
                 style={`color: ${active ? 'var(--global-theme-color)' : 'var(--global-text-color)'}; text-decoration: none;`}
               >
                 {item.label}
@@ -67,7 +67,7 @@ const items = site.navbar.items;
             return (
               <div class="nav-dropdown" role="none">
                 <button
-                  class={`nav-dropdown-trigger px-3 py-1 text-sm ${active ? 'font-bold' : ''}`}
+                  class={`nav-dropdown-trigger nav-link px-3 py-1 text-sm ${active ? 'active font-bold' : ''}`}
                   style={`color: ${active ? 'var(--global-theme-color)' : 'var(--global-text-color)'}; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.2rem;`}
                   aria-haspopup="menu"
                   aria-expanded="false"
@@ -281,6 +281,43 @@ const items = site.navbar.items;
 </script>
 
 <style>
+  /* ── Brand: letters breathe apart on hover ──────────────────────────── */
+  .navbar-brand {
+    transition: letter-spacing 0.25s ease;
+  }
+  .navbar-brand:hover {
+    letter-spacing: 0.03em;
+  }
+
+  /* ── Nav links: underline slides in from the left ───────────────────── */
+  .nav-link {
+    position: relative;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--global-theme-color);
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 0.25s ease;
+  }
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .navbar-brand,
+    .nav-link::after {
+      transition: none;
+    }
+  }
+
   /* ── Hamburger animation ────────────────────────────────────────────── */
   .icon-bar {
     transition: all 0.2s;

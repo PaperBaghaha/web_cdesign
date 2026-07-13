@@ -12,7 +12,7 @@ const href = project.data.redirect ?? project.data.url ?? `${site.base}/projects
 const isExternal = !!project.data.redirect;
 ---
 
-<div class="col">
+<div class="col" data-reveal>
   <div
     class="card hoverable h-100"
     data-href={href}
@@ -38,7 +38,7 @@ const isExternal = !!project.data.redirect;
           rel={isExternal ? 'noopener noreferrer' : undefined}
           class="card-title-link"
         >
-          {project.data.title}
+          {project.data.title}<span class="card-arrow" aria-hidden="true">&rarr;</span>
         </a>
       </h2>
       {project.data.description && <p class="card-text">{project.data.description}</p>}
@@ -123,10 +123,15 @@ const isExternal = !!project.data.redirect;
   }
 
   .hoverable {
-    transition: box-shadow 0.25s ease;
+    transition:
+      box-shadow 0.25s ease,
+      transform 0.25s ease,
+      border-color 0.25s ease;
   }
 
   .hoverable:hover {
+    transform: translateY(-6px);
+    border-color: var(--global-theme-color);
     box-shadow:
       0 5px 11px 0 rgba(0, 0, 0, 0.18),
       0 4px 15px 0 rgba(0, 0, 0, 0.15);
@@ -137,6 +142,37 @@ const isExternal = !!project.data.redirect;
     height: 200px;
     display: block;
     object-fit: cover;
+    transition: transform 0.35s ease;
+  }
+
+  .card:hover .card-img-top {
+    transform: scale(1.04);
+  }
+
+  .card-arrow {
+    display: inline-block;
+    margin-left: 0.3rem;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease;
+  }
+
+  .card:hover .card-arrow {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hoverable,
+    .card-img-top,
+    .card-arrow {
+      transition: none;
+    }
+    .hoverable:hover {
+      transform: none;
+    }
   }
 
   .card-body {

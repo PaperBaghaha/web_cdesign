@@ -40,7 +40,10 @@ const alumni = all
                   style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto 0.75rem;"
                 />
               ) : (
-                <div style="width: 120px; height: 120px; border-radius: 50%; background-color: var(--global-divider-color); margin: 0 auto 0.75rem; display: flex; align-items: center; justify-content: center;">
+                <div
+                  class="avatar-fallback"
+                  style="width: 120px; height: 120px; border-radius: 50%; background-color: var(--global-divider-color); margin: 0 auto 0.75rem; display: flex; align-items: center; justify-content: center;"
+                >
                   <span style="font-size: 2rem; color: var(--global-text-color-light);">
                     {person.data.name.charAt(0)}
                   </span>
@@ -155,3 +158,44 @@ const alumni = all
 
   {all.length === 0 && <p style="color: var(--global-text-color-light);">No people entries yet.</p>}
 </Page>
+
+<style>
+  .person-card {
+    padding: 1rem 0.5rem;
+    border-radius: 10px;
+    transition:
+      background-color 0.25s ease,
+      transform 0.25s ease;
+  }
+
+  .person-card:hover {
+    background-color: var(--global-card-bg-color);
+    transform: translateY(-4px);
+  }
+
+  .person-card img,
+  .person-card .avatar-fallback {
+    transition:
+      box-shadow 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  .person-card:hover img,
+  .person-card:hover .avatar-fallback {
+    box-shadow:
+      0 0 0 3px var(--global-bg-color),
+      0 0 0 5px var(--global-theme-color);
+    transform: scale(1.03);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .person-card,
+    .person-card img,
+    .person-card .avatar-fallback {
+      transition: none;
+    }
+    .person-card:hover {
+      transform: none;
+    }
+  }
+</style>
