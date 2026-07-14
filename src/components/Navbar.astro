@@ -120,61 +120,11 @@ const items = site.navbar.items;
         })
       }
 
-      <!-- Search pill (desktop) -->
-      <button
-        id="search-toggle"
-        class="search-pill"
-        aria-label="Search"
-        title="Search"
-        type="button"
-      >
-        <svg
-          class="search-icon"
-          xmlns="http://www.w3.org/2000/svg"
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <span class="search-pill-text">Search…</span>
-        <kbd class="search-kbd">⌘K</kbd>
-      </button>
-
       <ThemeToggle />
     </div>
 
-    <!-- Mobile controls (icon-only search + theme + hamburger) -->
+    <!-- Mobile controls (theme + hamburger) -->
     <div class="flex items-center gap-2 md:hidden">
-      <button
-        id="search-toggle"
-        aria-label="Search"
-        type="button"
-        style="padding: 0; border: 0; background: inherit; color: var(--global-text-color); cursor: pointer;"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-      </button>
       <ThemeToggle />
       <button
         id="navbar-toggler"
