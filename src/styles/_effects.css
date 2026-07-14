@@ -339,6 +339,134 @@ html[data-theme='dark'] .stat-tile:hover {
   transform: translateY(-3px);
 }
 
+/* ─── Page-enter transition (View Transitions fallback) ──────────────────── */
+/* When Astro's ClientRouter swaps pages, the incoming page fades + slides up.
+   Works alongside the built-in ::view-transition-* animations. */
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+::view-transition-new(root) {
+  animation: page-enter 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+::view-transition-old(root) {
+  animation: page-enter 0.2s cubic-bezier(0.22, 0.61, 0.36, 1) reverse both;
+}
+
+/* ─── Link underline transitions (global) ───────────────────────────────── */
+/* Apply to all plain prose links so every page feels responsive. */
+
+.prose a,
+.breadcrumb-link,
+footer a {
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+/* ─── Button / .btn transitions ─────────────────────────────────────────── */
+
+.publications ol.bibliography li .links a.btn,
+.publications ol.bibliography li .links button.btn,
+.btncv,
+.btn-calendar-toggle {
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.15s ease !important;
+}
+
+.publications ol.bibliography li .links a.btn:active,
+.publications ol.bibliography li .links button.btn:active {
+  transform: scale(0.95);
+}
+
+/* ─── Section headings: underline wipe-in ───────────────────────────────── */
+
+h2[style*='border-bottom'] {
+  position: relative;
+  border-bottom: none !important;
+  padding-bottom: 0.5rem;
+}
+
+h2[style*='border-bottom']::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1px;
+  width: 100%;
+  background: var(--global-divider-color);
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+h2[style*='border-bottom'].revealed::after,
+h2[style*='border-bottom']:where([data-reveal].revealed) ~ * {
+  transform: scaleX(1);
+}
+
+/* Trigger the underline when the heading's parent section is revealed */
+[data-reveal].revealed h2[style*='border-bottom']::after {
+  transform: scaleX(1);
+}
+
+/* ─── Course cards ───────────────────────────────────────────────────────── */
+
+.course-item {
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease !important;
+}
+
+.course-item:hover {
+  transform: translateY(-5px);
+  border-color: var(--global-theme-color) !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.09) !important;
+}
+
+html[data-theme='dark'] .course-item:hover {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ─── Pagination buttons ─────────────────────────────────────────────────── */
+
+.pagination-btn {
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.pagination-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* ─── Search pill in navbar ──────────────────────────────────────────────── */
+
+.search-pill {
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease !important;
+}
+
+.search-pill:hover {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--global-theme-color) 15%, transparent) !important;
+}
+
 /* ─── Reduced motion: kill all decorative animation ──────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
@@ -356,7 +484,15 @@ html[data-theme='dark'] .stat-tile:hover {
   .stat-tile::before,
   .chip,
   .chip::before,
-  #back-to-top {
+  #back-to-top,
+  .course-item,
+  .pagination-btn {
     transition: none !important;
+    animation: none !important;
+  }
+
+  ::view-transition-new(root),
+  ::view-transition-old(root) {
+    animation: none !important;
   }
 }

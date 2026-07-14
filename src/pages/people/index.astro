@@ -14,22 +14,25 @@ const alumni = all
 ---
 
 <Page title="People" description={`Research group members of ${site.author.name}`}>
-  <header class="post-header">
+  <header class="post-header" data-reveal>
     <h1 class="post-title">people</h1>
+    <p class="post-description" style="color: var(--global-text-color-light);">
+      Meet the researchers behind Convergence Design Lab.
+    </p>
   </header>
 
   {
     current.length > 0 && (
-      <section class="mb-10">
+      <section class="mb-10" data-reveal>
         <h2
           class="mb-6 text-xl font-bold"
           style="color: var(--global-theme-color); border-bottom: 1px solid var(--global-divider-color); padding-bottom: 0.25rem;"
         >
           Current Members
         </h2>
-        <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {current.map((person) => (
-            <div class="person-card text-center">
+        <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {current.map((person, i) => (
+            <div class="person-card text-center" data-reveal style={`--reveal-delay: ${i * 0.04}s`}>
               {person.data.photo ? (
                 <img
                   src={withBase(person.data.photo)}
@@ -110,7 +113,7 @@ const alumni = all
 
   {
     alumni.length > 0 && (
-      <section class="mb-10">
+      <section class="mb-10" data-reveal>
         <h2
           class="mb-6 text-xl font-bold"
           style="color: var(--global-theme-color); border-bottom: 1px solid var(--global-divider-color); padding-bottom: 0.25rem;"

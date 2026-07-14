@@ -252,12 +252,9 @@ const renderedAnnouncements = await Promise.all(
                 );
               })}
             </ol>
-            <p class="mt-2 text-sm">
-              <a
-                href={`${site.base}/publications/`}
-                style="color: var(--global-theme-color); text-decoration: none;"
-              >
-                Full publication list &rarr;
+            <p class="mt-4">
+              <a class="pub-more-link" href={`${site.base}/publications/`}>
+                Full publication list <span aria-hidden="true">→</span>
               </a>
             </p>
           </section>
@@ -274,12 +271,43 @@ const renderedAnnouncements = await Promise.all(
     clear: both;
   }
   .post-title {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 0.25rem;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.4rem;
+    line-height: 1.1;
   }
   .desc {
-    font-size: 1rem;
+    font-size: 1.05rem;
     margin-bottom: 1rem;
+    max-width: 64ch;
+  }
+  /* Selected pubs: left-accent on hover */
+  .sel-pubs li {
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s ease;
+  }
+  .sel-pubs li:hover {
+    transform: translateX(4px);
+  }
+  /* "Full publication list →" link */
+  .pub-more-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--global-theme-color);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition:
+      gap 0.2s ease,
+      opacity 0.2s ease;
+  }
+  .pub-more-link:hover {
+    gap: 0.6rem;
+    opacity: 0.75;
   }
 </style>

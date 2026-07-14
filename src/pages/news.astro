@@ -20,22 +20,25 @@ const formatDate = (d: Date) =>
 
 <Page title="News" description={`News and announcements from ${site.author.name}`}>
   <div class="post">
-    <header class="post-header">
+    <header class="post-header" data-reveal>
       <h1 class="post-title">news</h1>
+      <p class="post-description" style="color: var(--global-text-color-light);">
+        Updates, awards, and announcements from the lab.
+      </p>
     </header>
     <article>
       {
         rendered.length === 0 ? (
           <p style="color: var(--global-text-color-light);">No announcements yet.</p>
         ) : (
-          <table style="width: 100%; border-collapse: collapse;">
+          <table class="news-table" style="width: 100%; border-collapse: collapse;">
             <tbody>
               {rendered.map(({ item, rendered: { Content } }) => (
                 <tr style="border-bottom: 1px solid var(--global-divider-color);">
-                  <td style="padding: 0.5rem 1rem 0.5rem 0; white-space: nowrap; vertical-align: top; color: var(--global-text-color-light); font-size: 0.8rem;">
+                  <td style="padding: 0.6rem 1.25rem 0.6rem 0; white-space: nowrap; vertical-align: top; color: var(--global-text-color-light); font-size: 0.8rem;">
                     {formatDate(item.data.date)}
                   </td>
-                  <td style="padding: 0.5rem 0; font-size: 0.9rem; color: var(--global-text-color);">
+                  <td style="padding: 0.6rem 0; font-size: 0.925rem; color: var(--global-text-color);">
                     <Content />
                   </td>
                 </tr>
