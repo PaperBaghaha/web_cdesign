@@ -5,6 +5,7 @@
 
 @theme {
   --font-sans: 'Roboto', system-ui, -apple-system, sans-serif;
+  --font-display: 'Space Grotesk', 'Roboto', system-ui, -apple-system, sans-serif;
   --font-condensed: 'Roboto Condensed', 'Arial Narrow', sans-serif;
   --font-mono: 'Source Code Pro', 'Roboto Mono', 'Fira Code', ui-monospace, monospace;
 }
@@ -22,6 +23,17 @@ html {
 body {
   color: var(--global-text-color);
   background-color: var(--global-bg-color);
+}
+
+/* Display headings use Space Grotesk */
+h1,
+h2,
+h3 {
+  font-family:
+    'Space Grotesk',
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 /* Headings */

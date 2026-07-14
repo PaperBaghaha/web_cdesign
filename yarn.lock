@@ -647,6 +647,11 @@
   resolved "https://registry.npmjs.org/@fontsource/source-code-pro/-/source-code-pro-5.2.7.tgz"
   integrity sha512-7papq9TH94KT+S5VSY8cU7tFmwuGkIe3qxXRMscuAXH6AjMU+KJI75f28FzgBVDrlMfA0jjlTV4/x5+H5o/5EQ==
 
+"@fontsource/space-grotesk@^5.2.10":
+  version "5.2.10"
+  resolved "https://registry.npmjs.org/@fontsource/space-grotesk/-/space-grotesk-5.2.10.tgz"
+  integrity sha512-XNXEbT74OIITPqw2H6HXwPDp85fy43uxfBwFR5PU+9sLnjuLj12KlhVM9nZVN6q6dlKjkuN8JisW/OBxwxgUew==
+
 "@humanfs/core@^0.19.2":
   version "0.19.2"
   resolved "https://registry.npmjs.org/@humanfs/core/-/core-0.19.2.tgz"
@@ -1795,7 +1800,7 @@ astro-icon@^1.1.5:
     "@iconify/types" "^2.0.0"
     "@iconify/utils" "^2.1.30"
 
-astro@^6.4.8:
+astro@>=6.0.0:
   version "6.4.8"
   resolved "https://registry.npmjs.org/astro/-/astro-6.4.8.tgz"
   integrity sha512-KK5lX90uU9EeVaTjINyj3sy9/NFXVa59aowaqbWBDDKLXZh4rr7GwIaCFYVetE22MJtsCNFerQXn0vlCLmpP/Q==

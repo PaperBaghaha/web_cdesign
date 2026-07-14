@@ -1,5 +1,4 @@
 ---
-import ProfilePhoto from '@components/about/ProfilePhoto.astro';
 import SocialLinks from '@components/SocialLinks.astro';
 import { site } from '@config/site';
 import Base from '@layouts/Base.astro';
@@ -20,14 +19,6 @@ const allAnnouncements = site.announcements.enabled
       .slice(0, site.announcements.limit)
   : [];
 
-// Latest posts
-const allPosts = site.latestPosts.enabled
-  ? (await getCollection('posts'))
-      .filter((p) => !p.data.hidden)
-      .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-      .slice(0, site.latestPosts.limit)
-  : [];
-
 const formatDate = (d: Date) =>
   d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
@@ -37,7 +28,7 @@ const selectedPapers = site.selectedPapers.enabled
   ? bibEntries.filter((e) => getBoolField(e, 'selected'))
   : [];
 
-// Lab-at-a-glance stats + research-area quick links
+// Stats
 const peopleCount = (await getCollection('people')).length;
 const researchAreas = (await getCollection('projects')).sort(
   (a, b) => a.data.importance - b.data.importance,
@@ -52,262 +43,735 @@ const renderedAnnouncements = await Promise.all(
 ---
 
 <Base isHome={true}>
-  <div class="post page-container py-8">
-    <header class="post-header hero" data-reveal>
-      <div class="hero-dots" aria-hidden="true"></div>
-      <h1 class="post-title hero-title" style="font-family: var(--font-sans);">
-        {(site.title as string) === 'blank' ? site.author.name : site.title}
-      </h1>
-      {
-        site.author.subtitle && (
-          <p
-            class="desc"
-            style="color: var(--global-text-color-light);"
-            set:html={site.author.subtitle}
-          />
-        )
-      }
-    </header>
+  <!-- ═══ HERO ═══════════════════════════════════════════════════════════════ -->
+  <section class="hero-section">
+    <div class="page-container hero-inner">
+      <!-- Left: identity -->
+      <div class="hero-left" data-reveal>
+        <p class="hero-eyebrow">Purdue University · Mechanical Engineering</p>
 
-    <article>
-      <!-- Profile photo (floats right by default) -->
-      <ProfilePhoto align="right" />
+        <h1 class="hero-title">
+          <span class="title-line title-line-1">Convergence</span>
+          <span class="title-line title-line-2">Design<em>Lab</em></span>
+        </h1>
 
-      <div class="clearfix">
-        <!-- Bio content from about.mdx -->
-        <div class="prose max-w-none">
-          <AboutContent />
-        </div>
-      </div>
+        <p class="hero-sub" set:html={site.author.subtitle} />
 
-      <!-- Research area quick links -->
-      {
-        researchAreas.length > 0 && (
-          <div class="chip-row mt-6" data-reveal style="--reveal-delay: 0.05s;">
-            {researchAreas.map((p) => (
+        <!-- Research chips -->
+        <div class="chip-row mt-6">
+          {
+            researchAreas.map((p) => (
               <a class="chip" href={`${site.base}/projects/${p.id}/`}>
                 {p.data.title}
               </a>
-            ))}
-          </div>
-        )
-      }
+            ))
+          }
+        </div>
+      </div>
 
-      <!-- Lab at a glance -->
-      <section
-        class="stat-grid mt-8"
-        data-reveal
-        style="--reveal-delay: 0.1s;"
-        aria-label="Lab at a glance"
+      <!-- Right: geometric composition -->
+      <div class="hero-right" aria-hidden="true">
+        <div class="geo-frame">
+          <!-- Outer ring -->
+          <div class="geo-ring geo-ring-outer"></div>
+          <!-- Inner ring -->
+          <div class="geo-ring geo-ring-inner"></div>
+          <!-- Cross hair lines -->
+          <div class="geo-cross-h"></div>
+          <div class="geo-cross-v"></div>
+          <!-- CDL monogram in centre -->
+          <div class="geo-monogram">CDL</div>
+          <!-- Corner marks -->
+          <div class="geo-corner geo-corner-tl"></div>
+          <div class="geo-corner geo-corner-tr"></div>
+          <div class="geo-corner geo-corner-bl"></div>
+          <div class="geo-corner geo-corner-br"></div>
+          <!-- Floating dots -->
+          <div class="geo-dot" style="top:12%;left:68%;"></div>
+          <div class="geo-dot" style="top:78%;left:18%;"></div>
+          <div class="geo-dot" style="top:22%;left:25%;"></div>
+          <div class="geo-dot geo-dot-lg" style="top:65%;left:72%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full-width divider with tick marks -->
+    <div class="hero-rule-row page-container" aria-hidden="true">
+      <div class="rule-line-full">
+        {
+          Array.from({ length: 12 }).map((_, i) => (
+            <span class="rule-tick" style={`left:${(i + 1) * 7.7}%`} />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ STATS ══════════════════════════════════════════════════════════════ -->
+  <section class="stats-section page-container" data-reveal>
+    <a class="stat-tile" href={`${site.base}/publications/`}>
+      <span class="stat-num" data-countup={bibEntries.length} data-suffix="+"
+        >{bibEntries.length}+</span
       >
-        <a class="stat-tile" href={`${site.base}/publications/`}>
-          <span class="stat-num" data-countup={bibEntries.length} data-suffix="+">
-            {bibEntries.length}+
-          </span>
-          <span class="stat-label">Publications</span>
-        </a>
-        <a class="stat-tile" href={`${site.base}/projects/`}>
-          <span class="stat-num" data-countup={researchAreas.length}>{researchAreas.length}</span>
-          <span class="stat-label">Research Areas</span>
-        </a>
-        <a class="stat-tile" href={`${site.base}/people/`}>
-          <span class="stat-num" data-countup={peopleCount}>{peopleCount}</span>
-          <span class="stat-label">Lab Members</span>
-        </a>
-        <a class="stat-tile" href={`${site.base}/news/`}>
-          <span class="stat-num" data-countup={yearsActive} data-suffix="+">
-            {yearsActive}+
-          </span>
-          <span class="stat-label">Years of Research</span>
-        </a>
+      <span class="stat-label">Publications</span>
+    </a>
+    <a class="stat-tile" href={`${site.base}/projects/`}>
+      <span class="stat-num" data-countup={researchAreas.length}>{researchAreas.length}</span>
+      <span class="stat-label">Research Areas</span>
+    </a>
+    <a class="stat-tile" href={`${site.base}/people/`}>
+      <span class="stat-num" data-countup={peopleCount}>{peopleCount}</span>
+      <span class="stat-label">Lab Members</span>
+    </a>
+    <a class="stat-tile" href={`${site.base}/news/`}>
+      <span class="stat-num" data-countup={yearsActive} data-suffix="+">{yearsActive}+</span>
+      <span class="stat-label">Years Active</span>
+    </a>
+    <!-- Social -->
+    <div class="stat-social">
+      <SocialLinks />
+    </div>
+  </section>
+
+  <!-- ═══ ABOUT ══════════════════════════════════════════════════════════════ -->
+  <section class="about-section page-container" data-reveal>
+    <div class="about-label">
+      <span class="section-tag">About</span>
+      <div class="section-tag-line"></div>
+    </div>
+    <div class="about-body prose">
+      <AboutContent />
+    </div>
+  </section>
+
+  <!-- ═══ NEWS ══════════════════════════════════════════════════════════════ -->
+  {
+    site.announcements.enabled && renderedAnnouncements.length > 0 && (
+      <section class="content-section page-container" data-reveal>
+        <div class="section-header">
+          <h2 class="section-title">
+            <a href={`${site.base}/news/`}>News</a>
+          </h2>
+          <div class="section-line" />
+          <a class="section-more" href={`${site.base}/news/`}>
+            All news →
+          </a>
+        </div>
+        <table class="news-table">
+          <tbody>
+            {renderedAnnouncements.map(({ item, rendered: { Content } }) => (
+              <tr>
+                <td class="news-date">{formatDate(item.data.date)}</td>
+                <td class="news-body">
+                  <Content />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
+    )
+  }
 
-      <!-- Social icons -->
-      {
-        site.socials && (
-          <div class="social mt-6">
-            <div class="contact-icons">
-              <SocialLinks />
-            </div>
-          </div>
-        )
-      }
-
-      <!-- Announcements / News -->
-      {
-        site.announcements.enabled && allAnnouncements.length > 0 && (
-          <section class="mt-8" data-reveal>
-            <h2 style="color: var(--global-text-color); border-bottom: 1px solid var(--global-divider-color); padding-bottom: 0.3rem;">
-              <a href={`${site.base}/news/`} style="color: inherit; text-decoration: none;">
-                news
-              </a>
-            </h2>
-            <div class={site.announcements.scrollable ? 'scrollable-list' : ''}>
-              <table class="news-table" style="width: 100%; border-collapse: collapse;">
-                <tbody>
-                  {renderedAnnouncements.map(({ item, rendered: { Content } }) => (
-                    <tr style="border-bottom: 1px solid var(--global-divider-color);">
-                      <td style="padding: 0.5rem 1rem 0.5rem 0; white-space: nowrap; vertical-align: top; color: var(--global-text-color-light); font-size: 0.8rem;">
-                        {formatDate(item.data.date)}
-                      </td>
-                      <td style="padding: 0.5rem 0; font-size: 0.9rem; color: var(--global-text-color);">
-                        <Content />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        )
-      }
-
-      <!-- Latest posts -->
-      {
-        site.latestPosts.enabled && allPosts.length > 0 && (
-          <section class="mt-8">
-            <h2 style="color: var(--global-text-color); border-bottom: 1px solid var(--global-divider-color); padding-bottom: 0.3rem;">
-              <a href={`${site.base}/blog/`} style="color: inherit; text-decoration: none;">
-                latest posts
-              </a>
-            </h2>
-            <div class={site.latestPosts.scrollable ? 'scrollable-list' : ''}>
-              <table style="width: 100%; border-collapse: collapse;">
-                <tbody>
-                  {allPosts.map((post) => (
-                    <tr style="border-bottom: 1px solid var(--global-divider-color);">
-                      <td style="padding: 0.5rem 1rem 0.5rem 0; white-space: nowrap; vertical-align: top; color: var(--global-text-color-light); font-size: 0.8rem;">
-                        {formatDate(post.data.date)}
-                      </td>
-                      <td style="padding: 0.5rem 0; font-size: 0.9rem;">
-                        <a
-                          href={`${site.base}/blog/${post.id}/`}
-                          style="color: var(--global-theme-color); text-decoration: none;"
-                        >
-                          {post.data.title}
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        )
-      }
-
-      <!-- Selected publications -->
-      {
-        site.selectedPapers.enabled && selectedPapers.length > 0 && (
-          <section class="mt-8" data-reveal>
-            <h2 style="color: var(--global-text-color); border-bottom: 1px solid var(--global-divider-color); padding-bottom: 0.3rem;">
-              <a href={`${site.base}/publications/`} style="color: inherit; text-decoration: none;">
-                selected publications
-              </a>
-            </h2>
-            <ol class="sel-pubs m-0 list-none p-0">
-              {selectedPapers.map((entry) => {
-                const title = getTitle(entry);
-                const authors = getAuthors(entry);
-                const venue = getVenue(entry);
-                const year = getYear(entry);
-                const abbr = entry.fields.abbr;
-                const url =
-                  entry.fields.html ??
-                  (entry.fields.doi ? `https://doi.org/${entry.fields.doi}` : '');
-                const award = entry.fields.award;
-                return (
-                  <li class="mb-4 text-sm" style="line-height: 1.6;">
-                    {abbr && <span class="badge-abbr mr-2">{abbr}</span>}
-                    {url ? (
-                      <a
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style="color: var(--global-text-color); font-weight: 600; text-decoration: none;"
-                      >
-                        {title}
-                      </a>
-                    ) : (
-                      <strong style="color: var(--global-text-color);">{title}</strong>
-                    )}
-                    <br />
-                    <span style="color: var(--global-text-color-light);">{authors}</span>
-                    {(venue || year) && (
-                      <>
-                        {' · '}
-                        <em style="color: var(--global-text-color-light);">
-                          {venue}
-                          {venue && year ? ', ' : ''}
-                          {year || ''}
-                        </em>
-                      </>
-                    )}
-                    {award && (
-                      <span class="badge-abbr ml-2" style="background-color: #f59e0b;">
-                        {entry.fields.award_name ?? '🏆'}
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ol>
-            <p class="mt-4">
-              <a class="pub-more-link" href={`${site.base}/publications/`}>
-                Full publication list <span aria-hidden="true">→</span>
-              </a>
-            </p>
-          </section>
-        )
-      }
-    </article>
-  </div>
+  <!-- ═══ SELECTED PUBLICATIONS ════════════════════════════════════════════ -->
+  {
+    site.selectedPapers.enabled && selectedPapers.length > 0 && (
+      <section class="content-section page-container" data-reveal>
+        <div class="section-header">
+          <h2 class="section-title">
+            <a href={`${site.base}/publications/`}>Selected Publications</a>
+          </h2>
+          <div class="section-line" />
+          <a class="section-more pub-more-link" href={`${site.base}/publications/`}>
+            All {bibEntries.length}+ papers →
+          </a>
+        </div>
+        <ol class="sel-pubs">
+          {selectedPapers.map((entry) => {
+            const title = getTitle(entry);
+            const authors = getAuthors(entry);
+            const venue = getVenue(entry);
+            const year = getYear(entry);
+            const abbr = entry.fields.abbr;
+            const url =
+              entry.fields.html ?? (entry.fields.doi ? `https://doi.org/${entry.fields.doi}` : '');
+            return (
+              <li>
+                {abbr && <span class="badge-abbr">{abbr}</span>}
+                {url ? (
+                  <a href={url} target="_blank" rel="noopener noreferrer" class="pub-title">
+                    {title}
+                  </a>
+                ) : (
+                  <strong class="pub-title">{title}</strong>
+                )}
+                <span class="pub-meta">
+                  {authors}
+                  {(venue || year) && (
+                    <>
+                      {' '}
+                      ·{' '}
+                      <em>
+                        {venue}
+                        {venue && year ? ', ' : ''}
+                        {year || ''}
+                      </em>
+                    </>
+                  )}
+                </span>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+    )
+  }
 </Base>
 
 <style>
-  .clearfix::after {
-    content: '';
-    display: table;
-    clear: both;
+  /* ── Space Grotesk for all display elements ──────────────────────────── */
+  h1,
+  h2,
+  .section-title,
+  .stat-num,
+  .hero-eyebrow,
+  .hero-title,
+  .title-line,
+  .geo-monogram,
+  .stat-label,
+  .hero-eyebrow,
+  .section-tag,
+  .chip {
+    font-family:
+      'Space Grotesk',
+      system-ui,
+      -apple-system,
+      sans-serif;
   }
-  .post-title {
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    margin-bottom: 0.4rem;
-    line-height: 1.1;
+
+  /* ══ HERO ════════════════════════════════════════════════════════════════ */
+
+  .hero-section {
+    padding-top: 3rem;
+    padding-bottom: 0;
   }
-  .desc {
-    font-size: 1.05rem;
+
+  .hero-inner {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 3rem;
+    align-items: center;
+    padding-bottom: 2.5rem;
+  }
+
+  @media (max-width: 900px) {
+    .hero-inner {
+      grid-template-columns: 1fr;
+    }
+    .hero-right {
+      display: none;
+    }
+  }
+
+  /* Left column */
+  .hero-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--global-text-color-light);
     margin-bottom: 1rem;
-    max-width: 64ch;
   }
-  /* Selected pubs: left-accent on hover */
+
+  .hero-title {
+    margin: 0 0 1rem;
+    line-height: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .title-line {
+    display: block;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--global-text-color);
+  }
+
+  .title-line-2 em {
+    font-style: normal;
+    color: var(--global-text-color-light);
+    font-weight: 300;
+    padding-left: 0.15em;
+  }
+
+  .hero-sub {
+    font-size: 0.95rem;
+    color: var(--global-text-color-light);
+    margin: 0 0 0.5rem;
+    max-width: 52ch;
+    line-height: 1.6;
+  }
+
+  /* ── Geometric right panel ────────────────────────────────────────────── */
+
+  .hero-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .geo-frame {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    flex-shrink: 0;
+  }
+
+  .geo-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid var(--global-divider-color);
+  }
+
+  .geo-ring-outer {
+    inset: 0;
+    animation: geo-spin 40s linear infinite;
+  }
+
+  .geo-ring-inner {
+    inset: 20%;
+    border-style: dashed;
+    animation: geo-spin 28s linear infinite reverse;
+  }
+
+  @keyframes geo-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .geo-cross-h,
+  .geo-cross-v {
+    position: absolute;
+    background: var(--global-divider-color);
+  }
+
+  .geo-cross-h {
+    top: 50%;
+    left: 15%;
+    right: 15%;
+    height: 1px;
+    transform: translateY(-50%);
+  }
+
+  .geo-cross-v {
+    left: 50%;
+    top: 15%;
+    bottom: 15%;
+    width: 1px;
+    transform: translateX(-50%);
+  }
+
+  .geo-monogram {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 2.8rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: var(--global-text-color);
+    mix-blend-mode: normal;
+  }
+
+  .geo-corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+  }
+
+  .geo-corner::before,
+  .geo-corner::after {
+    content: '';
+    position: absolute;
+    background: var(--global-theme-color);
+  }
+
+  .geo-corner-tl {
+    top: 0;
+    left: 0;
+  }
+  .geo-corner-tl::before {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+  }
+  .geo-corner-tl::after {
+    top: 0;
+    left: 0;
+    width: 2px;
+    height: 100%;
+  }
+
+  .geo-corner-tr {
+    top: 0;
+    right: 0;
+  }
+  .geo-corner-tr::before {
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 2px;
+  }
+  .geo-corner-tr::after {
+    top: 0;
+    right: 0;
+    width: 2px;
+    height: 100%;
+  }
+
+  .geo-corner-bl {
+    bottom: 0;
+    left: 0;
+  }
+  .geo-corner-bl::before {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+  }
+  .geo-corner-bl::after {
+    bottom: 0;
+    left: 0;
+    width: 2px;
+    height: 100%;
+  }
+
+  .geo-corner-br {
+    bottom: 0;
+    right: 0;
+  }
+  .geo-corner-br::before {
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 2px;
+  }
+  .geo-corner-br::after {
+    bottom: 0;
+    right: 0;
+    width: 2px;
+    height: 100%;
+  }
+
+  .geo-dot {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--global-theme-color);
+    transform: translate(-50%, -50%);
+  }
+
+  .geo-dot-lg {
+    width: 10px;
+    height: 10px;
+    background: transparent;
+    border: 1.5px solid var(--global-theme-color);
+  }
+
+  /* ── Tick-mark rule ────────────────────────────────────────────────────── */
+
+  .hero-rule-row {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .rule-line-full {
+    position: relative;
+    height: 24px;
+    border-top: 1px solid var(--global-divider-color);
+  }
+
+  .rule-tick {
+    position: absolute;
+    top: 0;
+    width: 1px;
+    height: 8px;
+    background: var(--global-divider-color);
+    transform: translateX(-50%);
+  }
+
+  .rule-tick:nth-child(6) {
+    height: 14px;
+    background: var(--global-theme-color);
+  }
+
+  /* ══ STATS ══════════════════════════════════════════════════════════════ */
+
+  .stats-section {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--global-divider-color);
+    flex-wrap: wrap;
+  }
+
+  /* override global stat-tile grid */
+  .stats-section .stat-tile {
+    flex: 1 1 120px;
+    border: none;
+    border-right: 1px solid var(--global-divider-color);
+    border-radius: 0;
+    background: transparent;
+    padding: 0.75rem 2rem;
+    text-align: left;
+    align-items: flex-start;
+    gap: 0.15rem;
+  }
+
+  .stats-section .stat-tile:first-child {
+    padding-left: 0;
+  }
+
+  .stats-section .stat-tile:hover {
+    transform: none;
+    box-shadow: none;
+    background: var(--global-card-bg-color);
+    border-color: var(--global-divider-color);
+  }
+
+  .stats-section .stat-tile::before {
+    display: none;
+  }
+
+  .stat-num {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--global-text-color);
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--global-text-color-light);
+  }
+
+  .stat-social {
+    margin-left: auto;
+    padding-left: 2rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .stat-social .contact-icons {
+    font-size: 1.4rem;
+  }
+
+  /* ══ ABOUT ══════════════════════════════════════════════════════════════ */
+
+  .about-section {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 3rem;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid var(--global-divider-color);
+  }
+
+  @media (max-width: 700px) {
+    .about-section {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+
+  .about-label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 0.2rem;
+  }
+
+  .section-tag {
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--global-text-color-light);
+  }
+
+  .section-tag-line {
+    width: 2px;
+    flex: 1;
+    background: var(--global-divider-color);
+    border-radius: 1px;
+    max-height: 80px;
+  }
+
+  .about-body {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    max-width: 72ch;
+  }
+
+  /* ══ SECTION (news / pubs) ═══════════════════════════════════════════════ */
+
+  .content-section {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid var(--global-divider-color);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--global-text-color-light);
+    white-space: nowrap;
+    margin: 0;
+  }
+
+  .section-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--global-divider-color);
+  }
+
+  .section-more {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--global-text-color-light);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+  }
+
+  .section-more:hover {
+    color: var(--global-text-color);
+  }
+
+  /* ── News table ───────────────────────────────────────────────────────── */
+
+  .news-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .news-date {
+    padding: 0.65rem 1.5rem 0.65rem 0;
+    vertical-align: top;
+    white-space: nowrap;
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--global-text-color-light);
+    width: 130px;
+  }
+
+  .news-body {
+    padding: 0.65rem 0;
+    font-size: 0.92rem;
+    color: var(--global-text-color);
+    border-top: 1px solid var(--global-divider-color);
+  }
+
+  .news-table tr:first-child .news-body {
+    border-top: none;
+  }
+
+  /* ── Selected pubs ────────────────────────────────────────────────────── */
+
+  .sel-pubs {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
   .sel-pubs li {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--global-divider-color);
+    border-radius: 8px;
+    border-left: 3px solid transparent;
     transition:
-      background-color 0.2s ease,
-      border-color 0.2s ease,
-      transform 0.2s ease;
+      border-color 0.22s ease,
+      background-color 0.22s ease,
+      transform 0.22s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
   }
+
   .sel-pubs li:hover {
+    border-left-color: var(--global-theme-color);
+    background-color: var(--global-card-bg-color);
     transform: translateX(4px);
   }
-  /* "Full publication list →" link */
-  .pub-more-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-size: 0.875rem;
+
+  .pub-title {
+    font-size: 0.95rem;
     font-weight: 600;
-    color: var(--global-theme-color);
+    color: var(--global-text-color);
     text-decoration: none;
-    letter-spacing: 0.02em;
-    transition:
-      gap 0.2s ease,
-      opacity 0.2s ease;
+    line-height: 1.4;
   }
-  .pub-more-link:hover {
-    gap: 0.6rem;
-    opacity: 0.75;
+
+  .pub-title:hover {
+    color: var(--global-text-color-light);
+  }
+
+  .pub-meta {
+    font-size: 0.82rem;
+    color: var(--global-text-color-light);
+    line-height: 1.4;
+  }
+
+  .badge-abbr {
+    display: inline-block;
+    padding: 0.1em 0.55em;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background-color: var(--global-theme-color);
+    color: var(--global-hover-text-color);
+    margin-bottom: 0.25rem;
+    align-self: flex-start;
+  }
+
+  /* ── Reduce motion ────────────────────────────────────────────────────── */
+
+  @media (prefers-reduced-motion: reduce) {
+    .geo-ring {
+      animation: none;
+    }
   }
 </style>
