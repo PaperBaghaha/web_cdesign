@@ -35,3 +35,6 @@ coverage/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# papers.bib backups written by scripts/update-publications.ts
+src/data/papers.bib.*.bak

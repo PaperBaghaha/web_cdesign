@@ -353,6 +353,8 @@ export const site = {
     authorLastName: 'Ramani' as string | undefined,
     /** Path prefix (relative to public/) for publication preview images. */
     previewDir: '/assets/img/publication_preview/',
+    /** Path prefix (relative to public/) for self-hosted publication videos. */
+    videoDir: '/assets/video/',
     /** Path prefix (relative to public/) for publication PDFs and supplements. */
     pdfDir: '/assets/pdf/',
     /** UI labels — override for non-English sites. */

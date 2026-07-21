@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="ConceptVis teaser figure placeholder — interactive knowledge graph of design concepts">
+  <title>ConceptVis — teaser figure (placeholder)</title>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f4f4f5"/>
+      <stop offset="100%" stop-color="#e4e4e7"/>
+    </linearGradient>
+    <linearGradient id="silver" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8a8a8a"/>
+      <stop offset="100%" stop-color="#c8c8c8"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0 L0 0 0 40" fill="none" stroke="#00000010" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Corner brackets -->
+  <g stroke="#6e6e6e" stroke-width="2" fill="none">
+    <path d="M40 70 L40 40 L70 40"/>
+    <path d="M1130 40 L1160 40 L1160 70"/>
+    <path d="M40 560 L40 590 L70 590"/>
+    <path d="M1130 590 L1160 590 L1160 560"/>
+  </g>
+
+  <!-- Knowledge-graph edges -->
+  <g stroke="#9a9a9a" stroke-width="1.5" fill="none" opacity="0.7">
+    <path d="M600 315 L410 200"/>
+    <path d="M600 315 L790 200"/>
+    <path d="M600 315 L390 420"/>
+    <path d="M600 315 L810 430"/>
+    <path d="M600 315 L600 145"/>
+    <path d="M600 315 L600 490"/>
+    <path d="M410 200 L600 145" stroke-dasharray="5 5"/>
+    <path d="M790 200 L600 145" stroke-dasharray="5 5"/>
+    <path d="M390 420 L600 490" stroke-dasharray="5 5"/>
+    <path d="M810 430 L600 490" stroke-dasharray="5 5"/>
+  </g>
+
+  <!-- Graph nodes -->
+  <g>
+    <circle cx="600" cy="315" r="46" fill="url(#silver)" stroke="#5a5a5a" stroke-width="2"/>
+    <circle cx="410" cy="200" r="26" fill="#ffffff" stroke="#6e6e6e" stroke-width="2"/>
+    <circle cx="790" cy="200" r="26" fill="#ffffff" stroke="#6e6e6e" stroke-width="2"/>
+    <circle cx="390" cy="420" r="22" fill="#ffffff" stroke="#6e6e6e" stroke-width="2"/>
+    <circle cx="810" cy="430" r="30" fill="#ffffff" stroke="#6e6e6e" stroke-width="2"/>
+    <circle cx="600" cy="145" r="20" fill="#d4d4d4" stroke="#6e6e6e" stroke-width="2"/>
+    <circle cx="600" cy="490" r="24" fill="#d4d4d4" stroke="#6e6e6e" stroke-width="2"/>
+  </g>
+
+  <!-- Node labels -->
+  <g font-family="'Space Grotesk', system-ui, sans-serif" font-size="13" fill="#3a3a3a" text-anchor="middle">
+    <text x="600" y="320" font-size="15" font-weight="700" fill="#ffffff">CONCEPT</text>
+    <text x="410" y="205" font-weight="500">form</text>
+    <text x="790" y="205" font-weight="500">function</text>
+    <text x="390" y="425" font-weight="500">user</text>
+    <text x="810" y="435" font-weight="500">material</text>
+    <text x="600" y="150" font-size="11">goal</text>
+    <text x="600" y="495" font-size="11">context</text>
+  </g>
+
+  <!-- Caption block -->
+  <g font-family="'Space Grotesk', system-ui, sans-serif" text-anchor="middle">
+    <text x="600" y="565" font-size="20" font-weight="700" fill="#2a2a2a" letter-spacing="-0.5">
+      ConceptVis — Interactive Knowledge Graph
+    </text>
+    <text x="600" y="590" font-size="12" font-weight="500" fill="#7a7a7a" letter-spacing="2.5">
+      PLACEHOLDER FIGURE · AWAITING FINAL MEDIA UPLOAD
+    </text>
+  </g>
+</svg>

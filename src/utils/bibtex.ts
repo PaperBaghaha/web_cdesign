@@ -181,6 +181,7 @@ export const BIBTEX_INTERNAL_FIELDS = new Set([
   'pdf',
   'poster',
   'preview',
+  'preview_alt',
   'selected',
   'slides',
   'supp',

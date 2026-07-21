@@ -2,9 +2,18 @@
 import { site } from '@config/site';
 import Page from '@layouts/Page.astro';
 import { withBase } from '@utils/base';
+import { parseBibtex } from '@utils/bibtex';
+import { publicationCount } from '@utils/people';
 import { getCollection } from 'astro:content';
 
+import bibRaw from '../../data/papers.bib?raw';
+
 const all = await getCollection('people');
+const bibEntries = parseBibtex(bibRaw);
+
+/** Profile page href, or undefined when the person opted out of having one. */
+const profileHref = (person: (typeof all)[number]): string | undefined =>
+  person.data.noPage ? undefined : `${site.base}/people/${person.id}/`;
 const current = all
   .filter((p) => p.data.group === 'current')
   .sort((a, b) => (a.data.importance ?? 999) - (b.data.importance ?? 999));
@@ -31,81 +40,79 @@ const alumni = all
           Current Members
         </h2>
         <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {current.map((person, i) => (
-            <div class="person-card text-center" data-reveal style={`--reveal-delay: ${i * 0.04}s`}>
-              {person.data.photo ? (
-                <img
-                  src={withBase(person.data.photo)}
-                  alt={person.data.name}
-                  loading="lazy"
-                  width="120"
-                  height="120"
-                  style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto 0.75rem;"
-                />
-              ) : (
-                <div
-                  class="avatar-fallback"
-                  style="width: 120px; height: 120px; border-radius: 50%; background-color: var(--global-divider-color); margin: 0 auto 0.75rem; display: flex; align-items: center; justify-content: center;"
-                >
-                  <span style="font-size: 2rem; color: var(--global-text-color-light);">
-                    {person.data.name.charAt(0)}
-                  </span>
+          {current.map((person, i) => {
+            const href = profileHref(person);
+            const pubs = publicationCount(person.data.name, bibEntries, person.data.aliases);
+            return (
+              <div
+                class="person-card text-center"
+                data-reveal
+                style={`--reveal-delay: ${i * 0.04}s`}
+              >
+                <div class="avatar-wrap">
+                  {person.data.photo ? (
+                    <img
+                      src={withBase(person.data.photo)}
+                      alt={person.data.name}
+                      loading="lazy"
+                      width="120"
+                      height="120"
+                    />
+                  ) : (
+                    <div class="avatar-fallback" aria-hidden="true">
+                      {person.data.name.charAt(0)}
+                    </div>
+                  )}
+                  {pubs > 0 && (
+                    <span class="pub-badge" title={`${pubs} publications`}>
+                      {pubs}
+                    </span>
+                  )}
                 </div>
-              )}
 
-              <h3 class="text-sm font-semibold" style="color: var(--global-text-color);">
-                {person.data.website ? (
-                  <a
-                    href={person.data.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style="color: var(--global-text-color); text-decoration: none;"
-                  >
-                    {person.data.name}
-                  </a>
-                ) : (
-                  person.data.name
-                )}
-              </h3>
-              <p class="mt-0.5 text-xs" style="color: var(--global-text-color-light);">
-                {person.data.role}
-              </p>
+                <h3 class="person-name">
+                  {href ? (
+                    <a href={href}>{person.data.name}</a>
+                  ) : person.data.website ? (
+                    <a href={person.data.website} target="_blank" rel="noopener noreferrer">
+                      {person.data.name}
+                    </a>
+                  ) : (
+                    person.data.name
+                  )}
+                </h3>
+                <p class="person-role">{person.data.role}</p>
 
-              {/* Social icons */}
-              <div class="mt-1 flex justify-center gap-2">
-                {person.data.github && (
-                  <a
-                    href={`https://github.com/${person.data.github}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-xs"
-                    style="color: var(--global-text-color-light); text-decoration: none;"
-                    aria-label="GitHub"
-                  >
-                    gh
-                  </a>
-                )}
-                {person.data.scholar && (
-                  <a
-                    href={`https://scholar.google.com/citations?user=${person.data.scholar}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="text-xs"
-                    style="color: var(--global-text-color-light); text-decoration: none;"
-                    aria-label="Google Scholar"
-                  >
-                    gs
-                  </a>
-                )}
+                {/* Social icons */}
+                <div class="mt-1 flex justify-center gap-2">
+                  {person.data.github && (
+                    <a
+                      href={`https://github.com/${person.data.github}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="social-mini"
+                      aria-label={`${person.data.name} on GitHub`}
+                    >
+                      gh
+                    </a>
+                  )}
+                  {person.data.scholar && (
+                    <a
+                      href={`https://scholar.google.com/citations?user=${person.data.scholar}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="social-mini"
+                      aria-label={`${person.data.name} on Google Scholar`}
+                    >
+                      gs
+                    </a>
+                  )}
+                </div>
+
+                {person.data.description && <p class="person-desc">{person.data.description}</p>}
               </div>
-
-              {person.data.description && (
-                <p class="mt-1 text-xs" style="color: var(--global-text-color-light);">
-                  {person.data.description}
-                </p>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     )
@@ -121,39 +128,37 @@ const alumni = all
           Alumni
         </h2>
         <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-          {alumni.map((person) => (
-            <div class="flex items-center gap-3">
-              {person.data.photo && (
-                <img
-                  src={withBase(person.data.photo)}
-                  alt={person.data.name}
-                  loading="lazy"
-                  width="48"
-                  height="48"
-                  style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0;"
-                />
-              )}
-              <div>
-                <p class="text-sm font-semibold" style="color: var(--global-text-color);">
-                  {person.data.website ? (
-                    <a
-                      href={person.data.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style="color: var(--global-text-color); text-decoration: none;"
-                    >
-                      {person.data.name}
-                    </a>
-                  ) : (
-                    person.data.name
-                  )}
-                </p>
-                <p class="text-xs" style="color: var(--global-text-color-light);">
-                  {person.data.role}
-                </p>
+          {alumni.map((person) => {
+            const href = profileHref(person);
+            return (
+              <div class="alumni-row flex items-center gap-3">
+                {person.data.photo && (
+                  <img
+                    src={withBase(person.data.photo)}
+                    alt={person.data.name}
+                    loading="lazy"
+                    width="48"
+                    height="48"
+                    style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0;"
+                  />
+                )}
+                <div>
+                  <p class="person-name text-sm">
+                    {href ? (
+                      <a href={href}>{person.data.name}</a>
+                    ) : person.data.website ? (
+                      <a href={person.data.website} target="_blank" rel="noopener noreferrer">
+                        {person.data.name}
+                      </a>
+                    ) : (
+                      person.data.name
+                    )}
+                  </p>
+                  <p class="person-role">{person.data.role}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     )
@@ -163,6 +168,12 @@ const alumni = all
 </Page>
 
 <style>
+  h2,
+  .person-name,
+  .pub-badge {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+  }
+
   .person-card {
     padding: 1rem 0.5rem;
     border-radius: 10px;
@@ -176,25 +187,131 @@ const alumni = all
     transform: translateY(-4px);
   }
 
+  /* ── Avatar + publication badge ─────────────────────────────────────── */
+
+  .avatar-wrap {
+    position: relative;
+    width: 120px;
+    margin: 0 auto 0.75rem;
+  }
+
   .person-card img,
   .person-card .avatar-fallback {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
     transition:
       box-shadow 0.3s ease,
       transform 0.3s ease;
+  }
+
+  .person-card .avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--global-card-bg-color);
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-silver);
   }
 
   .person-card:hover img,
   .person-card:hover .avatar-fallback {
     box-shadow:
       0 0 0 3px var(--global-bg-color),
-      0 0 0 5px var(--global-theme-color);
+      0 0 0 5px var(--color-silver);
     transform: scale(1.03);
+  }
+
+  .pub-badge {
+    position: absolute;
+    right: 2px;
+    bottom: 2px;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 5px;
+    border-radius: 12px;
+    background: var(--global-bg-color);
+    border: 1px solid var(--color-silver);
+    color: var(--color-silver-dark);
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 22px;
+    font-variant-numeric: tabular-nums;
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease;
+  }
+
+  .person-card:hover .pub-badge {
+    background: var(--color-silver);
+    color: var(--global-bg-color);
+  }
+
+  /* ── Text ───────────────────────────────────────────────────────────── */
+
+  .person-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--global-text-color);
+  }
+
+  .person-name a {
+    color: inherit;
+    text-decoration: none;
+    background-image: linear-gradient(var(--color-silver), var(--color-silver));
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.25s ease;
+  }
+
+  .person-name a:hover {
+    background-size: 100% 1px;
+  }
+
+  .person-role {
+    margin-top: 0.15rem;
+    font-size: 0.75rem;
+    color: var(--global-text-color-light);
+  }
+
+  .person-desc {
+    margin-top: 0.35rem;
+    font-size: 0.72rem;
+    line-height: 1.5;
+    color: var(--color-silver-dark);
+  }
+
+  .social-mini {
+    font-size: 0.7rem;
+    color: var(--color-silver-dark);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .social-mini:hover {
+    color: var(--global-text-color);
+  }
+
+  .alumni-row {
+    padding: 0.4rem;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+  }
+
+  .alumni-row:hover {
+    background-color: var(--global-card-bg-color);
   }
 
   @media (prefers-reduced-motion: reduce) {
     .person-card,
     .person-card img,
-    .person-card .avatar-fallback {
+    .person-card .avatar-fallback,
+    .person-name a,
+    .pub-badge {
       transition: none;
     }
     .person-card:hover {

@@ -1,0 +1,537 @@
+---
+import { site } from '@config/site';
+import Page from '@layouts/Page.astro';
+import { withBase } from '@utils/base';
+import { parseBibtex } from '@utils/bibtex';
+import { publicationsByPerson } from '@utils/people';
+import { getCollection, render } from 'astro:content';
+
+import bibRaw from '../../data/papers.bib?raw';
+
+export async function getStaticPaths() {
+  const people = await getCollection('people');
+  return people
+    .filter((person) => !person.data.noPage)
+    .map((person) => ({
+      params: { slug: person.id },
+      props: { person },
+    }));
+}
+
+const { person } = Astro.props;
+const { Content } = await render(person);
+
+const entries = parseBibtex(bibRaw);
+const publications = publicationsByPerson(person.data.name, entries, person.data.aliases);
+
+// Group by year so the list reads as a timeline.
+const byYear = new Map<number, typeof publications>();
+for (const pub of publications) {
+  const bucket = byYear.get(pub.year);
+  if (bucket) bucket.push(pub);
+  else byYear.set(pub.year, [pub]);
+}
+const years = [...byYear.keys()].sort((a, b) => b - a);
+
+const initials = person.data.name
+  .split(/\s+/)
+  .map((part) => part[0])
+  .slice(0, 2)
+  .join('');
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: person.data.name,
+  jobTitle: person.data.role,
+  affiliation: { '@type': 'Organization', name: site.title },
+  ...(person.data.website ? { url: person.data.website } : {}),
+  ...(person.data.email ? { email: person.data.email } : {}),
+  ...(person.data.photo
+    ? { image: new URL(withBase(person.data.photo), site.url).toString() }
+    : {}),
+};
+---
+
+<Page
+  title={person.data.name}
+  description={person.data.description ?? `${person.data.role} at ${site.title}`}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </Fragment>
+
+  <nav aria-label="Breadcrumb" class="breadcrumb-nav">
+    <a href={`${site.base}/people/`} class="breadcrumb-link">← People</a>
+  </nav>
+
+  <!-- ═══ PROFILE HEADER ══════════════════════════════════════════════════ -->
+  <header class="profile-header" data-reveal>
+    <div class="profile-avatar">
+      {
+        person.data.photo ? (
+          <img
+            src={withBase(person.data.photo)}
+            alt={person.data.name}
+            width="160"
+            height="160"
+            loading="eager"
+          />
+        ) : (
+          <div class="avatar-fallback" aria-hidden="true">
+            {initials}
+          </div>
+        )
+      }
+    </div>
+
+    <div class="profile-meta">
+      <p class="profile-eyebrow">{person.data.group === 'alumni' ? 'Alumni' : 'Lab Member'}</p>
+      <h1 class="profile-name">{person.data.name}</h1>
+      <p class="profile-role">{person.data.role}</p>
+
+      {person.data.description && <p class="profile-desc">{person.data.description}</p>}
+
+      {
+        person.data.interests.length > 0 && (
+          <ul class="interest-row">
+            {person.data.interests.map((interest) => (
+              <li class="interest-chip">{interest}</li>
+            ))}
+          </ul>
+        )
+      }
+
+      <div class="profile-links">
+        {
+          person.data.website && (
+            <a href={person.data.website} target="_blank" rel="noopener noreferrer">
+              Website
+            </a>
+          )
+        }
+        {
+          person.data.scholar && (
+            <a
+              href={`https://scholar.google.com/citations?user=${person.data.scholar}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Google Scholar
+            </a>
+          )
+        }
+        {
+          person.data.github && (
+            <a
+              href={`https://github.com/${person.data.github}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub
+            </a>
+          )
+        }
+        {
+          person.data.orcid && (
+            <a
+              href={`https://orcid.org/${person.data.orcid}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              ORCID
+            </a>
+          )
+        }
+        {person.data.email && <a href={`mailto:${person.data.email}`}>Email</a>}
+      </div>
+    </div>
+
+    <!-- Publication count tile -->
+    {
+      publications.length > 0 && (
+        <div class="profile-stat" aria-label={`${publications.length} publications`}>
+          <span class="profile-stat-n">{publications.length}</span>
+          <span class="profile-stat-l">
+            {publications.length === 1 ? 'Publication' : 'Publications'}
+          </span>
+        </div>
+      )
+    }
+  </header>
+
+  <!-- ═══ BIO (markdown body of the person's .md file) ════════════════════ -->
+  <section class="profile-bio prose" data-reveal>
+    <Content />
+  </section>
+
+  <!-- ═══ PUBLICATIONS ════════════════════════════════════════════════════ -->
+  {
+    publications.length > 0 && (
+      <section class="profile-pubs" data-reveal>
+        <div class="pubs-header">
+          <h2>Publications</h2>
+          <div class="pubs-rule" />
+          <span class="pubs-count">{publications.length}</span>
+        </div>
+
+        {years.map((year) => (
+          <div class="year-block">
+            <h3 class="year-label">{year > 0 ? year : 'Undated'}</h3>
+            <ol class="year-list">
+              {byYear.get(year)!.map((pub) => (
+                <li class="pub-row">
+                  <a class="pub-row-title" href={`${site.base}/publications/${pub.entry.key}/`}>
+                    {pub.title}
+                  </a>
+                  <p class="pub-row-authors">
+                    {pub.authors.map((author, i) => (
+                      <>
+                        {author === person.data.name ? <strong>{author}</strong> : author}
+                        {i < pub.authors.length - 1 && ', '}
+                      </>
+                    ))}
+                  </p>
+                  {pub.venue && <p class="pub-row-venue">{pub.venue}</p>}
+                </li>
+              ))}
+            </ol>
+          </div>
+        ))}
+      </section>
+    )
+  }
+
+  {
+    publications.length === 0 && (
+      <p class="no-pubs">No publications matched this profile in the lab bibliography yet.</p>
+    )
+  }
+</Page>
+
+<style>
+  h1,
+  h2,
+  h3,
+  .profile-eyebrow,
+  .profile-stat-n,
+  .profile-stat-l,
+  .interest-chip,
+  .year-label {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+  }
+
+  .breadcrumb-nav {
+    margin-bottom: 1.5rem;
+  }
+
+  .breadcrumb-link {
+    font-size: 0.8rem;
+    color: var(--color-silver-dark);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .breadcrumb-link:hover {
+    color: var(--global-text-color);
+  }
+
+  /* ── Header ─────────────────────────────────────────────────────────── */
+
+  .profile-header {
+    display: grid;
+    grid-template-columns: 160px 1fr auto;
+    gap: 2.5rem;
+    align-items: start;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--global-divider-color);
+  }
+
+  @media (max-width: 760px) {
+    .profile-header {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      text-align: center;
+    }
+    .profile-avatar {
+      margin: 0 auto;
+    }
+    .profile-links,
+    .interest-row {
+      justify-content: center;
+    }
+  }
+
+  .profile-avatar img,
+  .avatar-fallback {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow:
+      0 0 0 1px var(--global-divider-color),
+      0 0 0 5px var(--global-bg-color),
+      0 0 0 6px var(--color-silver);
+  }
+
+  .avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--global-card-bg-color);
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: var(--color-silver);
+  }
+
+  .profile-eyebrow {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-silver-dark);
+    margin-bottom: 0.4rem;
+  }
+
+  .profile-name {
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin: 0 0 0.35rem;
+  }
+
+  .profile-role {
+    font-size: 0.95rem;
+    color: var(--color-silver);
+    margin-bottom: 0.75rem;
+  }
+
+  .profile-desc {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--global-text-color-light);
+    max-width: 60ch;
+    margin-bottom: 1rem;
+  }
+
+  .interest-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+  }
+
+  .interest-chip {
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--global-divider-color);
+    border-radius: 20px;
+    color: var(--color-silver-dark);
+  }
+
+  .profile-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.1rem;
+  }
+
+  .profile-links a {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--global-text-color);
+    text-decoration: none;
+    padding-bottom: 2px;
+    border-bottom: 1px solid var(--color-silver);
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .profile-links a:hover {
+    color: var(--color-silver);
+    border-color: var(--global-text-color);
+  }
+
+  /* ── Publication count tile ─────────────────────────────────────────── */
+
+  .profile-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.1rem;
+    padding-left: 2rem;
+    border-left: 1px solid var(--global-divider-color);
+  }
+
+  @media (max-width: 760px) {
+    .profile-stat {
+      align-items: center;
+      padding-left: 0;
+      border-left: none;
+      border-top: 1px solid var(--global-divider-color);
+      padding-top: 1rem;
+    }
+  }
+
+  .profile-stat-n {
+    font-size: 2.6rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, var(--global-text-color) 40%, var(--color-silver) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .profile-stat-l {
+    font-size: 0.58rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-silver-dark);
+  }
+
+  /* ── Bio ────────────────────────────────────────────────────────────── */
+
+  .profile-bio {
+    padding: 2rem 0;
+    font-size: 0.95rem;
+    line-height: 1.75;
+    max-width: 72ch;
+  }
+
+  .profile-bio:empty {
+    display: none;
+  }
+
+  /* ── Publications ───────────────────────────────────────────────────── */
+
+  .pubs-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .pubs-header h2 {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-silver-dark);
+    margin: 0;
+  }
+
+  .pubs-rule {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--color-silver-dark), transparent);
+  }
+
+  .pubs-count {
+    font-size: 0.7rem;
+    color: var(--color-silver-dark);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .year-block {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  @media (max-width: 640px) {
+    .year-block {
+      grid-template-columns: 1fr;
+      gap: 0.4rem;
+    }
+  }
+
+  .year-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-silver);
+    margin: 1rem 0 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .year-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .pub-row {
+    padding: 0.9rem 0.75rem 0.9rem 1rem;
+    border-top: 1px solid var(--global-divider-color);
+    border-left: 2px solid transparent;
+    transition:
+      border-left-color 0.2s ease,
+      background-color 0.2s ease,
+      padding-left 0.2s ease;
+  }
+
+  .pub-row:hover {
+    border-left-color: var(--color-silver);
+    background-color: var(--global-card-bg-color);
+    padding-left: 1.25rem;
+  }
+
+  .pub-row-title {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.45;
+    color: var(--global-text-color);
+    text-decoration: none;
+    margin-bottom: 0.2rem;
+    transition: color 0.2s ease;
+  }
+
+  .pub-row-title:hover {
+    color: var(--color-silver);
+  }
+
+  .pub-row-authors {
+    font-size: 0.78rem;
+    color: var(--global-text-color-light);
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .pub-row-authors strong {
+    color: var(--global-text-color);
+    font-weight: 600;
+  }
+
+  .pub-row-venue {
+    font-size: 0.75rem;
+    font-style: italic;
+    color: var(--color-silver-dark);
+    margin: 0.15rem 0 0;
+  }
+
+  .no-pubs {
+    padding: 2rem 0;
+    color: var(--color-silver-dark);
+    font-size: 0.9rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pub-row,
+    .pub-row-title,
+    .profile-links a {
+      transition: none;
+    }
+  }
+</style>

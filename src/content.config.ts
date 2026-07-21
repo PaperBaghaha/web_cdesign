@@ -129,6 +129,14 @@ const people = defineCollection({
     importance: z.number().optional().default(999),
     /** 'current' | 'alumni' */
     group: z.enum(['current', 'alumni']).optional().default('current'),
+    /** Email address, shown on the profile page. */
+    email: z.string().email().optional(),
+    /** Alternate name spellings used in papers.bib (e.g. a maiden name). */
+    aliases: z.array(z.string()).optional().default([]),
+    /** Research interests, shown as chips on the profile page. */
+    interests: z.array(z.string()).optional().default([]),
+    /** Hide the auto-generated individual profile page for this person. */
+    noPage: z.boolean().optional().default(false),
   }),
 });
 
