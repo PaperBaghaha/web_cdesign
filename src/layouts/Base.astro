@@ -1,6 +1,7 @@
 ---
 import '@styles/global.css';
 
+import Assistant from '@components/assistant/Assistant.astro';
 import Footer from '@components/Footer.astro';
 import Navbar from '@components/Navbar.astro';
 import SearchTrigger from '@components/search/SearchTrigger.astro';
@@ -281,6 +282,9 @@ const personJsonLd = isHome ? JSON.stringify({
         </>
       )
     }
+
+    <!-- Floating site assistant (client-side, reuses Pagefind search) -->
+    {site.features.assistant && <Assistant transition:persist />}
 
     <!-- Back to top button -->
     <button id="back-to-top" aria-label="Back to top" title="Back to top">
