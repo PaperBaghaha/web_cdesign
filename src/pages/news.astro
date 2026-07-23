@@ -85,24 +85,26 @@ const articleHref = (item: (typeof announcements)[number]) =>
 
   .news-item {
     display: flex;
-    gap: 1.25rem;
-    padding: 1.4rem 0;
+    align-items: center;
+    gap: 2.75rem;
+    padding: 2.75rem 0;
     border-bottom: 1px solid var(--global-divider-color);
   }
 
   .news-thumb {
-    flex: 0 0 180px;
+    flex: 0 0 42%;
+    max-width: 42%;
     display: block;
     overflow: hidden;
-    border-radius: 8px;
+    border-radius: 10px;
   }
 
   .news-thumb img {
-    width: 180px;
-    height: 120px;
+    width: 100%;
+    height: 260px;
     object-fit: cover;
     display: block;
-    transition: transform 0.25s ease;
+    transition: transform 0.3s ease;
   }
 
   .news-thumb:hover img {
@@ -115,10 +117,10 @@ const articleHref = (item: (typeof announcements)[number]) =>
   }
 
   .news-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    line-height: 1.35;
-    margin: 0 0 0.35rem;
+    font-size: 1.85rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 0.6rem;
     font-family: var(--font-sans);
   }
 
@@ -129,39 +131,47 @@ const articleHref = (item: (typeof announcements)[number]) =>
 
   .news-title a:hover {
     color: var(--global-theme-color);
-    text-decoration: underline;
   }
 
   .news-date {
-    font-size: 0.8rem;
+    font-size: 0.95rem;
+    font-style: italic;
     color: var(--global-text-color-light);
-    margin: 0 0 0.5rem;
+    margin: 0 0 0.9rem;
   }
 
   .news-excerpt {
-    font-size: 0.9rem;
-    line-height: 1.5;
+    font-size: 1.05rem;
+    line-height: 1.6;
     color: var(--global-text-color-light);
     margin: 0;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
 
-  @media (max-width: 576px) {
+  @media (max-width: 768px) {
     .news-item {
       flex-direction: column;
-      gap: 0.75rem;
+      align-items: stretch;
+      gap: 1rem;
+      padding: 1.75rem 0;
     }
 
     .news-thumb,
     .news-thumb img {
       width: 100%;
+      max-width: 100%;
+      flex-basis: auto;
     }
 
     .news-thumb img {
-      height: 180px;
+      height: 220px;
+    }
+
+    .news-title {
+      font-size: 1.4rem;
     }
   }
 </style>
