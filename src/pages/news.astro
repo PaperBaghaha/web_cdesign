@@ -31,6 +31,22 @@ const articleHref = (item: (typeof announcements)[number]) =>
         Updates, awards, and announcements from the lab.
       </p>
     </header>
+    {
+      announcements.length > 0 && (
+        <div class="news-search">
+          <input
+            type="text"
+            id="news-search-input"
+            placeholder="Search news by title or keyword…"
+            aria-label="Search news"
+            autocomplete="off"
+          />
+          <p id="news-search-empty" class="news-search-empty" hidden>
+            No news matches your search.
+          </p>
+        </div>
+      )
+    }
     <article>
       {
         announcements.length === 0 ? (
@@ -64,9 +80,62 @@ const articleHref = (item: (typeof announcements)[number]) =>
   </div>
 </Page>
 
+<script>
+  function initNewsSearch() {
+    const input = document.getElementById('news-search-input') as HTMLInputElement | null;
+    const empty = document.getElementById('news-search-empty') as HTMLElement | null;
+    if (!input) return;
+
+    const items = Array.from(document.querySelectorAll<HTMLElement>('.news-item'));
+
+    function apply() {
+      const q = input!.value.trim().toLowerCase();
+      let anyVisible = false;
+
+      items.forEach((item) => {
+        const match = q === '' || (item.textContent ?? '').toLowerCase().includes(q);
+        item.style.display = match ? '' : 'none';
+        if (match) anyVisible = true;
+      });
+
+      if (empty) empty.hidden = anyVisible;
+    }
+
+    input.addEventListener('input', apply);
+  }
+
+  document.addEventListener('astro:page-load', initNewsSearch);
+</script>
+
 <style>
   .post-header {
     margin-bottom: 1.5rem;
+  }
+
+  .news-search {
+    margin-bottom: 2rem;
+  }
+
+  #news-search-input {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--global-divider-color);
+    background: var(--global-bg-color);
+    color: var(--global-text-color);
+    transition: border-color 0.15s ease;
+  }
+
+  #news-search-input:focus {
+    outline: none;
+    border-color: var(--global-theme-color);
+  }
+
+  .news-search-empty {
+    margin: 0.75rem 0 0;
+    color: var(--global-text-color-light);
+    font-style: italic;
   }
 
   .post-title {
