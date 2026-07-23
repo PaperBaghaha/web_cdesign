@@ -36,8 +36,11 @@ function matchingBrace(src: string, from: number): number {
 export function parseBibtex(src: string): BibEntry[] {
   const entries: BibEntry[] = [];
 
-  // Remove line comments
-  const cleaned = src.replace(/%[^\n]*/g, '');
+  // Remove whole-line comments (a % at the start of a line, after optional
+  // whitespace). We deliberately do NOT strip mid-line %, because it appears
+  // literally inside field values (e.g. "80% reduction") — stripping it there
+  // would delete the rest of the line, including the entry's closing braces.
+  const cleaned = src.replace(/^[ \t]*%.*$/gm, '');
 
   // Find all @type{ positions
   const entryPattern = /@(\w+)\s*\{/g;
@@ -136,6 +139,23 @@ export function getAuthors(entry: BibEntry): string {
     .join(', ');
 }
 
+/** Get the abbreviation badge (venue short name), or '' if unset. */
+export function getAbbr(entry: BibEntry): string {
+  return entry.fields.abbr ?? '';
+}
+
+/**
+ * Get the research-topic slugs a publication is tagged with.
+ * Reads the comma-separated `topics` field; each slug should match a
+ * projects-collection entry id (e.g. `ar-vr-mr`). Returns [] when unset.
+ */
+export function getTopics(entry: BibEntry): string[] {
+  return (entry.fields.topics ?? '')
+    .split(',')
+    .map((t) => t.trim())
+    .filter(Boolean);
+}
+
 /** Get the venue (journal, booktitle, publisher, howpublished). */
 export function getVenue(entry: BibEntry): string {
   return (
@@ -185,6 +205,7 @@ export const BIBTEX_INTERNAL_FIELDS = new Set([
   'selected',
   'slides',
   'supp',
+  'topics',
   'video',
   'website',
 ]);

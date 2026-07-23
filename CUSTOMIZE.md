@@ -262,6 +262,7 @@ Edit `src/data/papers.bib`. Standard BibTeX format with extra as-folio fields:
   annotation  = {Short note shown below authors as italic tooltip.},
   additional_info = {Workshop version also presented at ICML.},
   preview     = {paper-thumb.jpg},    % relative to publications.previewDir
+  topics      = {ar-vr-mr, ai-computer-vision}, % research-area slugs (see below)
   award       = {Best Paper Award},
   award_name  = {Best Paper},         % short badge label (defaults to award text)
   bibtex_show = {true},               % show Bib button (copies clean BibTeX)
@@ -288,6 +289,30 @@ Edit `src/data/papers.bib`. Standard BibTeX format with extra as-folio fields:
 ```
 
 The publication page groups entries by year, newest first. BibTeX is parsed at build time — no runtime dependency.
+
+### Filters and research topics
+
+Above the publication list, three dropdown filters let visitors narrow the list. They
+combine (AND) with each other and with the search box, and a **Clear filters** button
+resets them:
+
+- **Year** — every distinct `year` value, newest first.
+- **Venue** — every distinct `abbr` value, alphabetical. Entries without an `abbr` are
+  excluded from this dropdown but still appear when the filter is set to "All venues".
+- **Topic** — research areas a paper is tagged with. Only topics used by at least one
+  publication appear.
+
+Tag a publication with the `topics` field — a comma-separated list of **project slugs**:
+
+```bibtex
+topics = {ar-vr-mr, ai-computer-vision},
+```
+
+Each slug must match the id (filename without extension) of an entry in the `projects`
+content collection (`src/content/projects/`). Tagged papers render clickable topic chips
+that link to the matching project page (`/projects/<slug>/`), and the chip label comes
+from that project's `title`. Slugs that don't match a project are ignored. `topics` is a
+display-only field, so it's stripped from the copyable BibTeX citation.
 
 ### Author highlighting and asset paths
 

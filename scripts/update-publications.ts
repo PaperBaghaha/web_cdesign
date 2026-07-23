@@ -71,6 +71,7 @@ const CURATED_FIELDS = new Set([
   'selected',
   'slides',
   'supp',
+  'topics',
   'video',
   'website',
 ]);
@@ -112,6 +113,7 @@ const FIELD_ORDER = [
   'annotation',
   'additional_info',
   'google_scholar_id',
+  'topics',
   'selected',
 ];
 

@@ -1,13 +1,16 @@
+import type { CSSProperties } from 'react';
 import { useMemo, useState } from 'react';
 
 import type { CoauthorMap } from '../../utils/authors';
 import { linkAuthors } from '../../utils/authors';
 import type { BibEntry } from '../../utils/bibtex';
 import {
+  getAbbr,
   getAuthors,
   getBoolField,
   getCleanBibtex,
   getTitle,
+  getTopics,
   getVenue,
   getYear,
 } from '../../utils/bibtex';
@@ -28,6 +31,12 @@ interface BadgeConfig {
   dimensions: boolean;
   googleScholar: boolean;
   inspirehep: boolean;
+}
+
+/** A research topic (project) that publications can be tagged with. */
+interface Topic {
+  slug: string;
+  title: string;
 }
 
 interface Props {
@@ -52,7 +61,19 @@ interface Props {
   scholarUserId?: string;
   /** Badge visibility flags from site.publications.badges. */
   badges?: BadgeConfig;
+  /** Research topics (projects) used for the topic filter and per-entry chips. */
+  topics?: Topic[];
 }
+
+const filterSelectStyle: CSSProperties = {
+  fontSize: '0.8125rem',
+  padding: '0.3rem 0.5rem',
+  border: '1px solid var(--global-divider-color)',
+  borderRadius: '6px',
+  color: 'var(--global-text-color)',
+  backgroundColor: 'transparent',
+  cursor: 'pointer',
+};
 
 function entryUrl(entry: BibEntry): string {
   if (entry.fields.html) return entry.fields.html;
@@ -73,6 +94,7 @@ function PublicationEntry({
   citations = {},
   scholarUserId = '',
   badges,
+  topicMap = {},
 }: {
   entry: BibEntry;
   maxAuthorLimit?: number;
@@ -86,6 +108,7 @@ function PublicationEntry({
   citations?: Record<string, number>;
   scholarUserId?: string;
   badges?: BadgeConfig;
+  topicMap?: Record<string, string>;
 }) {
   const [abstractOpen, setAbstractOpen] = useState(false);
   const [bibtexOpen, setBibtexOpen] = useState(false);
@@ -153,6 +176,8 @@ function PublicationEntry({
   const posterHref = poster.startsWith('http') ? poster : `${pdfDir}${poster}`;
 
   const scholarCount = googleScholarId ? citations[googleScholarId] : undefined;
+
+  const entryTopics = getTopics(entry);
 
   return (
     <li>
@@ -232,6 +257,38 @@ function PublicationEntry({
               {venue && year ? ', ' : ''}
               {year || ''}
               {additionalInfo && <span style={{ marginLeft: '0.25rem' }}> · {additionalInfo}</span>}
+            </div>
+          )}
+
+          {/* Research-topic chips — link back to the project pages */}
+          {entryTopics.length > 0 && detailBase !== undefined && (
+            <div
+              className="topics"
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '0.4rem',
+                margin: '0.4rem 0 0.1rem',
+              }}
+            >
+              {entryTopics.map((slug) => (
+                <a
+                  key={slug}
+                  href={`${detailBase}/projects/${slug}/`}
+                  className="topic-chip"
+                  style={{
+                    fontSize: '0.75rem',
+                    padding: '0.1rem 0.5rem',
+                    borderRadius: '999px',
+                    border: '1px solid var(--global-divider-color)',
+                    color: 'var(--global-text-color-light)',
+                    textDecoration: 'none',
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {topicMap[slug] ?? slug}
+                </a>
+              ))}
             </div>
           )}
 
@@ -459,20 +516,53 @@ export function BibSearch({
   citations = {},
   scholarUserId = '',
   badges,
+  topics = [],
 }: Props) {
   const [query, setQuery] = useState('');
+  const [yearFilter, setYearFilter] = useState('');
+  const [abbrFilter, setAbbrFilter] = useState('');
+  const [topicFilter, setTopicFilter] = useState('');
+
+  // slug → title, for rendering topic chips and the filter dropdown
+  const topicMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const t of topics) map[t.slug] = t.title;
+    return map;
+  }, [topics]);
+
+  // Distinct years present in the data, newest first
+  const yearOptions = useMemo(
+    () => [...new Set(entries.map(getYear).filter((y) => y > 0))].sort((a, b) => b - a),
+    [entries],
+  );
+
+  // Distinct abbreviations present in the data, alphabetical
+  const abbrOptions = useMemo(
+    () => [...new Set(entries.map(getAbbr).filter(Boolean))].sort((a, b) => a.localeCompare(b)),
+    [entries],
+  );
+
+  // Only offer topics that actually tag at least one publication
+  const topicOptions = useMemo(() => {
+    const used = new Set(entries.flatMap(getTopics));
+    return topics.filter((t) => used.has(t.slug));
+  }, [entries, topics]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return entries;
-    const words = q.split(/\s+/).filter(Boolean);
+    const words = q ? q.split(/\s+/).filter(Boolean) : [];
+    const yearNum = yearFilter ? parseInt(yearFilter, 10) : null;
     return entries.filter((entry) => {
+      if (yearNum !== null && getYear(entry) !== yearNum) return false;
+      if (abbrFilter && getAbbr(entry) !== abbrFilter) return false;
+      if (topicFilter && !getTopics(entry).includes(topicFilter)) return false;
+      if (words.length === 0) return true;
       const haystack = [getTitle(entry), getAuthors(entry), getVenue(entry), String(getYear(entry))]
         .join(' ')
         .toLowerCase();
       return words.every((word) => haystack.includes(word));
     });
-  }, [entries, query]);
+  }, [entries, query, yearFilter, abbrFilter, topicFilter]);
 
   const byYear = useMemo(() => {
     const map = new Map<number, BibEntry[]>();
@@ -507,9 +597,92 @@ export function BibSearch({
           }}
           aria-label="Search publications"
         />
+
+        {/* Dropdown filters — each only appears when there's something to pick */}
+        {(yearOptions.length > 1 || abbrOptions.length > 0 || topicOptions.length > 0) && (
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '0.5rem',
+              marginTop: '0.5rem',
+              alignItems: 'center',
+            }}
+          >
+            {yearOptions.length > 1 && (
+              <select
+                value={yearFilter}
+                onChange={(e) => setYearFilter(e.target.value)}
+                style={filterSelectStyle}
+                aria-label="Filter by year"
+              >
+                <option value="">All years</option>
+                {yearOptions.map((y) => (
+                  <option key={y} value={String(y)}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {abbrOptions.length > 0 && (
+              <select
+                value={abbrFilter}
+                onChange={(e) => setAbbrFilter(e.target.value)}
+                style={filterSelectStyle}
+                aria-label="Filter by abbreviation"
+              >
+                <option value="">All venues</option>
+                {abbrOptions.map((a) => (
+                  <option key={a} value={a}>
+                    {a}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {topicOptions.length > 0 && (
+              <select
+                value={topicFilter}
+                onChange={(e) => setTopicFilter(e.target.value)}
+                style={filterSelectStyle}
+                aria-label="Filter by research topic"
+              >
+                <option value="">All topics</option>
+                {topicOptions.map((t) => (
+                  <option key={t.slug} value={t.slug}>
+                    {t.title}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {(yearFilter || abbrFilter || topicFilter) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setYearFilter('');
+                  setAbbrFilter('');
+                  setTopicFilter('');
+                }}
+                style={{
+                  fontSize: '0.8125rem',
+                  padding: '0.3rem 0.6rem',
+                  border: 'none',
+                  background: 'none',
+                  color: 'var(--global-theme-color)',
+                  cursor: 'pointer',
+                }}
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
+        )}
+
         <p
           style={{
-            marginTop: '0.375rem',
+            marginTop: '0.5rem',
             fontSize: '0.8125rem',
             color: 'var(--global-text-color-light)',
           }}
@@ -543,6 +716,7 @@ export function BibSearch({
                   citations={citations}
                   scholarUserId={scholarUserId}
                   badges={badges}
+                  topicMap={topicMap}
                 />
               ))}
             </ol>

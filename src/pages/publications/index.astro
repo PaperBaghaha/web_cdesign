@@ -5,6 +5,7 @@ import Page from '@layouts/Page.astro';
 import type { CoauthorMap } from '@utils/authors';
 import { withBase } from '@utils/base';
 import { getAuthors, getTitle, getVenue, parseBibtex } from '@utils/bibtex';
+import { getCollection } from 'astro:content';
 import yaml from 'js-yaml';
 
 import citationsRaw from '../../data/citations.yml?raw';
@@ -19,6 +20,11 @@ const entries = parseBibtex(bibRaw).sort((a, b) => {
 
 const coauthors = (yaml.load(coauthorsRaw) ?? {}) as CoauthorMap;
 const citations = (yaml.load(citationsRaw) ?? {}) as Record<string, number>;
+
+// Research-topic map: publication `topics` slugs link back to project pages
+const topics = (await getCollection('projects'))
+  .sort((a, b) => (a.data.importance ?? 999) - (b.data.importance ?? 999))
+  .map((project) => ({ slug: project.id, title: project.data.title }));
 
 const showAltmetric = site.publications.badges.altmetric;
 const showDimensions = site.publications.badges.dimensions;
@@ -85,6 +91,7 @@ const badges = site.publications.badges;
         citations={citations}
         scholarUserId={scholarUserId}
         badges={badges}
+        topics={topics}
       />
     </article>
   </div>
