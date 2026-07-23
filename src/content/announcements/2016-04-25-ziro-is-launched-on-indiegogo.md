@@ -1,0 +1,17 @@
+---
+date: 2016-04-25
+title: 'Ziro Launch Party @ Purdue GateWood Attrium'
+slug: 'ziro-is-launched-on-indiegogo'
+source: 'https://engineering.purdue.edu/cdesign/wp/ziro-is-launched-on-indiegogo/'
+image: '2016-04-25-ziro-is-launched-on-indiegogo.jpg'
+excerpt: 'We had a successful event for announcing the start of the Indiegogo campaign for Ziro on April 18th. The event took place in Gatewood Wing of Purdue Mechanical Engineering building and it was a major success with more than 350 people attended. The event has introduced Ziro to the kids and robotics enthusiasts in Greater'
+---
+
+<p>We had a successful event for announcing the start of the Indiegogo campaign for Ziro on April 18th. The event took place in Gatewood Wing of Purdue Mechanical Engineering building and it was a major success with more than 350 people attended. The event has introduced Ziro to the kids and robotics enthusiasts in Greater Lafayette area. Â <a href="https://www.indiegogo.com/projects/ziro-world-s-first-hand-controlled-robotics-kit#/" target="_blank">The campaign</a> has reached its goal in its second day.</p>
+<p><img loading="lazy" class="alignleft size-large wp-image-4434" src="/assets/img/news/content/16-1024x603.png" alt="16" width="550" height="324" /></p>
+<p><img loading="lazy" class="  wp-image-4419 alignleft" src="/assets/img/news/content/1.png" alt="1" width="438" height="550" /> <img loading="lazy" class="alignleft size-large wp-image-4420" src="/assets/img/news/content/2.png" alt="2" width="550" height="834" /> <img loading="lazy" class=" size-large wp-image-4421 alignright" src="/assets/img/news/content/3.png" alt="3" width="481" height="859" /> <img loading="lazy" class="alignleft size-large wp-image-4422" src="/assets/img/news/content/4-1024x731.png" alt="4" width="550" height="393" /> <img loading="lazy" class=" size-large wp-image-4423 alignleft" src="/assets/img/news/content/5.png" alt="5" width="550" height="825" /> <img loading="lazy" class=" size-large wp-image-4424 alignright" src="/assets/img/news/content/6.png" alt="6" width="550" height="839" /> <img loading="lazy" class=" size-large wp-image-4425 alignleft" src="/assets/img/news/content/7.png" alt="7" width="550" height="719" /> <img loading="lazy" class=" size-large wp-image-4426 alignright" src="/assets/img/news/content/8-1024x679.png" alt="8" width="550" height="365" /> <img loading="lazy" class=" size-large wp-image-4427 alignleft" src="/assets/img/news/content/9-1024x784.png" alt="9" width="550" height="421" /> <img loading="lazy" class=" size-large wp-image-4428 alignright" src="/assets/img/news/content/10.png" alt="10" width="550" height="701" /> <img loading="lazy" class=" size-large wp-image-4429 alignleft" src="/assets/img/news/content/11-1024x637.png" alt="11" width="550" height="342" /> <img loading="lazy" class=" size-large wp-image-4430 alignright" src="/assets/img/news/content/12.png" alt="12" width="519" height="854" /></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><img loading="lazy" class=" size-large wp-image-4431 alignleft" src="/assets/img/news/content/13.png" alt="13" width="550" height="787" /> <img loading="lazy" class=" size-large wp-image-4432 alignleft" src="/assets/img/news/content/14.png" alt="14" width="550" height="450" /> <img loading="lazy" class=" size-large wp-image-4433 alignright" src="/assets/img/news/content/15.png" alt="15" width="550" height="767" /><br />
+<img loading="lazy" class=" size-large wp-image-4435 alignleft" src="/assets/img/news/content/17.png" alt="17" width="550" height="750" /></p>

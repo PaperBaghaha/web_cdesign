@@ -172,7 +172,13 @@ const renderedAnnouncements = await Promise.all(
               <tr class="news-row">
                 <td class="news-date">{formatDate(item.data.date)}</td>
                 <td class="news-body">
-                  <Content />
+                  {item.data.title ? (
+                    <a href={`${site.base}/news/${item.data.slug ?? item.id}/`}>
+                      {item.data.title}
+                    </a>
+                  ) : (
+                    <Content />
+                  )}
                 </td>
               </tr>
             ))}

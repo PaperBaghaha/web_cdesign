@@ -1,0 +1,48 @@
+---
+date: 2017-05-09
+title: 'Study Researches â€˜Gorilla-Armâ€™ Fatigue in Mid-Air Computer Usage'
+slug: 'study-researches-gorilla-arm-fatigue-in-mid-air-computer-usage'
+source: 'https://engineering.purdue.edu/cdesign/wp/study-researches-gorilla-arm-fatigue-in-mid-air-computer-usage/'
+image: '2017-05-09-study-researches-gorilla-arm-fatigue-in-mid-air-co.jpg'
+excerpt: 'Arm fatigue accumulates during a prolonged use of mid-air interfaces such as Oculus Rift. (Purdue University Photo/Brian Huchel) WEST LAFAYETTE, Ind. â€” Researchers at Purdue Universityâ€™s C Design Lab are studying arm and muscle fatigue connected to advancements in the use of hand gestures for mid-air computer interaction. Computer interaction improvements have included the expanding'
+---
+
+<div id="article-photo" class="flex-item">
+<div class="inner-content"><img class="banner flex-photo aligncenter" src="https://news.uns.purdue.edu/images/2017/ramani-armsLO.jpg" alt="Ramani arms" /></div>
+</div>
+<div id="sidebar" class="flex-item">
+<div class="inner-content">
+<p>Arm fatigue accumulates during a prolonged use of mid-air interfaces such as Oculus Rift. (Purdue University Photo/Brian Huchel)</p>
+<p>WEST LAFAYETTE, Ind. â€” Researchers at Purdue Universityâ€™s <a href="https://engineering.purdue.edu/cdesign/wp/">C Design Lab</a> are studying arm and muscle fatigue connected to advancements in the use of hand gestures for mid-air computer interaction.</p>
+</div>
+</div>
+<p class="FORMAT-BODY">Computer interaction improvements have included the expanding use of natural motions and gestures to control floating graphical user interfaces. As a result, fatigue from prolonged use of the motions and gestures has become an issue.</p>
+<p class="FORMAT-BODY">Karthik Ramani, the Donald W. Feddersen Professor in the School of Mechanical Engineering, is part of a <a href="https://engineering.purdue.edu/cdesign/wp/modeling-cumulative-arm-fatigue/">study</a> to evaluate and quantify arm fatigue in a simplified framework compared to current methods.</p>
+<p class="FORMAT-BODY">â€œIn previous years, all the computer interaction technologies we had included something to support our limbs,â€ Ramani said. â€œBut with newer forms of interaction, there is no support. The question now is what the guidelines are to design new interfaces and interaction for such settings.â€</p>
+<p class="FORMAT-BODY">Technology has created mid-air interaction advancements in gaming, augmented and virtual reality applications and the use of mobile technologies using hands.</p>
+<p class="FORMAT-BODY">â€œPhysical ergonomics is an important design factor for mid-air interaction,â€ Ramani said. â€œIn particular, arm fatigue â€“ the so-called â€˜gorilla arm syndromeâ€™ â€“ is known to negatively impact user experience and hamper prolonged use of mid-air interfaces.â€</p>
+<div class="imageContainer right useCaption"><img src="https://news.uns.purdue.edu/images/2017/ramani-zonesLO.jpg" alt="Ramani zones" /></div>
+<div class="imageContainer right useCaption"><span class="caption">This image shows mid-air pointing tasks where seven circular targets are arranged on a virtual plane in different interaction zones. (Purdue University/Karthik Ramani) (Purdue University Photo/Brian Huchel)<a href="https://news.uns.purdue.edu/images/2017/ramani-zones.jpg" target="_blank">Download image</a></span></div>
+<div class="imageContainer right useCaption"></div>
+<p class="FORMAT-BODY">Results of the study will be presented Tuesday (May 9) at the Association for Computing Machinery Conference on Human Factors in Computing SystemsÂ in Denver. The event is one in a series of prestigious academic conferences in the field ofÂ humanâ€“computer interactionÂ and one of the top conferences in computer science.Â It is hosted byÂ ACMÂ SIGCHI, theÂ special interest groupÂ on computerâ€“human interaction.</p>
+<p class="FORMAT-BODY">Ramani, who also has a courtesy appointment in the School of Electrical and Computer Engineering, is joined in the research by Sujin Jang, a doctoral student in the School of Mechanical Engineering, and Satyajit Ambike, an assistant professor in the Department of Health and Kinesiology, as well as Wolfgang Stuerzlinger, a professor in the School of Interactive Arts and Technology at Simon Fraser University, Vancouver, Canada.</p>
+<p class="FORMAT-BODY">The study looked at the issue of human-computer interaction in two ways: Determining an individualâ€™s arm strength and estimating cumulative subjective fatigue levels.</p>
+<p class="FORMAT-BODY">Ramani said current methods to examine strength are expensive and invasive and can leave out considerations for rest. To simplify the issue, the study opted for inexpensive depth cameras, which are used in popular home video game systems to sense body motion and hand motion.</p>
+<p class="FORMAT-BODY">According to Jang, 24 participants were asked to grasp a dumbbell (5-pound for 20 males and 3-pound for four females) and hold their arm out horizontally for as long as they could. The camera sensors measured what their hands and arms are doing.</p>
+<p class="FORMAT-BODY">Using shoulder torque and endurance time, researchers were able to determine arm strength with an average error of 8.4 percent, slightly higher than the 6.2 percent recorded by current, higher-priced methods. That difference is negligible given the latterâ€™s accessibility and price tags of tens of thousands of dollars.</p>
+<p class="FORMAT-BODY">â€œWith a simple depth camera and a dumbbell, we are able to do as good measurements as the other methods,â€ Ramani said.</p>
+<p class="FORMAT-BODY">In determining cumulative subjective fatigue, the study once again looked to improve current methods, which usually register an error rate of 35 percent.</p>
+<p class="FORMAT-BODY">Jang said 24 subjects were shown targets on screen and asked to touch the targets as many times as possible with good accuracy for four one-minute segments, with random rest durations of 5-20 seconds between each segment. The screens were placed at shoulder- and waist-level heights for the experiment, and depth cameras were used to examine the bodyâ€™s skeleton.</p>
+<p class="FORMAT-BODY">He pointed out the researchers utilized a biomechanical model that includes the idea of a rest period into their estimate of the subjectâ€™s fatigue. The status of the muscle as it transitioned from rest to activation to fatigue also was considered in estimating the subjectâ€™s fatigue.</p>
+<p class="FORMAT-BODY">In the end, Ramani said the study was able to estimate the cumulating subjective fatigue at an improved 15 percent error rate over traditional methods.</p>
+<p class="FORMAT-BODY">According to Stuerzlinger, an expert on 3-D user interfaces, the â€œgorilla arm syndromeâ€ is already an issue with vertical touchscreens, making it a problem even beyond augmented and virtual reality systems.</p>
+<p class="FORMAT-BODY">â€œThe results of our work enable user interface designers to predict how fatiguing a specific user interface is, even before a new design is built/realized, which enables the designers to make better decisions around new, proposed 3-D user interfaces,â€ he said. â€œThis, in turn, will accelerate and lead to the development of better user interface solutions for virtual and augmented reality systems.â€</p>
+<p class="FORMAT-BODY">For Ambike, the studyâ€™s method of measuring strength and fatigue could have far-reaching implications for the aging population.</p>
+<p class="FORMAT-BODY">â€œOur inexpensive methods will potentially translate to establishing the relation between fatigue/strength and health, as well as into continuous monitoring of fatigue levels in at-risk populations,â€ he said. â€œIn this way, this technology promises to have a significant clinical impact.â€</p>
+<p class="FORMAT-BODY">The C Design lab will present two other papers at the conference: One in computational fabrication (<a href="https://engineering.purdue.edu/cdesign/wp/wirefab-mix-dimension-modeling-and-fabrication-for-3d-mesh-models/">https://engineering.purdue.edu/cdesign/wp/wirefab-mix-dimension-modeling-and-fabrication-for-3d-mesh-models/</a>) and a second in collaborative design ideation (<a href="https://engineering.purdue.edu/cdesign/wp/co-3deator-a-team-first-collaborative-3d-design-ideation-tool/">https://engineering.purdue.edu/cdesign/wp/co-3deator-a-team-first-collaborative-3d-design-ideation-tool/</a>).</p>
+<p class="FORMAT-WRITER"><strong>Writer:</strong> Brian L. Huchel, 765-494-2084, <a href="mailto:bhuchel@purdue.edu">bhuchel@purdue.edu</a></p>
+<p class="FORMAT-WRITER"><strong>Sources:</strong> Karthik Ramani, 765-494-5725, <a href="mailto:ramani@purdue.edu">ramani@purdue.edu</a></p>
+<p class="FORMAT-WRITER">Sujin Jang, <a href="mailto:jang64@purdue.edu">jang64@purdue.edu</a></p>
+<p class="FORMAT-WRITER">Satyajit Ambike, 765-496-0567, <a href="mailto:sambike@purdue.edu">sambike@purdue.edu</a></p>
+<p class="FORMAT-WRITER">Wolfgang Stuerzlinger, -778-782-7474, Â <a href="mailto:w.s@sfu.ca">w.s@sfu.ca</a></p>
+<p class="FORMAT-WRITER"><b>Note to Journalists:</b> Purdue researchers are scheduled to present â€œModeling Cumulative Arm Fatigue in Mid-Air Interaction based on Perceived Exertion and Kinetics of Arm Motionâ€ at 4:30 p.m. PST Tuesday (May 9) at the Association for Computing Machineryâ€™s Human Factors in Computing Systems Conference in Denver, Colorado.</p>

@@ -1,7 +1,8 @@
 ---
 import { site } from '@config/site';
 import Page from '@layouts/Page.astro';
-import { getCollection, render } from 'astro:content';
+import { withBase } from '@utils/base';
+import { getCollection } from 'astro:content';
 
 const announcements = (await getCollection('announcements'))
   .filter((e) => !e.data.hidden)
@@ -10,12 +11,16 @@ const announcements = (await getCollection('announcements'))
     return b.data.date.getTime() - a.data.date.getTime();
   });
 
-const rendered = await Promise.all(
-  announcements.map(async (item) => ({ item, rendered: await render(item) })),
-);
-
 const formatDate = (d: Date) =>
   d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+
+/** Resolve a bare filename against /assets/img/news/, or pass a full URL through. */
+const imageSrc = (image: string) =>
+  image.startsWith('http') ? image : withBase(`/assets/img/news/${image}`);
+
+/** Internal article page for an announcement. */
+const articleHref = (item: (typeof announcements)[number]) =>
+  withBase(`/news/${item.data.slug ?? item.id}/`);
 ---
 
 <Page title="News" description={`News and announcements from ${site.author.name}`}>
@@ -28,23 +33,31 @@ const formatDate = (d: Date) =>
     </header>
     <article>
       {
-        rendered.length === 0 ? (
+        announcements.length === 0 ? (
           <p style="color: var(--global-text-color-light);">No announcements yet.</p>
         ) : (
-          <table class="news-table" style="width: 100%; border-collapse: collapse;">
-            <tbody>
-              {rendered.map(({ item, rendered: { Content } }) => (
-                <tr style="border-bottom: 1px solid var(--global-divider-color);">
-                  <td style="padding: 0.6rem 1.25rem 0.6rem 0; white-space: nowrap; vertical-align: top; color: var(--global-text-color-light); font-size: 0.8rem;">
-                    {formatDate(item.data.date)}
-                  </td>
-                  <td style="padding: 0.6rem 0; font-size: 0.925rem; color: var(--global-text-color);">
-                    <Content />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <ul class="news-list">
+            {announcements.map((item) => {
+              const { title, image, alt, excerpt } = item.data;
+              const href = articleHref(item);
+              return (
+                <li class="news-item">
+                  {image && (
+                    <a class="news-thumb" href={href} tabindex="-1" aria-hidden="true">
+                      <img src={imageSrc(image)} alt={alt ?? ''} loading="lazy" />
+                    </a>
+                  )}
+                  <div class="news-body">
+                    <h2 class="news-title">
+                      <a href={href}>{title ?? item.id}</a>
+                    </h2>
+                    <p class="news-date">{formatDate(item.data.date)}</p>
+                    {excerpt && <p class="news-excerpt">{excerpt}</p>}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
         )
       }
     </article>
@@ -62,5 +75,93 @@ const formatDate = (d: Date) =>
     color: var(--global-text-color);
     font-family: var(--font-sans);
     margin-bottom: 0;
+  }
+
+  .news-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .news-item {
+    display: flex;
+    gap: 1.25rem;
+    padding: 1.4rem 0;
+    border-bottom: 1px solid var(--global-divider-color);
+  }
+
+  .news-thumb {
+    flex: 0 0 180px;
+    display: block;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .news-thumb img {
+    width: 180px;
+    height: 120px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.25s ease;
+  }
+
+  .news-thumb:hover img {
+    transform: scale(1.04);
+  }
+
+  .news-body {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .news-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.35;
+    margin: 0 0 0.35rem;
+    font-family: var(--font-sans);
+  }
+
+  .news-title a {
+    color: var(--global-text-color);
+    text-decoration: none;
+  }
+
+  .news-title a:hover {
+    color: var(--global-theme-color);
+    text-decoration: underline;
+  }
+
+  .news-date {
+    font-size: 0.8rem;
+    color: var(--global-text-color-light);
+    margin: 0 0 0.5rem;
+  }
+
+  .news-excerpt {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--global-text-color-light);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  @media (max-width: 576px) {
+    .news-item {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .news-thumb,
+    .news-thumb img {
+      width: 100%;
+    }
+
+    .news-thumb img {
+      height: 180px;
+    }
   }
 </style>

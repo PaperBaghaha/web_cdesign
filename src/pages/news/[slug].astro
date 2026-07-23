@@ -1,0 +1,115 @@
+---
+import { site } from '@config/site';
+import Page from '@layouts/Page.astro';
+import { withBase } from '@utils/base';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const announcements = await getCollection('announcements');
+  return announcements
+    .filter((e) => !e.data.hidden)
+    .map((entry) => ({
+      params: { slug: entry.data.slug ?? entry.id },
+      props: { entry },
+    }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, date, image, alt, source } = entry.data;
+
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+const heroSrc = image
+  ? image.startsWith('http')
+    ? image
+    : withBase(`/assets/img/news/${image}`)
+  : undefined;
+---
+
+<Page title={title ?? 'News'} description={`News from ${site.author.name}`}>
+  <article class="news-article">
+    <nav aria-label="Breadcrumb" class="breadcrumb-nav">
+      <a href={withBase('/news/')} class="breadcrumb-link">← All news</a>
+    </nav>
+
+    <header class="news-article-header">
+      <h1 class="news-article-title">{title}</h1>
+      <p class="news-article-date">{formatDate(date)}</p>
+    </header>
+
+    {heroSrc && <img class="news-article-hero" src={heroSrc} alt={alt ?? ''} />}
+
+    <div class="prose news-article-body max-w-none">
+      <Content />
+    </div>
+
+    {
+      source && (
+        <p class="news-article-source">
+          Originally published at{' '}
+          <a href={source} target="_blank" rel="noopener noreferrer">
+            {new URL(source).hostname}
+          </a>
+        </p>
+      )
+    }
+  </article>
+</Page>
+
+<style>
+  .news-article {
+    max-width: 48rem;
+    margin: 0 auto;
+  }
+
+  .breadcrumb-nav {
+    margin-bottom: 1.25rem;
+  }
+
+  .breadcrumb-link {
+    font-size: 0.85rem;
+    color: var(--global-text-color-light);
+    text-decoration: none;
+  }
+
+  .breadcrumb-link:hover {
+    color: var(--global-theme-color);
+  }
+
+  .news-article-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .news-article-title {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--global-text-color);
+    font-family: var(--font-sans);
+    margin: 0 0 0.5rem;
+  }
+
+  .news-article-date {
+    font-size: 0.85rem;
+    color: var(--global-text-color-light);
+    margin: 0;
+  }
+
+  .news-article-hero {
+    width: 100%;
+    max-height: 420px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 1.75rem;
+  }
+
+  .news-article-source {
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--global-divider-color);
+    font-size: 0.85rem;
+    color: var(--global-text-color-light);
+  }
+</style>

@@ -1,5 +1,13 @@
 ---
 date: 2019-11-01
+title: 'C Design Lab at UIST 2019, New Orleans'
+slug: 'c-design-lab-at-uist-2019-new-orleans'
+source: 'https://engineering.purdue.edu/cdesign/wp/c-design-lab-at-uist-2019-new-orleans/'
+image: '2019-11-01-c-design-lab-at-uist-2019-new-orleans.jpg'
+excerpt: 'From Oct 21 to Oct 23, Professor Ramani, the C Design Lab members, and two alumni Ke Huo (currently works at Facebook) and Sang Ho Yoon (currently works at Microsoft) attended the 32nd ACM User Interface Software and Technology Symposium (UIST 2019) in New Orleans. Yuanzhi Cao presented the work GhostAR: A Time-space Editor for'
 ---
 
-C Design Lab at UIST 2019, New Orleans
+<p style="text-align: justify;">From Oct 21 to Oct 23, Professor Ramani, the C Design Lab members, and two alumni <em><a href="https://engineering.purdue.edu/cdesign/wp/category/people/ke-huo/">Ke Huo</a></em> (currently works at Facebook) and <em><a href="https://engineering.purdue.edu/cdesign/wp/category/people/sang-ho-yoon/">Sang Ho Yoon</a></em> (currently works at Microsoft) attended the <em><a href="http://uist.acm.org/uist2019/">32nd ACM User Interface Software and Technology Symposium (UIST 2019)</a></em> in New Orleans. <em><a href="https://engineering.purdue.edu/cdesign/wp/category/people/yuanzhi-cao/">Yuanzhi Cao </a></em>presented the work <strong>GhostAR: A Time-space Editor for Embodied Authoring of Human-Robot Collaborative Task with Augmented Reality </strong>at the conference. <a href="https://engineering.purdue.edu/cdesign/wp/ghostar-a-time-space-editor-for-embodied-authoring-of-human-robot-collaborative-task-with-augmented-reality/">[Click here for more details of the paper]</a></p>
+<p><a href="https://Engineering.Purdue.edu/cdesign/wp/c-design-lab-at-uist-2019-new-orleans/img_3769/" rel="attachment wp-att-5992"><img loading="lazy" class="aligncenter size-large wp-image-5992" src="/assets/img/news/content/IMG_3769-1024x768.jpg" alt="IMG_3769" width="550" height="413" /></a></p>
+<p><a href="https://Engineering.Purdue.edu/cdesign/wp/c-design-lab-at-uist-2019-new-orleans/img_3720/" rel="attachment wp-att-5993"><img loading="lazy" class="aligncenter size-large wp-image-5993" src="/assets/img/news/content/IMG_3720-1024x768.jpg" alt="IMG_3720" width="550" height="413" /></a></p>
+<p><a href="https://Engineering.Purdue.edu/cdesign/wp/ghostar-a-time-space-editor-for-embodied-authoring-of-human-robot-collaborative-task-with-augmented-reality/ghostar1/" rel="attachment wp-att-5981"><img loading="lazy" class="aligncenter size-large wp-image-5981" src="/assets/img/news/content/GhostAR1-1024x557.png" alt="GhostAR1" width="550" height="299" /></a></p>
