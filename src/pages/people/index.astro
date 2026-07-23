@@ -31,6 +31,23 @@ const alumni = all
   </header>
 
   {
+    all.length > 0 && (
+      <div class="people-search" data-reveal>
+        <input
+          type="text"
+          id="people-search-input"
+          placeholder="Search people by name or role…"
+          aria-label="Search people"
+          autocomplete="off"
+        />
+        <p id="people-search-empty" class="people-search-empty" hidden>
+          No people match your search.
+        </p>
+      </div>
+    )
+  }
+
+  {
     current.length > 0 && (
       <section class="mb-10" data-reveal>
         <h2
@@ -167,7 +184,69 @@ const alumni = all
   {all.length === 0 && <p style="color: var(--global-text-color-light);">No people entries yet.</p>}
 </Page>
 
+<script>
+  function initPeopleSearch() {
+    const input = document.getElementById('people-search-input') as HTMLInputElement | null;
+    const empty = document.getElementById('people-search-empty') as HTMLElement | null;
+    if (!input) return;
+
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('.person-card, .alumni-row'));
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('section.mb-10'));
+
+    function apply() {
+      const q = input!.value.trim().toLowerCase();
+      let anyVisible = false;
+
+      cards.forEach((card) => {
+        const match = q === '' || (card.textContent ?? '').toLowerCase().includes(q);
+        card.style.display = match ? '' : 'none';
+        if (match) anyVisible = true;
+      });
+
+      // Hide a whole section (heading + grid) when none of its people match.
+      sections.forEach((section) => {
+        const visible = section.querySelector(
+          '.person-card:not([style*="display: none"]), .alumni-row:not([style*="display: none"])',
+        );
+        section.style.display = visible ? '' : 'none';
+      });
+
+      if (empty) empty.hidden = anyVisible;
+    }
+
+    input.addEventListener('input', apply);
+  }
+
+  document.addEventListener('astro:page-load', initPeopleSearch);
+</script>
+
 <style>
+  .people-search {
+    margin: 1.25rem 0 2rem;
+  }
+
+  #people-search-input {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--global-divider-color);
+    background: var(--global-bg-color);
+    color: var(--global-text-color);
+    transition: border-color 0.15s ease;
+  }
+
+  #people-search-input:focus {
+    outline: none;
+    border-color: var(--global-theme-color);
+  }
+
+  .people-search-empty {
+    margin: 0.5rem 0 0;
+    color: var(--global-text-color-light);
+    font-style: italic;
+  }
+
   h2,
   .person-name,
   .pub-badge {

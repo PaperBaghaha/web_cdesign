@@ -39,6 +39,23 @@ const timezone = site.teaching.timezone;
       <p class="post-description">{site.pages.teaching.description}</p>
     </header>
 
+    {
+      all.length > 0 && (
+        <div class="course-search">
+          <input
+            type="text"
+            id="course-search-input"
+            placeholder="Search courses by title, code, term…"
+            aria-label="Search courses"
+            autocomplete="off"
+          />
+          <p id="course-search-empty" class="course-search-empty" hidden>
+            No courses match your search.
+          </p>
+        </div>
+      )
+    }
+
     <article>
       <!-- Google Calendar section -->
       {
@@ -163,5 +180,70 @@ const timezone = site.teaching.timezone;
     });
   }
 
-  document.addEventListener('astro:page-load', initCalendar);
+  function initCourseSearch() {
+    const input = document.getElementById('course-search-input') as HTMLInputElement | null;
+    const empty = document.getElementById('course-search-empty') as HTMLElement | null;
+    if (!input) return;
+
+    const items = Array.from(document.querySelectorAll<HTMLElement>('.course-item'));
+    const yearBlocks = Array.from(document.querySelectorAll<HTMLElement>('h2.year')).map((h) => ({
+      heading: h,
+      list: h.nextElementSibling as HTMLElement | null,
+    }));
+
+    function apply() {
+      const q = input!.value.trim().toLowerCase();
+      let anyVisible = false;
+
+      items.forEach((item) => {
+        const match = q === '' || (item.textContent ?? '').toLowerCase().includes(q);
+        item.style.display = match ? '' : 'none';
+        if (match) anyVisible = true;
+      });
+
+      // Hide year headings whose courses are all filtered out.
+      yearBlocks.forEach(({ heading, list }) => {
+        if (!list) return;
+        const visible = list.querySelector('.course-item:not([style*="display: none"])');
+        heading.style.display = visible ? '' : 'none';
+      });
+
+      if (empty) empty.hidden = anyVisible;
+    }
+
+    input.addEventListener('input', apply);
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    initCalendar();
+    initCourseSearch();
+  });
 </script>
+
+<style>
+  .course-search {
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  #course-search-input {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--global-divider-color);
+    background: var(--global-bg-color);
+    color: var(--global-text-color);
+    transition: border-color 0.15s ease;
+  }
+
+  #course-search-input:focus {
+    outline: none;
+    border-color: var(--global-theme-color);
+  }
+
+  .course-search-empty {
+    margin: 0.75rem 0 0;
+    color: var(--global-text-color-light);
+    font-style: italic;
+  }
+</style>
