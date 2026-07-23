@@ -250,6 +250,12 @@ export const site = {
     viewTransitions: true,
     /** Show social sharing links (X, LinkedIn, Facebook, email) at the bottom of blog posts. */
     socialShare: true,
+    /**
+     * Show the floating site assistant — a chat bubble that helps visitors find
+     * content (reuses the Pagefind search index) and jump to key sections.
+     * No API key or backend required; runs entirely client-side.
+     */
+    assistant: true,
   },
 
   // ─── Giscus comments ──────────────────────────────────────────────────────

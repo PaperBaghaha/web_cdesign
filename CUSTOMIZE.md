@@ -731,6 +731,22 @@ features: {
 
 The search index is rebuilt on every `yarn build` run.
 
+### Site assistant
+
+A floating chat bubble (bottom-right) that helps visitors find their way around
+the site. It greets them, offers quick-jump chips for each navbar section, and
+answers questions like "where are the publications?" by searching the same
+Pagefind index (with a title/keyword fallback that also works in `yarn dev`).
+It runs entirely client-side — no API key or backend required.
+
+Enabled by default. To disable:
+
+```typescript
+features: {
+  assistant: false,
+},
+```
+
 ---
 
 ## 20. Deployment base path
@@ -761,6 +777,7 @@ All feature flags live in the `features` block of `site.ts`:
 features: {
   darkmode: true,       // dark/light toggle in navbar
   search: true,         // ⌘K search
+  assistant: true,      // floating site-assistant chat bubble
   progressBar: true,    // reading progress bar on posts
   backToTop: true,      // floating back-to-top button
   masonry: true,        // auto masonry layout for projects

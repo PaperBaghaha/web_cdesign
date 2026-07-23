@@ -1,0 +1,523 @@
+---
+import type { NavItem } from '@config/site';
+import { site } from '@config/site';
+import { getCollection } from 'astro:content';
+
+const base = site.base || '';
+
+// ── Quick-nav sections — derived from site.navbar.items (single source of truth) ─
+function flattenNav(items: NavItem[]) {
+  return items.flatMap((item) => {
+    if ('href' in item) {
+      return [
+        {
+          label: item.label.charAt(0).toUpperCase() + item.label.slice(1),
+          href: `${base}${item.href}`,
+        },
+      ];
+    }
+    return item.children.map((child) => ({
+      label: child.label.charAt(0).toUpperCase() + child.label.slice(1),
+      href: `${base}${child.href}`,
+    }));
+  });
+}
+
+const navItems = flattenNav(site.navbar.items);
+
+// ── Content index (built at build time; enables title/keyword search in dev too) ──
+type SearchItem = { title: string; section: string; href: string; keywords: string };
+
+const posts = (await getCollection('posts'))
+  .filter((p) => !p.data.hidden && !p.data.draft)
+  .map((p): SearchItem => ({
+    title: p.data.title,
+    section: 'Blog',
+    href: `${base}/blog/${p.id}/`,
+    keywords: [...(p.data.tags ?? []), ...(p.data.categories ?? [])].join(' '),
+  }));
+
+const projects = (await getCollection('projects')).map((p): SearchItem => ({
+  title: p.data.title,
+  section: 'Research',
+  href: `${base}/projects/${p.id}/`,
+  keywords: p.data.category ?? '',
+}));
+
+const teaching = (await getCollection('teaching')).map((t): SearchItem => ({
+  title: t.data.title,
+  section: 'Courses',
+  href: `${base}/teaching/`,
+  keywords: t.data.term ?? '',
+}));
+
+const contentItems: SearchItem[] = [...posts, ...projects, ...teaching];
+
+const assistantName = `${site.author.name.split(' ')[0]}'s assistant`;
+const welcome = `Hi! I can help you find your way around this site. Ask me something like “where are the publications?” or pick a section below.`;
+---
+
+<div
+  id="site-assistant"
+  data-nav-items={JSON.stringify(navItems)}
+  data-content-items={JSON.stringify(contentItems)}
+  data-pagefind-base={base}
+  data-email={site.author.email}
+  data-author={site.author.name}
+  data-name={assistantName}
+  data-welcome={welcome}
+>
+  <button id="assistant-toggle" aria-label="Open the site assistant" aria-expanded="false">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+    </svg>
+  </button>
+
+  <div id="assistant-panel" role="dialog" aria-label="Site assistant" aria-modal="false" hidden>
+    <header id="assistant-head">
+      <span id="assistant-title"></span>
+      <button id="assistant-close" aria-label="Close the assistant">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+          <path d="M18 6 6 18M6 6l12 12"></path>
+        </svg>
+      </button>
+    </header>
+
+    <div id="assistant-log" aria-live="polite"></div>
+
+    <div id="assistant-chips"></div>
+
+    <form id="assistant-form" autocomplete="off">
+      <input
+        id="assistant-input"
+        type="text"
+        placeholder="Ask me where to find something…"
+        aria-label="Ask the site assistant"
+      />
+      <button type="submit" id="assistant-send" aria-label="Send message">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"></path>
+        </svg>
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  type NavItem = { label: string; href: string };
+  type ContentItem = { title: string; section: string; href: string; keywords?: string };
+
+  function initAssistant() {
+    const root = document.getElementById('site-assistant');
+    // transition:persist keeps this element alive across page swaps — only wire it once.
+    if (!root || root.dataset.ready === 'true') return;
+    root.dataset.ready = 'true';
+
+    const toggle = document.getElementById('assistant-toggle') as HTMLButtonElement;
+    const panel = document.getElementById('assistant-panel') as HTMLElement;
+    const closeBtn = document.getElementById('assistant-close') as HTMLButtonElement;
+    const log = document.getElementById('assistant-log') as HTMLElement;
+    const chips = document.getElementById('assistant-chips') as HTMLElement;
+    const form = document.getElementById('assistant-form') as HTMLFormElement;
+    const input = document.getElementById('assistant-input') as HTMLInputElement;
+    const title = document.getElementById('assistant-title') as HTMLElement;
+
+    const navItems: NavItem[] = JSON.parse(root.dataset.navItems ?? '[]');
+    const contentItems: ContentItem[] = JSON.parse(root.dataset.contentItems ?? '[]');
+    const pagefindBase = root.dataset.pagefindBase ?? '';
+    const email = root.dataset.email ?? '';
+    const author = root.dataset.author ?? '';
+    const assistantName = root.dataset.name ?? 'Assistant';
+    const welcome = root.dataset.welcome ?? '';
+
+    title.textContent = assistantName;
+
+    let greeted = false;
+
+    // ── Message bubbles (textContent only — never innerHTML with dynamic text) ──
+    function addBubble(who: 'bot' | 'user', text: string): HTMLElement {
+      const el = document.createElement('div');
+      el.className = `assistant-msg assistant-msg--${who}`;
+      el.textContent = text;
+      log.appendChild(el);
+      log.scrollTop = log.scrollHeight;
+      return el;
+    }
+
+    function addLinks(results: { title: string; section?: string; href: string }[]) {
+      const wrap = document.createElement('div');
+      wrap.className = 'assistant-msg assistant-msg--bot assistant-results';
+      results.forEach((r) => {
+        const a = document.createElement('a');
+        a.className = 'assistant-result';
+        a.href = r.href;
+        const t = document.createElement('span');
+        t.className = 'assistant-result-title';
+        t.textContent = r.title;
+        a.appendChild(t);
+        if (r.section) {
+          const s = document.createElement('span');
+          s.className = 'assistant-result-section';
+          s.textContent = r.section;
+          a.appendChild(s);
+        }
+        wrap.appendChild(a);
+      });
+      log.appendChild(wrap);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    // ── Quick-nav section chips ────────────────────────────────────────────────
+    function renderChips() {
+      chips.replaceChildren();
+      navItems.forEach((n) => {
+        const b = document.createElement('a');
+        b.className = 'assistant-chip';
+        b.href = n.href;
+        b.textContent = n.label;
+        chips.appendChild(b);
+      });
+    }
+
+    // ── Pagefind (full-text, present after `yarn build`) with dev-mode fallback ──
+    let pagefind: any = null;
+    let pagefindTried = false;
+    async function loadPagefind() {
+      if (pagefindTried) return pagefind;
+      pagefindTried = true;
+      try {
+        pagefind = await import(/* @vite-ignore */ `${pagefindBase}/pagefind/pagefind.js`);
+        await pagefind.init();
+      } catch {
+        pagefind = null;
+      }
+      return pagefind;
+    }
+
+    async function search(query: string) {
+      const q = query.toLowerCase();
+
+      const pf = await loadPagefind();
+      if (pf) {
+        const response = await pf.search(q);
+        const data = await Promise.all(response.results.slice(0, 6).map((r: any) => r.data()));
+        if (data.length > 0) {
+          return data.map((d: any) => ({
+            title: d.meta?.title || d.url,
+            href: d.url,
+            section: '',
+          }));
+        }
+      }
+
+      // Fallback: filter the pre-built title/keyword index (works in `yarn dev`).
+      return contentItems
+        .filter((c) => `${c.title} ${c.keywords ?? ''}`.toLowerCase().includes(q))
+        .slice(0, 6)
+        .map((c) => ({ title: c.title, href: c.href, section: c.section }));
+    }
+
+    async function handleQuery(raw: string) {
+      const query = raw.trim();
+      if (!query) return;
+      addBubble('user', query);
+
+      // Intent: contact / how to reach the author.
+      if (/\b(contact|email|e-?mail|reach|get in touch|message)\b/i.test(query) && email) {
+        addBubble('bot', `You can reach ${author} by email:`);
+        addLinks([{ title: email, href: `mailto:${email}`, section: 'Email' }]);
+        return;
+      }
+
+      const thinking = addBubble('bot', 'Looking…');
+      const results = await search(query);
+      thinking.remove();
+
+      if (results.length > 0) {
+        addBubble('bot', `Here's what I found for “${query}”:`);
+        addLinks(results);
+      } else {
+        addBubble(
+          'bot',
+          `I couldn't find a page matching that. Try one of the sections below, or rephrase your question.`,
+        );
+      }
+    }
+
+    // ── Open / close ───────────────────────────────────────────────────────────
+    function open() {
+      panel.hidden = false;
+      toggle.setAttribute('aria-expanded', 'true');
+      root?.classList.add('is-open');
+      if (!greeted) {
+        greeted = true;
+        addBubble('bot', welcome);
+        renderChips();
+      }
+      window.setTimeout(() => input.focus(), 50);
+    }
+
+    function close() {
+      panel.hidden = true;
+      toggle.setAttribute('aria-expanded', 'false');
+      root?.classList.remove('is-open');
+    }
+
+    toggle.addEventListener('click', () => (panel.hidden ? open() : close()));
+    closeBtn.addEventListener('click', close);
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const value = input.value;
+      input.value = '';
+      handleQuery(value);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !panel.hidden) close();
+    });
+  }
+
+  initAssistant();
+  document.addEventListener('astro:after-swap', initAssistant);
+</script>
+
+<style>
+  #site-assistant {
+    --assistant-size: 56px;
+  }
+
+  #assistant-toggle {
+    position: fixed;
+    right: 30px;
+    bottom: 84px;
+    width: var(--assistant-size);
+    height: var(--assistant-size);
+    border-radius: 50%;
+    border: none;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    z-index: 9998;
+    background: var(--global-theme-color);
+    color: var(--global-hover-text-color, #fff);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  #assistant-toggle:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.3);
+  }
+
+  /* When the footer is sticky, lift the button to match #back-to-top's offset. */
+  :global(body[data-footer-position='sticky']) #assistant-toggle {
+    bottom: 124px;
+  }
+
+  #assistant-panel {
+    position: fixed;
+    right: 30px;
+    bottom: 152px;
+    width: 360px;
+    max-width: calc(100vw - 40px);
+    max-height: min(70vh, 560px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 9999;
+    border-radius: 16px;
+    background: var(--global-card-bg-color, var(--global-bg-color));
+    border: 1px solid var(--global-divider-color);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
+  }
+
+  #assistant-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: var(--global-theme-color);
+    color: var(--global-hover-text-color, #fff);
+  }
+
+  #assistant-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  #assistant-close {
+    background: transparent;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    padding: 2px;
+    border-radius: 6px;
+    opacity: 0.9;
+  }
+
+  #assistant-close:hover {
+    opacity: 1;
+  }
+
+  #assistant-log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .assistant-msg {
+    max-width: 85%;
+    padding: 9px 12px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+  }
+
+  .assistant-msg--bot {
+    align-self: flex-start;
+    background: var(--global-divider-color);
+    color: var(--global-text-color);
+    border-bottom-left-radius: 4px;
+  }
+
+  .assistant-msg--user {
+    align-self: flex-end;
+    background: var(--global-theme-color);
+    color: var(--global-hover-text-color, #fff);
+    border-bottom-right-radius: 4px;
+  }
+
+  .assistant-results {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 100%;
+    background: transparent;
+    padding: 0;
+  }
+
+  .assistant-result {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    background: var(--global-divider-color);
+    border: 1px solid transparent;
+    color: var(--global-text-color);
+    transition:
+      border-color 0.12s ease,
+      transform 0.12s ease;
+  }
+
+  .assistant-result:hover {
+    border-color: var(--global-theme-color);
+    transform: translateX(2px);
+  }
+
+  .assistant-result-title {
+    font-size: 0.88rem;
+    font-weight: 500;
+  }
+
+  .assistant-result-section {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--global-text-color-light);
+    white-space: nowrap;
+  }
+
+  #assistant-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 14px 10px;
+  }
+
+  #assistant-chips:empty {
+    display: none;
+  }
+
+  .assistant-chip {
+    font-size: 0.8rem;
+    padding: 5px 11px;
+    border-radius: 999px;
+    text-decoration: none;
+    background: transparent;
+    border: 1px solid var(--global-divider-color);
+    color: var(--global-text-color);
+    transition:
+      border-color 0.12s ease,
+      color 0.12s ease;
+  }
+
+  .assistant-chip:hover {
+    border-color: var(--global-theme-color);
+    color: var(--global-theme-color);
+  }
+
+  #assistant-form {
+    display: flex;
+    gap: 8px;
+    padding: 12px 14px;
+    border-top: 1px solid var(--global-divider-color);
+  }
+
+  #assistant-input {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--global-divider-color);
+    background: var(--global-bg-color);
+    color: var(--global-text-color);
+    font-size: 0.9rem;
+  }
+
+  #assistant-input:focus {
+    outline: none;
+    border-color: var(--global-theme-color);
+  }
+
+  #assistant-send {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: var(--global-theme-color);
+    color: var(--global-hover-text-color, #fff);
+  }
+
+  @media (max-width: 480px) {
+    #assistant-panel {
+      right: 16px;
+      left: 16px;
+      width: auto;
+      bottom: 148px;
+    }
+    #assistant-toggle {
+      right: 20px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #assistant-toggle,
+    .assistant-result {
+      transition: none;
+    }
+  }
+</style>
