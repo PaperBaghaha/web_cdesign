@@ -66,7 +66,8 @@
     "prepare": "husky",
     "citations:update": "node --strip-types scripts/update-citations.ts",
     "pubs:import": "node --strip-types scripts/update-publications.ts --import",
-    "pubs:enrich": "node --strip-types scripts/update-publications.ts"
+    "pubs:enrich": "node --strip-types scripts/update-publications.ts",
+    "news:import": "node --strip-types scripts/import-news.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^6.0.0",

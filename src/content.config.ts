@@ -168,6 +168,16 @@ const announcements = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/announcements' }),
   schema: z.object({
     date: z.coerce.date(),
+    /** Headline shown on the news list. Falls back to the file body if unset. */
+    title: z.string().optional(),
+    /** URL the headline links to (e.g. the full article). */
+    link: z.string().url().optional(),
+    /** Thumbnail image: bare filename resolves against /assets/img/news/, or a full URL. */
+    image: z.string().optional(),
+    /** Alt text for the thumbnail. */
+    alt: z.string().optional(),
+    /** Short summary shown under the headline. */
+    excerpt: z.string().optional(),
     /** Pin this announcement to the top. */
     pinned: z.boolean().optional().default(false),
     /** Hide from the announcements list. */

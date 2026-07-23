@@ -579,6 +579,44 @@ Announcement text here. HTML and Markdown are supported.
 
 Announcements appear on the About page (if `site.announcements.enabled: true`) and on the dedicated `/news` page.
 
+### News cards (title, thumbnail, excerpt, link)
+
+The `/news` page renders each announcement as a card with a thumbnail, a clickable
+headline, the date, and a short summary. Provide these optional fields to fill the card:
+
+```yaml
+---
+date: 2023-10-16
+title: 'ASME Hosts Congressional Briefing on a Robust AI and STEM Workforce'
+link: 'https://engineering.purdue.edu/cdesign/wp/asme-hosts-congressional-briefing/'
+image: '2023-10-16-asme-briefing.jpg' # bare filename → /assets/img/news/, or a full URL
+alt: 'ASME and IEEE logos'
+excerpt: 'ASME joined IEEE and the U.S. Senate AI Caucus to discuss workforce needs…'
+---
+```
+
+- `title` — the headline. If omitted, the file body is used instead.
+- `link` — the headline (and thumbnail) link here, opening in a new tab. Omit for a
+  non-clickable card.
+- `image` — a bare filename resolves against `public/assets/img/news/`; a full URL is
+  used as-is. Omit to render a text-only card.
+- `alt` / `excerpt` — thumbnail alt text and the summary shown under the date.
+
+#### Importing news from a WordPress site
+
+`scripts/import-news.ts` bulk-imports every post in a WordPress "News" category via the
+public WordPress REST API and regenerates the announcements collection:
+
+```bash
+yarn news:import
+```
+
+It downloads each post's featured image, downscales it to a 600px-wide JPEG thumbnail in
+`public/assets/img/news/`, and writes one markdown file per post with the fields above.
+Set `WP_BASE` and `NEWS_CATEGORY_ID` at the top of the script to point at your site.
+**Re-running wipes and regenerates** `src/content/announcements/` and the news image
+folder, so keep any hand-written announcements elsewhere.
+
 ---
 
 ## 14. Dark mode
