@@ -2,13 +2,13 @@
  * import-news.ts
  *
  * Imports every post in the "News" category of the legacy WordPress site into
- * the `announcements` content collection, so the new site's News page shows the
- * same headlines, thumbnails, dates, and excerpts — with each headline linking
- * to the full article.
+ * the `announcements` content collection, so the new site hosts the full news
+ * archive itself — headline, thumbnail, date, excerpt, AND the full article body
+ * (with its inline images) on a self-contained /news/<slug>/ page.
  *
- * Source: the WordPress REST API (public, no auth). For each post we pull the
- * title, permalink, publish date, excerpt, and featured image. Images are
- * downloaded into public/assets/img/news/ so the site stays self-contained.
+ * Source: the WordPress REST API (public, no auth). All images — the featured
+ * thumbnail and every image inside the article body — are downloaded into
+ * public/assets/img/news/ so nothing loads from the old site at runtime.
  *
  * Usage:
  *   yarn news:import
@@ -18,7 +18,7 @@
  */
 
 import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { extname, join } from 'node:path';
 
 import sharp from 'sharp';
 
@@ -31,12 +31,17 @@ const PER_PAGE = 50;
 const USER_AGENT =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36';
 
-/** Thumbnails are downscaled to this max width — the list only needs small previews. */
+/** Featured thumbnails are downscaled to this max width (list previews). */
 const THUMB_WIDTH = 600;
+/** Inline article images are downscaled to this max width (content column). */
+const CONTENT_WIDTH = 900;
 
 const root = process.cwd();
 const announcementsDir = join(root, 'src/content/announcements');
 const imageDir = join(root, 'public/assets/img/news');
+const contentImageDir = join(imageDir, 'content');
+/** Public URL prefix for downloaded inline images. */
+const CONTENT_URL_PREFIX = '/assets/img/news/content';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -46,6 +51,7 @@ interface WpPost {
   link: string;
   title: { rendered: string };
   excerpt: { rendered: string };
+  content: { rendered: string };
   _embedded?: {
     'wp:featuredmedia'?: Array<{ source_url?: string; alt_text?: string }>;
   };
@@ -108,12 +114,21 @@ async function fetchAllPosts(): Promise<WpPost[]> {
   return posts;
 }
 
-/** Fetch an image, downscale it to a thumbnail, and write it as JPEG. */
-async function downloadThumbnail(url: string, dest: string): Promise<boolean> {
+async function fetchBuffer(url: string): Promise<Buffer | null> {
   try {
     const res = await fetch(url, { headers: { 'User-Agent': USER_AGENT } });
-    if (!res.ok) return false;
-    const buf = Buffer.from(await res.arrayBuffer());
+    if (!res.ok) return null;
+    return Buffer.from(await res.arrayBuffer());
+  } catch {
+    return null;
+  }
+}
+
+/** Fetch an image, downscale it to a JPEG thumbnail, and write it. */
+async function downloadThumbnail(url: string, dest: string): Promise<boolean> {
+  const buf = await fetchBuffer(url);
+  if (!buf) return false;
+  try {
     await sharp(buf)
       .rotate()
       .resize({ width: THUMB_WIDTH, withoutEnlargement: true })
@@ -123,6 +138,75 @@ async function downloadThumbnail(url: string, dest: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+// ─── Inline article images ────────────────────────────────────────────────────
+
+/** Cache of remote image URL → public path, so shared images download once. */
+const inlineCache = new Map<string, string>();
+const usedInlineNames = new Set<string>();
+let inlineDownloaded = 0;
+
+function sanitizeBasename(url: string): string {
+  const path = url.split(/[?#]/)[0];
+  const raw = decodeURIComponent(path.split('/').pop() || 'image');
+  const cleaned = raw.replace(/[^a-z0-9._-]/gi, '-').replace(/-+/g, '-');
+  return cleaned || 'image';
+}
+
+/** Download one inline image (resized), returning its public path, or null. */
+async function importInlineImage(url: string): Promise<string | null> {
+  if (inlineCache.has(url)) return inlineCache.get(url)!;
+
+  const buf = await fetchBuffer(url);
+  if (!buf) return null;
+
+  let name = sanitizeBasename(url);
+  const ext = extname(name).toLowerCase();
+  while (usedInlineNames.has(name)) name = `x-${name}`;
+  usedInlineNames.add(name);
+
+  const dest = join(contentImageDir, name);
+  try {
+    const img = sharp(buf).rotate().resize({ width: CONTENT_WIDTH, withoutEnlargement: true });
+    if (ext === '.png') {
+      await img.png({ compressionLevel: 9, palette: true }).toFile(dest);
+    } else if (ext === '.jpg' || ext === '.jpeg' || ext === '.webp') {
+      await img.jpeg({ quality: 78 }).toFile(dest);
+    } else {
+      writeFileSync(dest, buf); // gif/svg: keep as-is
+    }
+  } catch {
+    writeFileSync(dest, buf); // fall back to original bytes
+  }
+
+  const publicPath = `${CONTENT_URL_PREFIX}/${name}`;
+  inlineCache.set(url, publicPath);
+  inlineDownloaded++;
+  return publicPath;
+}
+
+/**
+ * Rewrite an article body so every image loads locally:
+ * strip responsive srcset/sizes, then download each wp-content/uploads URL and
+ * swap it for its local path.
+ */
+async function localizeContent(html: string): Promise<string> {
+  let out = html.replace(/\s+(?:srcset|sizes)="[^"]*"/gi, '');
+
+  // Only localize image files; leave PDFs/audio/video pointing at the source.
+  const urls = new Set(
+    [
+      ...out.matchAll(
+        /https?:\/\/[^"'\s)]+\/wp-content\/uploads\/[^"'\s)]+?\.(?:jpe?g|png|gif|webp|svg)/gi,
+      ),
+    ].map((m) => m[0]),
+  );
+  for (const url of urls) {
+    const local = await importInlineImage(url);
+    if (local) out = out.split(url).join(local);
+  }
+  return out.trim();
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -140,22 +224,27 @@ async function main() {
       mkdirSync(dir, { recursive: true });
     }
   }
+  mkdirSync(contentImageDir, { recursive: true });
 
-  let imagesOk = 0;
+  let thumbsOk = 0;
   const usedNames = new Set<string>();
+  const usedSlugs = new Set<string>();
 
   for (const post of posts) {
     const isoDate = post.date.slice(0, 10); // YYYY-MM-DD
     const title = decodeEntities(post.title.rendered).trim();
     const excerpt = cleanText(post.excerpt.rendered);
 
-    // Filename: date + trimmed slug, de-duplicated.
-    const shortSlug = post.slug.replace(/[^a-z0-9-]/gi, '').slice(0, 50);
-    let base = `${isoDate}-${shortSlug}`;
+    // Route slug (unique) and markdown filename.
+    let slug = post.slug.replace(/[^a-z0-9-]/gi, '').replace(/-+/g, '-') || 'news';
+    while (usedSlugs.has(slug)) slug += '-x';
+    usedSlugs.add(slug);
+
+    let base = `${isoDate}-${slug.slice(0, 50)}`;
     while (usedNames.has(base)) base += '-x';
     usedNames.add(base);
 
-    // Featured image → local file.
+    // Featured image → local thumbnail.
     let imageField = '';
     const mediaUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
     const alt = post._embedded?.['wp:featuredmedia']?.[0]?.alt_text ?? '';
@@ -163,21 +252,29 @@ async function main() {
       const imgName = `${base}.jpg`;
       if (await downloadThumbnail(mediaUrl, join(imageDir, imgName))) {
         imageField = imgName;
-        imagesOk++;
+        thumbsOk++;
       }
     }
 
+    // Full article body with inline images pulled local.
+    const body = await localizeContent(post.content.rendered ?? '');
+
     // Build frontmatter.
-    const fm = [`date: ${isoDate}`, `title: ${yamlQuote(title)}`, `link: ${yamlQuote(post.link)}`];
+    const fm = [
+      `date: ${isoDate}`,
+      `title: ${yamlQuote(title)}`,
+      `slug: ${yamlQuote(slug)}`,
+      `source: ${yamlQuote(post.link)}`,
+    ];
     if (imageField) fm.push(`image: ${yamlQuote(imageField)}`);
     if (alt) fm.push(`alt: ${yamlQuote(decodeEntities(alt).trim())}`);
     if (excerpt) fm.push(`excerpt: ${yamlQuote(excerpt)}`);
 
-    writeFileSync(join(announcementsDir, `${base}.md`), `---\n${fm.join('\n')}\n---\n`);
+    writeFileSync(join(announcementsDir, `${base}.md`), `---\n${fm.join('\n')}\n---\n\n${body}\n`);
   }
 
   console.log(`Wrote ${posts.length} announcement files.`);
-  console.log(`Downloaded ${imagesOk}/${posts.length} images to public/assets/img/news/.`);
+  console.log(`Downloaded ${thumbsOk}/${posts.length} thumbnails + ${inlineDownloaded} inline images.`);
 }
 
 main().catch((err) => {

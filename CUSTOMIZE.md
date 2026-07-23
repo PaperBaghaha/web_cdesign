@@ -579,25 +579,34 @@ Announcement text here. HTML and Markdown are supported.
 
 Announcements appear on the About page (if `site.announcements.enabled: true`) and on the dedicated `/news` page.
 
-### News cards (title, thumbnail, excerpt, link)
+### News cards (title, thumbnail, excerpt) and article pages
 
 The `/news` page renders each announcement as a card with a thumbnail, a clickable
-headline, the date, and a short summary. Provide these optional fields to fill the card:
+headline, the date, and a short summary. Clicking a card opens a full article page at
+`/news/<slug>/` — the article body is hosted on **this** site, not linked back to any
+external source. Provide these optional fields to fill the card and article:
 
 ```yaml
 ---
 date: 2023-10-16
 title: 'ASME Hosts Congressional Briefing on a Robust AI and STEM Workforce'
-link: 'https://engineering.purdue.edu/cdesign/wp/asme-hosts-congressional-briefing/'
+slug: 'asme-hosts-congressional-briefing'
+source: 'https://engineering.purdue.edu/cdesign/wp/asme-hosts-congressional-briefing/'
 image: '2023-10-16-asme-briefing.jpg' # bare filename → /assets/img/news/, or a full URL
 alt: 'ASME and IEEE logos'
 excerpt: 'ASME joined IEEE and the U.S. Senate AI Caucus to discuss workforce needs…'
 ---
+
+Full article body goes here. HTML and Markdown are both supported, and images can
+point at local files under /assets/img/news/content/.
 ```
 
-- `title` — the headline. If omitted, the file body is used instead.
-- `link` — the headline (and thumbnail) link here, opening in a new tab. Omit for a
-  non-clickable card.
+- `title` — the headline. If omitted, the file id is used instead.
+- `slug` — the URL segment for the article page (`/news/<slug>/`). If omitted, the file
+  id is used.
+- `source` — the original article URL. Shown at the bottom of the article as an
+  "Originally published at…" reference link. Purely informational — the card and headline
+  link to the internal article page, not here.
 - `image` — a bare filename resolves against `public/assets/img/news/`; a full URL is
   used as-is. Omit to render a text-only card.
 - `alt` / `excerpt` — thumbnail alt text and the summary shown under the date.
@@ -611,11 +620,13 @@ public WordPress REST API and regenerates the announcements collection:
 yarn news:import
 ```
 
-It downloads each post's featured image, downscales it to a 600px-wide JPEG thumbnail in
-`public/assets/img/news/`, and writes one markdown file per post with the fields above.
-Set `WP_BASE` and `NEWS_CATEGORY_ID` at the top of the script to point at your site.
-**Re-running wipes and regenerates** `src/content/announcements/` and the news image
-folder, so keep any hand-written announcements elsewhere.
+For each post it downloads the featured image (downscaled to a 600px-wide JPEG thumbnail
+in `public/assets/img/news/`) **and the full article body**, pulling every inline image
+local to `public/assets/img/news/content/` (resized/compressed) so nothing loads from the
+old site at runtime. It writes one markdown file per post with the fields above plus the
+full HTML body. Set `WP_BASE` and `NEWS_CATEGORY_ID` at the top of the script to point at
+your site. **Re-running wipes and regenerates** `src/content/announcements/` and the news
+image folder, so keep any hand-written announcements elsewhere.
 
 ---
 

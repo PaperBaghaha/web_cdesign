@@ -1,7 +1,15 @@
 ---
 date: 2016-01-31
 title: 'ZIRO Robot to Hit Shelves Soon! [Interview on Inside Indiana Business]'
-link: 'https://engineering.purdue.edu/cdesign/wp/ziro-robot-to-hit-shelves-soon-interview-on-inside-indiana-business/'
+slug: 'ziro-robot-to-hit-shelves-soon-interview-on-inside-indiana-business'
+source: 'https://engineering.purdue.edu/cdesign/wp/ziro-robot-to-hit-shelves-soon-interview-on-inside-indiana-business/'
 image: '2016-01-31-ziro-robot-to-hit-shelves-soon-interview-on-inside.jpg'
 excerpt: 'After being chosen as â€œThe best of CES 2016 finalistsâ€ by Engadget, Ziro keeps getting more famous. The modular robotic toy, that originated from our lab, is now on the Inside Indiana Business for the second time. Prof. Karthik Ramani introduces the latest form Ziro has taken, with Inside Indiana Business: Gerry Dick and Kylie'
 ---
+
+<p style="text-align: justify;"><a href="http://www.insideindianabusiness.com/clip/12178999/ziro-robot-to-hit-shelves-soon" target="_blank"><img loading="lazy" class="alignleft size-full wp-image-4329" src="/assets/img/news/content/insideindiana-business.png" alt="insideindiana business" width="644" height="364" /></a></p>
+<p style="text-align: justify;">After being chosen as â€œThe best of CES 2016 finalistsâ€ by Engadget, Ziro keeps getting more famous. The modular robotic toy, that originated from our lab, is now on the Inside Indiana Business for the second time. Prof. Karthik Ramani introduces the latest form Ziro has taken, with Inside Indiana Business: Gerry Dick and Kylie Veleta.</p>
+<p style="text-align: justify;">Inside Indiana Business: â€œLast year, we told you about a robotic toy called ZIRO, designed by a Purdue University researcher. Since then it has grabbed national attention and is about to hit store shelves.</p>
+<p style="text-align: justify;">A glove-controlled robotic toy developed with Purdue University technology that has gained national attention is on the cusp of hitting the market. Ziro is weeks away from commercialization and is being touted as a tool for learning that can hold the interest of boys and girls alike. The robotic tool kit debuted last year on Inside INdiana Business Television and was created by Purdue Professor of Mechanical Engineering Karthik Ramani. During an interview last week on Inside INdiana Business Television, Ramani told Reporter Kylie Veleta he wants mass production of Ziro to be in-state.</p>
+<p style="text-align: justify;">The product debuted last year under the name &#8220;<a href="http://www.insideindianabusiness.com/story/30776568/indiana-made-robot-toy-merges-creativity-technology" target="_blank">HandiMate</a>&#8221; and California-based ZeroUI Inc. has the exclusive licensing rights for the toy. Ramani says it can help spark interest in STEM fields among the next generation of innovators. He tells Inside INdiana Business Ziro could be set to hit shelves within weeks.</p>
+<p style="text-align: justify;">This kits include customizable modules, which Ramani says allows kids to bring the robot to life and control it with your hands. &#8220;We basically deconstructed robotics and made it very simple and very approachable for everyone.&#8221;&#8221;</p>
