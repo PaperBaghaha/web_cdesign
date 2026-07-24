@@ -65,14 +65,23 @@ const publications = parseBibtex(bibRaw).map((entry): SearchItem => ({
 }));
 
 // ── People — lab members answerable by name and role/interests ──
-const people = (await getCollection('people'))
-  .filter((p) => !p.data.noPage)
-  .map((p): SearchItem => ({
-    title: p.data.name,
-    section: 'People',
-    href: `${base}/people/${p.id}/`,
-    keywords: [p.data.role ?? '', ...(p.data.interests ?? [])].join(' '),
-  }));
+const peopleEntries = (await getCollection('people')).filter((p) => !p.data.noPage);
+
+const people = peopleEntries.map((p): SearchItem => ({
+  title: p.data.name,
+  section: 'People',
+  href: `${base}/people/${p.id}/`,
+  keywords: [p.data.role ?? '', ...(p.data.interests ?? [])].join(' '),
+}));
+
+// Rich people facts — let the assistant answer "who is …" directly, not just link.
+const peopleFacts = peopleEntries.map((p) => ({
+  name: p.data.name,
+  role: p.data.role ?? '',
+  description: p.data.description ?? '',
+  interests: p.data.interests ?? [],
+  href: `${base}/people/${p.id}/`,
+}));
 
 const contentItems: SearchItem[] = [...publications, ...people, ...projects, ...posts, ...teaching];
 
@@ -92,6 +101,7 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
   id="site-assistant"
   data-nav-items={JSON.stringify(navItems)}
   data-content-items={JSON.stringify(contentItems)}
+  data-people-facts={JSON.stringify(peopleFacts)}
   data-lab-facts={JSON.stringify(labFacts)}
   data-pagefind-base={base}
   data-email={site.author.email}
@@ -171,8 +181,17 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
     const input = document.getElementById('assistant-input') as HTMLInputElement;
     const title = document.getElementById('assistant-title') as HTMLElement;
 
+    type PersonFact = {
+      name: string;
+      role: string;
+      description: string;
+      interests: string[];
+      href: string;
+    };
+
     const navItems: NavItem[] = JSON.parse(root.dataset.navItems ?? '[]');
     const contentItems: ContentItem[] = JSON.parse(root.dataset.contentItems ?? '[]');
+    const peopleFacts: PersonFact[] = JSON.parse(root.dataset.peopleFacts ?? '[]');
     const labFacts: {
       name: string;
       description: string;
@@ -286,6 +305,39 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
         .map((x) => ({ title: x.c.title, href: x.c.href, section: x.c.section }));
     }
 
+    // Find the lab member a query is asking about. Returns the best name match and
+    // whether every word of their name appears in the query (a confident full match).
+    function findPerson(query: string): { person: PersonFact; full: boolean } | null {
+      const qTokens = new Set((query.toLowerCase().match(/[a-z0-9]+/g) ?? []));
+      if (qTokens.size === 0) return null;
+      let best: { person: PersonFact; matched: number; total: number } | null = null;
+      for (const person of peopleFacts) {
+        const nameTokens = (person.name.toLowerCase().match(/[a-z0-9]+/g) ?? []).filter(
+          (t) => t.length >= 2,
+        );
+        if (nameTokens.length === 0) continue;
+        const matched = nameTokens.filter((t) => qTokens.has(t));
+        // Require a distinctive hit: a name word of 4+ chars present in the query.
+        const distinctive = matched.some((t) => t.length >= 4);
+        if (matched.length === 0 || !distinctive) continue;
+        if (!best || matched.length > best.matched) {
+          best = { person, matched: matched.length, total: nameTokens.length };
+        }
+      }
+      if (!best) return null;
+      return { person: best.person, full: best.matched >= best.total };
+    }
+
+    function answerPerson(p: PersonFact) {
+      let msg = p.name;
+      if (p.role) msg += ` — ${p.role}`;
+      msg += '.';
+      if (p.description) msg += ` ${p.description}`;
+      if (p.interests.length) msg += ` Research interests: ${p.interests.join(', ')}.`;
+      addBubble('bot', msg);
+      addLinks([{ title: `${p.name}'s profile`, href: p.href, section: 'People' }]);
+    }
+
     async function search(query: string) {
       const local = localSearch(query);
 
@@ -325,6 +377,18 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
       const navByLabel = (label: string) =>
         navItems.find((n) => n.label.toLowerCase() === label.toLowerCase());
 
+      // Intent: a question about a specific lab member — answer directly.
+      // Fires on a confident full-name match, or on any "who is / tell me about /
+      // bio / profile" phrasing that also names someone in the lab.
+      const asksAboutPerson = /\bwho\b|tell me about|\bbio\b|\bprofile\b|\bwork(s|ing)?\s+on\b/i.test(
+        query,
+      );
+      const personMatch = findPerson(query);
+      if (personMatch && (personMatch.full || asksAboutPerson)) {
+        answerPerson(personMatch.person);
+        return;
+      }
+
       // Intent: what/who is the lab — describe it and point to About.
       if (/\b(what|who|tell|about|describe)\b/i.test(query) && /\b(lab|cdl|convergence|you|this|research)\b/i.test(query)) {
         if (labFacts.description) addBubble('bot', labFacts.description);
@@ -361,7 +425,7 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
       } else {
         addBubble(
           'bot',
-          `I couldn't find anything about that in the lab's pages. Try different words — a person's name, a paper title, or a research topic — or pick a section below.`,
+          `Sorry, I don't have information about that. I can only answer questions about the Convergence Design Lab — our people, publications, research projects, and courses. Try different words, or pick a section below.`,
         );
       }
     }
