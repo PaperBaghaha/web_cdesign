@@ -51,7 +51,7 @@ export const site = {
     email: 'cdesign-lab@purdue.edu',
 
     /** Path to profile photo. Place image in public/assets/img/. */
-    avatar: '/assets/img/cdl-logo.svg',
+    avatar: '/assets/img/cdl-logo-icon.png',
 
     /**
      * Subtitle below your name on the about page.

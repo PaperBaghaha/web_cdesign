@@ -39,10 +39,18 @@ const items = site.navbar.items;
     <!-- Brand -->
     <a
       href={`${site.base}/`}
-      class="navbar-brand text-lg font-bold"
-      style="color: var(--global-text-color); text-decoration: none; font-family: var(--font-display); letter-spacing: -0.02em;"
+      class="navbar-brand"
+      aria-label={site.author.name}
+      style="display: flex; align-items: center; text-decoration: none;"
     >
-      {site.author.name}
+      <img
+        src={`${site.base}/assets/img/cdl-logo-horizontal.png`}
+        alt={site.author.name}
+        class="navbar-logo"
+        width="800"
+        height="150"
+        decoding="async"
+      />
     </a>
 
     <!-- Desktop nav -->
@@ -231,12 +239,27 @@ const items = site.navbar.items;
 </script>
 
 <style>
-  /* ── Brand: letters breathe apart on hover ──────────────────────────── */
-  .navbar-brand {
-    transition: letter-spacing 0.25s ease;
+  /* ── Brand logo ─────────────────────────────────────────────────────── */
+  .navbar-logo {
+    height: 34px;
+    width: auto;
+    display: block;
+    transition:
+      opacity 0.2s ease,
+      transform 0.25s ease;
   }
-  .navbar-brand:hover {
-    letter-spacing: 0.03em;
+  .navbar-brand:hover .navbar-logo {
+    opacity: 0.82;
+    transform: scale(1.02);
+  }
+  /* The logo is dark ink — flip it to light on dark backgrounds. */
+  :global([data-theme='dark']) .navbar-logo {
+    filter: invert(1) brightness(1.9);
+  }
+  @media (max-width: 480px) {
+    .navbar-logo {
+      height: 28px;
+    }
   }
 
   /* ── Nav links: underline slides in from the left ───────────────────── */

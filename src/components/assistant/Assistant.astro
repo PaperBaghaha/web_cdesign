@@ -93,6 +93,7 @@ const labFacts = {
   peopleCount: people.length,
 };
 
+const logoIcon = `${base}/assets/img/cdl-logo-icon.png`;
 const assistantName = 'Purdue Assistant AI';
 const welcomeHeading = `Welcome to ${assistantName}! How can I assist you today?`;
 const welcomeSub = `Ask me anything about the ${labFacts.name} — our people, publications, research, and courses.`;
@@ -114,7 +115,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   data-disclaimer={disclaimer}
 >
   <button id="assistant-toggle" aria-label="Open the site assistant" aria-expanded="false">
-    <span class="assistant-p" aria-hidden="true">P</span>
+    <img src={logoIcon} alt="" class="assistant-toggle-logo" aria-hidden="true" width="512" height="512" />
   </button>
 
   <div id="assistant-overlay" hidden></div>
@@ -122,7 +123,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   <div id="assistant-panel" role="dialog" aria-label="Site assistant" aria-modal="true" hidden>
     <header id="assistant-head">
       <span id="assistant-title">
-        <span class="assistant-title-dot" aria-hidden="true"></span>
+        <img src={logoIcon} alt="" class="assistant-title-logo" aria-hidden="true" width="512" height="512" />
         <span id="assistant-title-text"></span>
       </span>
       <button id="assistant-close" aria-label="Close the assistant">
@@ -144,10 +145,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     <div id="assistant-body">
       <div id="assistant-hero">
         <div id="assistant-hero-badge" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"></path>
-            <path d="M19 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2z"></path>
-          </svg>
+          <img src={logoIcon} alt="" width="512" height="512" />
         </div>
         <h2 id="assistant-hero-heading"></h2>
         <p id="assistant-hero-sub"></p>
@@ -603,12 +601,12 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     width: var(--assistant-size);
     height: var(--assistant-size);
     border-radius: 50%;
-    border: 2px solid var(--purdue-black);
+    border: 2px solid var(--purdue-gold);
     display: grid;
     place-items: center;
     cursor: pointer;
     z-index: 9998;
-    background: var(--purdue-gold);
+    background: #ffffff;
     color: var(--purdue-black);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
     transition:
@@ -621,15 +619,11 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     box-shadow: 0 10px 26px rgba(207, 185, 145, 0.55);
   }
 
-  .assistant-p {
-    font-family: 'Space Grotesk', Georgia, 'Times New Roman', serif;
-    font-weight: 700;
-    font-size: 1.9rem;
-    line-height: 1;
-    color: var(--purdue-black);
-    /* subtle inset so the letterform reads like an emblem */
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
-    transform: translateY(-1px);
+  .assistant-toggle-logo {
+    width: 62%;
+    height: 62%;
+    object-fit: contain;
+    display: block;
   }
 
   /* When the footer is sticky, lift the button to match #back-to-top's offset. */
@@ -710,12 +704,15 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     letter-spacing: 0.01em;
   }
 
-  .assistant-title-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--purdue-gold);
-    box-shadow: 0 0 0 3px rgba(207, 185, 145, 0.28);
+  /* Header sits on a dark bar; the dark-ink logo needs a light chip behind it. */
+  .assistant-title-logo {
+    width: 26px;
+    height: 26px;
+    padding: 3px;
+    border-radius: 7px;
+    background: #fff;
+    object-fit: contain;
+    box-shadow: 0 0 0 1px rgba(207, 185, 145, 0.5);
   }
 
   #assistant-close {
@@ -767,13 +764,19 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   #assistant-hero-badge {
     display: grid;
     place-items: center;
-    width: 66px;
-    height: 66px;
-    border-radius: 20px;
-    color: var(--purdue-black);
-    background: linear-gradient(145deg, var(--purdue-gold), #e6d6b3);
-    box-shadow: 0 10px 28px rgba(207, 185, 145, 0.5);
+    width: 92px;
+    height: 92px;
+    border-radius: 24px;
+    background: #fff;
+    border: 1px solid color-mix(in srgb, var(--purdue-gold) 45%, var(--global-divider-color));
+    box-shadow: 0 12px 30px rgba(207, 185, 145, 0.4);
     animation: assistant-float 4s ease-in-out infinite;
+  }
+
+  #assistant-hero-badge img {
+    width: 72%;
+    height: 72%;
+    object-fit: contain;
   }
 
   @keyframes assistant-float {
