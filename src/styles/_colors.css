@@ -36,8 +36,12 @@
   --color-grey-900: #212529;
   --color-white: #ffffff;
   --color-black: #000000;
-  --color-code-bg-light: rgba(181, 9, 172, 0.05);
+  --color-code-bg-light: rgba(207, 185, 145, 0.14);
   --color-code-bg-dark: #2c3237;
+
+  /* Purdue brand golds */
+  --purdue-gold: #cfb991; /* Boilermaker gold (pale, for dark backgrounds) */
+  --purdue-gold-strong: #a67c00; /* readable amber gold for light backgrounds */
 }
 
 /* ─── Light theme (default) ──────────────────────────────────────────────── */
@@ -49,18 +53,18 @@
   --global-code-bg-color: #f3f4f6;
   --global-text-color: #111111;
   --global-text-color-light: #6b6b6b;
-  --global-theme-color: #1a1a1a;
-  --global-hover-color: #4d4d4d;
-  --global-hover-text-color: var(--color-white);
-  --global-dropdown-hover-bg: #1a1a1a;
-  --global-dropdown-hover-text: var(--color-white);
-  --global-footer-bg-color: var(--color-grey-dark);
+  --global-theme-color: var(--purdue-gold-strong);
+  --global-hover-color: #856300;
+  --global-hover-text-color: #111111;
+  --global-dropdown-hover-bg: var(--purdue-gold-strong);
+  --global-dropdown-hover-text: #111111;
+  --global-footer-bg-color: var(--color-black);
   --global-footer-text-color: var(--color-grey-light);
-  --global-footer-link-color: var(--color-white);
+  --global-footer-link-color: var(--purdue-gold);
   --global-distill-app-color: var(--color-grey);
   --global-divider-color: rgba(0, 0, 0, 0.1);
   --global-card-bg-color: #f8f9fa;
-  --global-highlight-color: var(--color-red-dark);
+  --global-highlight-color: var(--purdue-gold-strong);
   --global-back-to-top-bg-color: rgba(0, 0, 0, 0.4);
   --global-back-to-top-text-color: var(--color-white);
   --global-newsletter-bg-color: var(--color-white);
@@ -90,14 +94,14 @@ html[data-theme='dark'] {
   --global-code-bg-color: var(--color-code-bg-dark);
   --global-text-color: #e4e4e4;
   --global-text-color-light: #9e9e9e;
-  --global-theme-color: #d4d4d4;
-  --global-hover-color: #ffffff;
+  --global-theme-color: var(--purdue-gold);
+  --global-hover-color: #e0cfa8;
   --global-hover-text-color: var(--color-black);
-  --global-dropdown-hover-bg: rgba(255, 255, 255, 0.1);
+  --global-dropdown-hover-bg: rgba(207, 185, 145, 0.18);
   --global-dropdown-hover-text: var(--global-text-color);
-  --global-footer-bg-color: var(--color-grey-light);
-  --global-footer-text-color: var(--color-grey-dark);
-  --global-footer-link-color: var(--color-black);
+  --global-footer-bg-color: #0a0a0a;
+  --global-footer-text-color: var(--color-grey-light);
+  --global-footer-link-color: var(--purdue-gold);
   --global-distill-app-color: var(--color-grey-light);
   --global-divider-color: #424246;
   --global-card-bg-color: var(--color-grey-900);
