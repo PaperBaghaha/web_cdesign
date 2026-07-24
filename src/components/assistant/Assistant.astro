@@ -920,14 +920,15 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     line-height: 1.65;
   }
 
-  /* User message: subtle neutral grey bubble tucked to the top-right */
+  /* User message: distinct grey bubble tucked to the top-right */
   .assistant-msg--user {
     align-self: flex-end;
     max-width: 82%;
-    background: color-mix(in srgb, var(--global-text-color) 9%, var(--global-bg-color));
+    background: color-mix(in srgb, var(--global-text-color) 15%, var(--global-bg-color));
+    border: 1px solid var(--global-divider-color);
     color: var(--global-text-color);
-    padding: 10px 15px;
-    border-radius: 16px;
+    padding: 11px 16px;
+    border-radius: 18px;
     border-bottom-right-radius: 5px;
     font-size: 0.98rem;
     line-height: 1.55;
