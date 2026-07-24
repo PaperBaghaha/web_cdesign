@@ -93,8 +93,10 @@ const labFacts = {
   peopleCount: people.length,
 };
 
-const assistantName = `${site.author.name.split(' ')[0]}'s assistant`;
-const welcome = `Hi! Ask me anything about the Convergence Design Lab — our people, research projects, publications, or where to find something on the site.`;
+const assistantName = 'Purdue Assistant AI';
+const welcomeHeading = `Welcome to ${assistantName}! How can I assist you today?`;
+const welcomeSub = `Ask me anything about the ${labFacts.name} — our people, publications, research, and courses.`;
+const disclaimer = `${assistantName} is AI and can make mistakes. It only knows what's on this website.`;
 ---
 
 <div
@@ -107,20 +109,27 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
   data-email={site.author.email}
   data-author={site.author.name}
   data-name={assistantName}
-  data-welcome={welcome}
+  data-welcome-heading={welcomeHeading}
+  data-welcome-sub={welcomeSub}
+  data-disclaimer={disclaimer}
 >
   <button id="assistant-toggle" aria-label="Open the site assistant" aria-expanded="false">
     <span class="assistant-p" aria-hidden="true">P</span>
   </button>
 
-  <div id="assistant-panel" role="dialog" aria-label="Site assistant" aria-modal="false" hidden>
+  <div id="assistant-overlay" hidden></div>
+
+  <div id="assistant-panel" role="dialog" aria-label="Site assistant" aria-modal="true" hidden>
     <header id="assistant-head">
-      <span id="assistant-title"></span>
+      <span id="assistant-title">
+        <span class="assistant-title-dot" aria-hidden="true"></span>
+        <span id="assistant-title-text"></span>
+      </span>
       <button id="assistant-close" aria-label="Close the assistant">
         <svg
           viewBox="0 0 24 24"
-          width="18"
-          height="18"
+          width="20"
+          height="20"
           fill="none"
           stroke="currentColor"
           stroke-width="2.4"
@@ -132,33 +141,49 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
       </button>
     </header>
 
-    <div id="assistant-log" aria-live="polite"></div>
+    <div id="assistant-body">
+      <div id="assistant-hero">
+        <div id="assistant-hero-badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"></path>
+            <path d="M19 14l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2z"></path>
+          </svg>
+        </div>
+        <h2 id="assistant-hero-heading"></h2>
+        <p id="assistant-hero-sub"></p>
+      </div>
 
-    <div id="assistant-chips"></div>
+      <div id="assistant-log" aria-live="polite"></div>
 
-    <form id="assistant-form" autocomplete="off">
-      <input
-        id="assistant-input"
-        type="text"
-        placeholder="Ask about our people, papers, projects…"
-        aria-label="Ask the site assistant"
-      />
-      <button type="submit" id="assistant-send" aria-label="Send message">
-        <svg
-          viewBox="0 0 24 24"
-          width="18"
-          height="18"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2.2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"></path>
-        </svg>
-      </button>
-    </form>
+      <div id="assistant-chips"></div>
+    </div>
+
+    <div id="assistant-footer">
+      <form id="assistant-form" autocomplete="off">
+        <input
+          id="assistant-input"
+          type="text"
+          placeholder="Ask anything…"
+          aria-label="Ask the site assistant"
+        />
+        <button type="submit" id="assistant-send" aria-label="Send message">
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"></path>
+          </svg>
+        </button>
+      </form>
+      <p id="assistant-disclaimer"></p>
+    </div>
   </div>
 </div>
 
@@ -173,13 +198,19 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
     root.dataset.ready = 'true';
 
     const toggle = document.getElementById('assistant-toggle') as HTMLButtonElement;
+    const overlay = document.getElementById('assistant-overlay') as HTMLElement;
     const panel = document.getElementById('assistant-panel') as HTMLElement;
     const closeBtn = document.getElementById('assistant-close') as HTMLButtonElement;
+    const body = document.getElementById('assistant-body') as HTMLElement;
+    const hero = document.getElementById('assistant-hero') as HTMLElement;
+    const heroHeading = document.getElementById('assistant-hero-heading') as HTMLElement;
+    const heroSub = document.getElementById('assistant-hero-sub') as HTMLElement;
     const log = document.getElementById('assistant-log') as HTMLElement;
     const chips = document.getElementById('assistant-chips') as HTMLElement;
     const form = document.getElementById('assistant-form') as HTMLFormElement;
     const input = document.getElementById('assistant-input') as HTMLInputElement;
-    const title = document.getElementById('assistant-title') as HTMLElement;
+    const titleText = document.getElementById('assistant-title-text') as HTMLElement;
+    const disclaimerEl = document.getElementById('assistant-disclaimer') as HTMLElement;
 
     type PersonFact = {
       name: string;
@@ -204,11 +235,26 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
     const email = root.dataset.email ?? '';
     const author = root.dataset.author ?? '';
     const assistantName = root.dataset.name ?? 'Assistant';
-    const welcome = root.dataset.welcome ?? '';
+    const welcomeHeading = root.dataset.welcomeHeading ?? '';
+    const welcomeSub = root.dataset.welcomeSub ?? '';
+    const disclaimer = root.dataset.disclaimer ?? '';
 
-    title.textContent = assistantName;
+    titleText.textContent = assistantName;
+    heroHeading.textContent = welcomeHeading;
+    heroSub.textContent = welcomeSub;
+    disclaimerEl.textContent = disclaimer;
 
     let greeted = false;
+
+    // Show the welcome hero while no messages exist; hide it once a chat starts.
+    function startConversation() {
+      hero.hidden = true;
+      body.classList.add('is-chatting');
+    }
+    function resetToHero() {
+      hero.hidden = false;
+      body.classList.remove('is-chatting');
+    }
 
     // ── Message bubbles (textContent only — never innerHTML with dynamic text) ──
     function addBubble(who: 'bot' | 'user', text: string): HTMLElement {
@@ -243,14 +289,24 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
       log.scrollTop = log.scrollHeight;
     }
 
-    // ── Quick-nav section chips ────────────────────────────────────────────────
+    // ── Suggested prompts — click to ask, RadarAI-style ────────────────────────
+    const suggestedPrompts = [
+      `What is the ${labFacts.name}?`,
+      'Who are the people in the lab?',
+      'What research does the lab do?',
+      'How can I contact the lab?',
+    ];
     function renderChips() {
       chips.replaceChildren();
-      navItems.forEach((n) => {
-        const b = document.createElement('a');
+      suggestedPrompts.forEach((q) => {
+        const b = document.createElement('button');
+        b.type = 'button';
         b.className = 'assistant-chip';
-        b.href = n.href;
-        b.textContent = n.label;
+        b.textContent = q;
+        b.addEventListener('click', () => {
+          input.value = '';
+          handleQuery(q);
+        });
         chips.appendChild(b);
       });
     }
@@ -472,8 +528,10 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
     async function handleQuery(raw: string) {
       const query = raw.trim();
       if (!query) return;
+      // The first question swaps the welcome hero out for the chat transcript.
+      startConversation();
       addBubble('user', query);
-      // Once the visitor starts asking, drop the section shortcuts so each answer
+      // Once the visitor starts asking, drop the suggested prompts so each answer
       // stands on its own instead of repeating "About / Research / People…".
       chips.replaceChildren();
 
@@ -485,31 +543,34 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
 
     // ── Open / close ───────────────────────────────────────────────────────────
     function open() {
+      overlay.hidden = false;
       panel.hidden = false;
       toggle.setAttribute('aria-expanded', 'true');
       root?.classList.add('is-open');
       if (!greeted) {
         greeted = true;
-        addBubble('bot', welcome);
         renderChips();
       }
-      window.setTimeout(() => input.focus(), 50);
+      window.setTimeout(() => input.focus(), 60);
     }
 
     function close() {
+      overlay.hidden = true;
       panel.hidden = true;
       toggle.setAttribute('aria-expanded', 'false');
       root?.classList.remove('is-open');
       // Reset the whole conversation, so reopening the assistant starts fresh
-      // with just the greeting and the section shortcuts again.
+      // with just the welcome hero and the suggested prompts again.
       log.replaceChildren();
       chips.replaceChildren();
       input.value = '';
       greeted = false;
+      resetToHero();
     }
 
     toggle.addEventListener('click', () => (panel.hidden ? open() : close()));
     closeBtn.addEventListener('click', close);
+    overlay.addEventListener('click', close);
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -576,60 +637,188 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
     bottom: 124px;
   }
 
+  /* Dimmed backdrop behind the centered modal */
+  #assistant-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    background: rgba(10, 10, 12, 0.55);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    animation: assistant-fade 0.2s ease-out;
+  }
+
+  @keyframes assistant-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
   #assistant-panel {
     position: fixed;
-    right: 30px;
-    bottom: 152px;
-    width: 360px;
-    max-width: calc(100vw - 40px);
-    max-height: min(70vh, 560px);
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(680px, calc(100vw - 32px));
+    height: min(78vh, 720px);
     display: flex;
     flex-direction: column;
     overflow: hidden;
     z-index: 9999;
-    border-radius: 16px;
+    border-radius: 22px;
     background: var(--global-card-bg-color, var(--global-bg-color));
     border: 1px solid var(--global-divider-color);
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+    animation: assistant-rise 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes assistant-rise {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -46%) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
   }
 
   #assistant-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 14px;
-    background: var(--global-theme-color);
-    color: var(--global-hover-text-color, #fff);
+    padding: 14px 18px;
+    background: linear-gradient(
+      100deg,
+      var(--purdue-black) 0%,
+      #1c1c1c 55%,
+      var(--purdue-black) 100%
+    );
+    color: #fff;
+    border-bottom: 2px solid var(--purdue-gold);
   }
 
   #assistant-title {
+    display: flex;
+    align-items: center;
+    gap: 9px;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.98rem;
+    letter-spacing: 0.01em;
+  }
+
+  .assistant-title-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--purdue-gold);
+    box-shadow: 0 0 0 3px rgba(207, 185, 145, 0.28);
   }
 
   #assistant-close {
-    background: transparent;
+    background: rgba(255, 255, 255, 0.08);
     border: none;
-    color: inherit;
+    color: #fff;
     cursor: pointer;
     display: grid;
     place-items: center;
-    padding: 2px;
-    border-radius: 6px;
-    opacity: 0.9;
+    padding: 5px;
+    border-radius: 8px;
+    opacity: 0.85;
+    transition:
+      opacity 0.12s ease,
+      background 0.12s ease;
   }
 
   #assistant-close:hover {
     opacity: 1;
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  /* Scrollable middle: hero (when idle) or the chat transcript (when chatting) */
+  #assistant-body {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Welcome hero (RadarAI-style) ─────────────────────────────────────────── */
+  #assistant-hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 14px;
+    padding: 40px 32px;
+    background:
+      radial-gradient(
+        circle at 50% 22%,
+        color-mix(in srgb, var(--purdue-gold) 22%, transparent) 0%,
+        transparent 62%
+      );
+  }
+
+  #assistant-hero-badge {
+    display: grid;
+    place-items: center;
+    width: 66px;
+    height: 66px;
+    border-radius: 20px;
+    color: var(--purdue-black);
+    background: linear-gradient(145deg, var(--purdue-gold), #e6d6b3);
+    box-shadow: 0 10px 28px rgba(207, 185, 145, 0.5);
+    animation: assistant-float 4s ease-in-out infinite;
+  }
+
+  @keyframes assistant-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+
+  #assistant-hero-heading {
+    margin: 0;
+    font-size: 1.65rem;
+    line-height: 1.25;
+    font-weight: 700;
+    max-width: 22ch;
+    background: linear-gradient(
+      100deg,
+      var(--global-text-color),
+      color-mix(in srgb, var(--global-text-color) 55%, var(--purdue-gold))
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  #assistant-hero-sub {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--global-text-color-light, var(--global-text-color));
+    max-width: 46ch;
   }
 
   #assistant-log {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px 14px;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    padding: 18px 18px 6px;
+  }
+
+  #assistant-log:empty {
+    display: none;
   }
 
   .assistant-msg {
@@ -716,75 +905,125 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
     white-space: nowrap;
   }
 
+  /* Suggested-prompt chips — centered under the hero, hidden once chatting */
   #assistant-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    padding: 0 14px 10px;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 24px 26px;
   }
 
   #assistant-chips:empty {
     display: none;
   }
 
+  #assistant-body.is-chatting #assistant-chips {
+    display: none;
+  }
+
   .assistant-chip {
-    font-size: 0.8rem;
-    padding: 5px 11px;
+    font-size: 0.85rem;
+    padding: 8px 15px;
     border-radius: 999px;
+    cursor: pointer;
     text-decoration: none;
-    background: transparent;
-    border: 1px solid var(--global-divider-color);
+    background: color-mix(in srgb, var(--purdue-gold) 12%, var(--global-card-bg-color));
+    border: 1px solid color-mix(in srgb, var(--purdue-gold) 40%, var(--global-divider-color));
     color: var(--global-text-color);
     transition:
-      border-color 0.12s ease,
-      color 0.12s ease;
+      border-color 0.14s ease,
+      background 0.14s ease,
+      transform 0.14s ease;
   }
 
   .assistant-chip:hover {
-    border-color: var(--global-theme-color);
-    color: var(--global-theme-color);
+    border-color: var(--purdue-gold);
+    background: color-mix(in srgb, var(--purdue-gold) 24%, var(--global-card-bg-color));
+    transform: translateY(-1px);
+  }
+
+  /* ── Footer: big input + disclaimer ───────────────────────────────────────── */
+  #assistant-footer {
+    padding: 14px 18px 12px;
+    border-top: 1px solid var(--global-divider-color);
+    background: var(--global-card-bg-color, var(--global-bg-color));
   }
 
   #assistant-form {
     display: flex;
-    gap: 8px;
-    padding: 12px 14px;
-    border-top: 1px solid var(--global-divider-color);
+    gap: 10px;
+    align-items: center;
+    padding: 6px 6px 6px 8px;
+    border-radius: 16px;
+    border: 1.5px solid var(--global-divider-color);
+    background: var(--global-bg-color);
+    transition:
+      border-color 0.14s ease,
+      box-shadow 0.14s ease;
+  }
+
+  #assistant-form:focus-within {
+    border-color: var(--purdue-gold);
+    box-shadow: 0 0 0 4px rgba(207, 185, 145, 0.22);
   }
 
   #assistant-input {
     flex: 1;
     min-width: 0;
-    padding: 9px 12px;
-    border-radius: 10px;
-    border: 1px solid var(--global-divider-color);
-    background: var(--global-bg-color);
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
     color: var(--global-text-color);
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 
   #assistant-input:focus {
     outline: none;
-    border-color: var(--global-theme-color);
   }
 
   #assistant-send {
     display: grid;
     place-items: center;
-    width: 40px;
+    width: 44px;
+    height: 44px;
+    flex: none;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
-    background: var(--global-theme-color);
-    color: var(--global-hover-text-color, #fff);
+    color: var(--purdue-black);
+    background: linear-gradient(145deg, var(--purdue-gold), #e0cfa8);
+    box-shadow: 0 4px 12px rgba(207, 185, 145, 0.45);
+    transition:
+      transform 0.12s ease,
+      box-shadow 0.12s ease;
   }
 
-  @media (max-width: 480px) {
+  #assistant-send:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 18px rgba(207, 185, 145, 0.6);
+  }
+
+  #assistant-disclaimer {
+    margin: 10px 4px 0;
+    text-align: center;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--global-text-color-light, var(--global-text-color));
+    opacity: 0.75;
+  }
+
+  @media (max-width: 520px) {
     #assistant-panel {
-      right: 16px;
-      left: 16px;
-      width: auto;
-      bottom: 148px;
+      width: calc(100vw - 20px);
+      height: min(88vh, 100vh - 40px);
+      border-radius: 18px;
+    }
+    #assistant-hero {
+      padding: 28px 20px;
+    }
+    #assistant-hero-heading {
+      font-size: 1.4rem;
     }
     #assistant-toggle {
       right: 20px;
@@ -793,7 +1032,13 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
 
   @media (prefers-reduced-motion: reduce) {
     #assistant-toggle,
-    .assistant-result {
+    .assistant-result,
+    .assistant-chip,
+    #assistant-send,
+    #assistant-panel,
+    #assistant-overlay,
+    #assistant-hero-badge {
+      animation: none;
       transition: none;
     }
   }
