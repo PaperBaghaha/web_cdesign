@@ -94,8 +94,8 @@ const labFacts = {
 };
 
 const logoIcon = `${base}/assets/img/cdl-logo-icon.png`;
-const assistantName = 'Purdue Assistant AI';
-const welcomeHeading = `Welcome to ${assistantName}! How can I assist you today?`;
+const assistantName = 'CDL AI Assistant';
+const welcomeHeading = `Welcome to ${assistantName}! How can I help you today?`;
 const welcomeSub = `Ask me anything about the ${labFacts.name} — our people, publications, research, and courses.`;
 const disclaimer = `${assistantName} is AI and can make mistakes. It only knows what's on this website.`;
 ---
@@ -432,31 +432,25 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
           cleaned,
         )
       ) {
-        addBubble(
-          'bot',
-          `Hi there! 👋 What would you like to know about the ${labFacts.name}? You can ask about our people, publications, research, or courses.`,
-        );
+        addBubble('bot', `Hello! How can I help you today?`);
         return 'smalltalk';
       }
 
       // Small talk: thanks.
       if (/^(thanks|thank\s?you|thx|ty|cheers|much appreciated|appreciate it)$/.test(cleaned)) {
-        addBubble('bot', `You're welcome! Is there anything else I can help you find?`);
+        addBubble('bot', `You're welcome!`);
         return 'smalltalk';
       }
 
       // Small talk: goodbye.
       if (/^(bye+|goodbye|see\s?you|see ya|cya|take care|good night)$/.test(cleaned)) {
-        addBubble('bot', `Goodbye! Feel free to come back anytime you have a question.`);
+        addBubble('bot', `Goodbye! Come back anytime.`);
         return 'smalltalk';
       }
 
       // Small talk: how are you.
       if (/^(how are you|hows it going|how do you do|whats up)$/.test(cleaned)) {
-        addBubble(
-          'bot',
-          `I'm doing great, thanks for asking! What can I help you find about the ${labFacts.name}?`,
-        );
+        addBubble('bot', `I'm good, thanks! How can I help you today?`);
         return 'smalltalk';
       }
 
@@ -569,6 +563,11 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     toggle.addEventListener('click', () => (panel.hidden ? open() : close()));
     closeBtn.addEventListener('click', close);
     overlay.addEventListener('click', close);
+    // Navbar "CDL AI" button (and any other launcher) opens the assistant.
+    window.addEventListener('assistant:open', () => {
+      if (panel.hidden) open();
+      else window.setTimeout(() => input.focus(), 30);
+    });
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -631,14 +630,20 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     bottom: 124px;
   }
 
-  /* Dimmed backdrop behind the centered modal */
+  /* Keep any logo/image inside the widget from ever overflowing its box. */
+  #site-assistant img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  /* Dimmed backdrop behind the side panel */
   #assistant-overlay {
     position: fixed;
     inset: 0;
     z-index: 9998;
-    background: rgba(10, 10, 12, 0.55);
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
+    background: rgba(10, 10, 12, 0.45);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
     animation: assistant-fade 0.2s ease-out;
   }
 
@@ -651,32 +656,32 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     }
   }
 
+  /* Docked half-screen panel on the right — big, but never covers everything. */
   #assistant-panel {
     position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: min(680px, calc(100vw - 32px));
-    height: min(78vh, 720px);
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(48vw, 560px);
+    min-width: 360px;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     z-index: 9999;
-    border-radius: 22px;
+    border-radius: 20px 0 0 20px;
     background: var(--global-card-bg-color, var(--global-bg-color));
-    border: 1px solid var(--global-divider-color);
-    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
-    animation: assistant-rise 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    border-left: 1px solid var(--global-divider-color);
+    box-shadow: -24px 0 70px rgba(0, 0, 0, 0.4);
+    animation: assistant-slide 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  @keyframes assistant-rise {
+  @keyframes assistant-slide {
     from {
-      opacity: 0;
-      transform: translate(-50%, -46%) scale(0.97);
+      transform: translateX(100%);
     }
     to {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
+      transform: translateX(0);
     }
   }
 
@@ -816,8 +821,8 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   #assistant-log {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 18px 18px 6px;
+    gap: 18px;
+    padding: 24px 22px 8px;
   }
 
   #assistant-log:empty {
@@ -825,11 +830,11 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   }
 
   .assistant-msg {
-    max-width: 82%;
-    padding: 10px 14px;
-    border-radius: 18px;
-    font-size: 0.92rem;
-    line-height: 1.45;
+    max-width: 80%;
+    padding: 13px 17px;
+    border-radius: 20px;
+    font-size: 0.98rem;
+    line-height: 1.55;
     word-wrap: break-word;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.14);
     /* each bubble animates in like an incoming text message */
@@ -1016,11 +1021,12 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     opacity: 0.75;
   }
 
-  @media (max-width: 520px) {
+  /* On narrow screens the half-panel becomes a full-width sheet. */
+  @media (max-width: 820px) {
     #assistant-panel {
-      width: calc(100vw - 20px);
-      height: min(88vh, 100vh - 40px);
-      border-radius: 18px;
+      width: 100vw;
+      min-width: 0;
+      border-radius: 0;
     }
     #assistant-hero {
       padding: 28px 20px;

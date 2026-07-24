@@ -128,11 +128,19 @@ const items = site.navbar.items;
         })
       }
 
+      <button type="button" class="nav-ai-btn" data-assistant-open aria-label="Open CDL AI Assistant">
+        <img src={`${site.base}/assets/img/cdl-logo-icon.png`} alt="" width="512" height="512" />
+        <span>CDL AI</span>
+      </button>
+
       <ThemeToggle />
     </div>
 
-    <!-- Mobile controls (theme + hamburger) -->
+    <!-- Mobile controls (AI + theme + hamburger) -->
     <div class="flex items-center gap-2 md:hidden">
+      <button type="button" class="nav-ai-btn nav-ai-btn--compact" data-assistant-open aria-label="Open CDL AI Assistant">
+        <img src={`${site.base}/assets/img/cdl-logo-icon.png`} alt="" width="512" height="512" />
+      </button>
       <ThemeToggle />
       <button
         id="navbar-toggler"
@@ -239,6 +247,47 @@ const items = site.navbar.items;
 </script>
 
 <style>
+  /* ── AI assistant nav button (RadarAI-style pill) ───────────────────── */
+  .nav-ai-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0 0.35rem;
+    padding: 5px 13px 5px 6px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: #000;
+    background: linear-gradient(135deg, #cfb991, #e6d6b3);
+    box-shadow: 0 2px 10px rgba(207, 185, 145, 0.5);
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+  .nav-ai-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 16px rgba(207, 185, 145, 0.7);
+  }
+  .nav-ai-btn img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    padding: 2px;
+    object-fit: contain;
+  }
+  .nav-ai-btn--compact {
+    padding: 4px;
+    margin: 0;
+  }
+  .nav-ai-btn--compact img {
+    width: 26px;
+    height: 26px;
+  }
+
   /* ── Brand logo ─────────────────────────────────────────────────────── */
   .navbar-logo {
     height: 34px;
@@ -443,6 +492,15 @@ const items = site.navbar.items;
     navbarController?.abort();
     navbarController = new AbortController();
     const { signal } = navbarController;
+
+    // ── AI assistant launch buttons — tell the assistant to open ─────────
+    document.querySelectorAll('[data-assistant-open]').forEach((btn) => {
+      btn.addEventListener(
+        'click',
+        () => window.dispatchEvent(new CustomEvent('assistant:open')),
+        { signal },
+      );
+    });
 
     // ── Mobile hamburger ────────────────────────────────────────────────
     const toggler = document.getElementById('navbar-toggler') as HTMLButtonElement | null;
