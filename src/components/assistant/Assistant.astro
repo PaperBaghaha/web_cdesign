@@ -890,7 +890,9 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     display: none;
   }
 
-  .assistant-msg {
+  /* Chat elements are created by JS at runtime, so they never receive Astro's
+     scoped data-attribute — these rules must be :global to actually apply. */
+  :global(.assistant-msg) {
     max-width: 100%;
     word-wrap: break-word;
     /* each message animates in like an incoming text message */
@@ -909,7 +911,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   }
 
   /* Bot reply: plain text, no bubble — reads like a natural assistant answer */
-  .assistant-msg--bot {
+  :global(.assistant-msg--bot) {
     align-self: stretch;
     background: transparent;
     border: none;
@@ -921,7 +923,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   }
 
   /* User message: solid card bubble clearly on the right */
-  .assistant-msg--user {
+  :global(.assistant-msg--user) {
     align-self: flex-end;
     max-width: 82%;
     background: color-mix(in srgb, var(--global-text-color) 22%, var(--global-bg-color));
@@ -934,7 +936,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     line-height: 1.55;
   }
 
-  .assistant-results {
+  :global(.assistant-results) {
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -945,7 +947,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     padding: 0;
   }
 
-  .assistant-result {
+  :global(.assistant-result) {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
@@ -961,17 +963,17 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       transform 0.12s ease;
   }
 
-  .assistant-result:hover {
+  :global(.assistant-result:hover) {
     border-color: var(--global-theme-color);
     transform: translateX(2px);
   }
 
-  .assistant-result-title {
+  :global(.assistant-result-title) {
     font-size: 0.88rem;
     font-weight: 500;
   }
 
-  .assistant-result-section {
+  :global(.assistant-result-section) {
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -996,7 +998,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     display: none;
   }
 
-  .assistant-chip {
+  :global(.assistant-chip) {
     font-size: 0.85rem;
     padding: 8px 15px;
     border-radius: 999px;
@@ -1011,7 +1013,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       transform 0.14s ease;
   }
 
-  .assistant-chip:hover {
+  :global(.assistant-chip:hover) {
     border-color: var(--purdue-gold);
     background: color-mix(in srgb, var(--purdue-gold) 24%, var(--global-card-bg-color));
     transform: translateY(-1px);
@@ -1151,13 +1153,13 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   }
 
   /* Copy action under substantive bot answers */
-  .assistant-msg-actions {
+  :global(.assistant-msg-actions) {
     margin-top: 8px;
     display: flex;
     gap: 8px;
   }
 
-  .assistant-copy {
+  :global(.assistant-copy) {
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -1174,7 +1176,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       color 0.12s ease;
   }
 
-  .assistant-copy:hover {
+  :global(.assistant-copy:hover) {
     border-color: var(--purdue-gold);
     color: var(--global-text-color);
   }
