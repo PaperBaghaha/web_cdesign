@@ -362,16 +362,14 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
       return local.slice(0, 6);
     }
 
-    async function handleQuery(raw: string) {
-      const query = raw.trim();
-      if (!query) return;
-      addBubble('user', query);
-
+    // Answer a single query. Returns true when a real answer was given (so the
+    // caller can offer a follow-up), false when nothing matched.
+    async function route(query: string): Promise<boolean> {
       // Intent: contact / how to reach the author.
       if (/\b(contact|email|e-?mail|reach|get in touch|message)\b/i.test(query) && email) {
         addBubble('bot', `You can reach ${author} by email:`);
         addLinks([{ title: email, href: `mailto:${email}`, section: 'Email' }]);
-        return;
+        return true;
       }
 
       const navByLabel = (label: string) =>
@@ -386,17 +384,15 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
       const personMatch = findPerson(query);
       if (personMatch && (personMatch.full || asksAboutPerson)) {
         answerPerson(personMatch.person);
-        return;
+        return true;
       }
 
       // Intent: what/who is the lab — describe it and point to About.
       if (/\b(what|who|tell|about|describe)\b/i.test(query) && /\b(lab|cdl|convergence|you|this|research)\b/i.test(query)) {
         if (labFacts.description) addBubble('bot', labFacts.description);
         const about = navByLabel('About') ?? navByLabel('Home');
-        const research = navByLabel('Research') ?? navByLabel('Projects');
-        const links = [about, research].filter(Boolean) as NavItem[];
-        if (links.length) addLinks(links.map((l) => ({ title: l.label, href: l.href })));
-        return;
+        if (about) addLinks([{ title: about.label, href: about.href }]);
+        return true;
       }
 
       // Intent: how many publications / papers.
@@ -404,7 +400,7 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
         addBubble('bot', `The lab lists ${labFacts.publicationCount} publications. Browse them all here:`);
         const pubs = navByLabel('Publications');
         if (pubs) addLinks([{ title: 'Publications', href: pubs.href }]);
-        return;
+        return true;
       }
 
       // Intent: how many people / members.
@@ -412,7 +408,7 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
         addBubble('bot', `There are ${labFacts.peopleCount} people listed. Meet the team here:`);
         const ppl = navByLabel('People') ?? navByLabel('Team');
         if (ppl) addLinks([{ title: 'People', href: ppl.href }]);
-        return;
+        return true;
       }
 
       const thinking = addBubble('bot', 'Looking…');
@@ -422,11 +418,27 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
       if (results.length > 0) {
         addBubble('bot', `Here's what I found for “${query}”:`);
         addLinks(results);
-      } else {
-        addBubble(
-          'bot',
-          `Sorry, I don't have information about that. I can only answer questions about the Convergence Design Lab — our people, publications, research projects, and courses. Try different words, or pick a section below.`,
-        );
+        return true;
+      }
+
+      addBubble(
+        'bot',
+        `Sorry, I don't have information about that. I can only answer questions about the Convergence Design Lab — our people, publications, research projects, and courses. Try rephrasing your question.`,
+      );
+      return false;
+    }
+
+    async function handleQuery(raw: string) {
+      const query = raw.trim();
+      if (!query) return;
+      addBubble('user', query);
+      // Once the visitor starts asking, drop the section shortcuts so each answer
+      // stands on its own instead of repeating "About / Research / People…".
+      chips.replaceChildren();
+
+      const answered = await route(query);
+      if (answered) {
+        addBubble('bot', 'Is there anything else I can help you with?');
       }
     }
 
