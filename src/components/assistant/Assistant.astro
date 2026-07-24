@@ -166,11 +166,6 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
         />
         <div id="assistant-controls">
           <div class="assistant-controls-left">
-            <button type="button" id="assistant-attach" aria-label="Attach a file" title="File upload coming soon">
-              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M21.44 11.05l-9.19 9.19a5 5 0 0 1-7.07-7.07l9.19-9.19a3 3 0 0 1 4.24 4.24l-9.2 9.19a1 1 0 0 1-1.41-1.41l8.49-8.49"></path>
-              </svg>
-            </button>
             <button type="button" id="assistant-new-thread">
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
                 <path d="M12 5v14M5 12h14"></path>
@@ -226,7 +221,6 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     const titleText = document.getElementById('assistant-title-text') as HTMLElement;
     const disclaimerEl = document.getElementById('assistant-disclaimer') as HTMLElement;
     const newThreadBtn = document.getElementById('assistant-new-thread') as HTMLButtonElement;
-    const attachBtn = document.getElementById('assistant-attach') as HTMLButtonElement;
     const modeSelect = document.getElementById('assistant-mode') as HTMLSelectElement;
 
     // "Fast" gives a couple of top hits; "Detailed" returns more related links.
@@ -641,16 +635,6 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     // Answer mode selector (Fast / Detailed).
     modeSelect.addEventListener('change', () => {
       mode = modeSelect.value === 'detailed' ? 'detailed' : 'fast';
-    });
-
-    // File upload isn't wired to a backend — be upfront instead of failing silently.
-    attachBtn.addEventListener('click', () => {
-      startConversation();
-      chips.replaceChildren();
-      addBubble(
-        'bot',
-        `File and image uploads aren't available on this site yet — but you can ask me anything about the ${labFacts.name} in text.`,
-      );
     });
 
     document.addEventListener('keydown', (e) => {
@@ -1086,9 +1070,8 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     gap: 6px;
   }
 
-  /* Subtle text/icon buttons: New Thread + attach */
-  #assistant-new-thread,
-  #assistant-attach {
+  /* Subtle text button: New Thread */
+  #assistant-new-thread {
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -1106,12 +1089,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       background 0.12s ease;
   }
 
-  #assistant-attach {
-    padding: 6px;
-  }
-
-  #assistant-new-thread:hover,
-  #assistant-attach:hover {
+  #assistant-new-thread:hover {
     border-color: var(--purdue-gold);
     color: var(--global-text-color);
     background: color-mix(in srgb, var(--purdue-gold) 12%, transparent);
