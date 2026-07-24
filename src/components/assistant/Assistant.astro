@@ -362,14 +362,55 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
       return local.slice(0, 6);
     }
 
-    // Answer a single query. Returns true when a real answer was given (so the
-    // caller can offer a follow-up), false when nothing matched.
-    async function route(query: string): Promise<boolean> {
+    // Answer a single query.
+    //  'answer'    → a real answer was given; offer a follow-up afterwards
+    //  'smalltalk' → greeting/thanks/bye handled; no follow-up needed
+    //  'none'      → nothing matched
+    async function route(query: string): Promise<'answer' | 'smalltalk' | 'none'> {
+      const cleaned = query
+        .toLowerCase()
+        .replace(/[^a-z\s]/g, '')
+        .trim();
+
+      // Small talk: greetings — just say hi back, don't run a search.
+      if (
+        /^(hi+|hey+|hello+|helo|yo+|hiya|howdy|sup|wassup|greetings|good\s?(morning|afternoon|evening|day))(\s?(there|everyone|assistant))?$/.test(
+          cleaned,
+        )
+      ) {
+        addBubble(
+          'bot',
+          `Hi there! 👋 What would you like to know about the ${labFacts.name}? You can ask about our people, publications, research, or courses.`,
+        );
+        return 'smalltalk';
+      }
+
+      // Small talk: thanks.
+      if (/^(thanks|thank\s?you|thx|ty|cheers|much appreciated|appreciate it)$/.test(cleaned)) {
+        addBubble('bot', `You're welcome! Is there anything else I can help you find?`);
+        return 'smalltalk';
+      }
+
+      // Small talk: goodbye.
+      if (/^(bye+|goodbye|see\s?you|see ya|cya|take care|good night)$/.test(cleaned)) {
+        addBubble('bot', `Goodbye! Feel free to come back anytime you have a question.`);
+        return 'smalltalk';
+      }
+
+      // Small talk: how are you.
+      if (/^(how are you|hows it going|how do you do|whats up)$/.test(cleaned)) {
+        addBubble(
+          'bot',
+          `I'm doing great, thanks for asking! What can I help you find about the ${labFacts.name}?`,
+        );
+        return 'smalltalk';
+      }
+
       // Intent: contact / how to reach the author.
       if (/\b(contact|email|e-?mail|reach|get in touch|message)\b/i.test(query) && email) {
         addBubble('bot', `You can reach ${author} by email:`);
         addLinks([{ title: email, href: `mailto:${email}`, section: 'Email' }]);
-        return true;
+        return 'answer';
       }
 
       const navByLabel = (label: string) =>
@@ -384,7 +425,7 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
       const personMatch = findPerson(query);
       if (personMatch && (personMatch.full || asksAboutPerson)) {
         answerPerson(personMatch.person);
-        return true;
+        return 'answer';
       }
 
       // Intent: what/who is the lab — describe it and point to About.
@@ -392,7 +433,7 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
         if (labFacts.description) addBubble('bot', labFacts.description);
         const about = navByLabel('About') ?? navByLabel('Home');
         if (about) addLinks([{ title: about.label, href: about.href }]);
-        return true;
+        return 'answer';
       }
 
       // Intent: how many publications / papers.
@@ -400,7 +441,7 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
         addBubble('bot', `The lab lists ${labFacts.publicationCount} publications. Browse them all here:`);
         const pubs = navByLabel('Publications');
         if (pubs) addLinks([{ title: 'Publications', href: pubs.href }]);
-        return true;
+        return 'answer';
       }
 
       // Intent: how many people / members.
@@ -408,7 +449,7 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
         addBubble('bot', `There are ${labFacts.peopleCount} people listed. Meet the team here:`);
         const ppl = navByLabel('People') ?? navByLabel('Team');
         if (ppl) addLinks([{ title: 'People', href: ppl.href }]);
-        return true;
+        return 'answer';
       }
 
       const thinking = addBubble('bot', 'Looking…');
@@ -418,14 +459,14 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
       if (results.length > 0) {
         addBubble('bot', `Here's what I found for “${query}”:`);
         addLinks(results);
-        return true;
+        return 'answer';
       }
 
       addBubble(
         'bot',
         `Sorry, I don't have information about that. I can only answer questions about the Convergence Design Lab — our people, publications, research projects, and courses. Try rephrasing your question.`,
       );
-      return false;
+      return 'none';
     }
 
     async function handleQuery(raw: string) {
@@ -436,8 +477,8 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
       // stands on its own instead of repeating "About / Research / People…".
       chips.replaceChildren();
 
-      const answered = await route(query);
-      if (answered) {
+      const status = await route(query);
+      if (status === 'answer') {
         addBubble('bot', 'Is there anything else I can help you with?');
       }
     }
