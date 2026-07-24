@@ -907,14 +907,9 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   }
 
   .assistant-msg {
-    max-width: 80%;
-    padding: 13px 17px;
-    border-radius: 20px;
-    font-size: 0.98rem;
-    line-height: 1.55;
+    max-width: 100%;
     word-wrap: break-word;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.14);
-    /* each bubble animates in like an incoming text message */
+    /* each message animates in like an incoming text message */
     animation: assistant-pop 0.18s ease-out;
   }
 
@@ -929,20 +924,29 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     }
   }
 
+  /* Bot reply: plain text, no bubble — reads like a natural assistant answer */
   .assistant-msg--bot {
-    align-self: flex-start;
-    /* tinted surface so the bot bubble clearly stands out from the panel */
-    background: color-mix(in srgb, var(--global-theme-color) 14%, var(--global-card-bg-color));
-    border: 1px solid var(--global-divider-color);
+    align-self: stretch;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
     color: var(--global-text-color);
-    border-bottom-left-radius: 5px;
+    font-size: 1.02rem;
+    line-height: 1.65;
   }
 
+  /* User message: subtle neutral grey bubble tucked to the top-right */
   .assistant-msg--user {
     align-self: flex-end;
-    background: var(--global-theme-color);
-    color: var(--global-hover-text-color, #fff);
+    max-width: 82%;
+    background: color-mix(in srgb, var(--global-text-color) 9%, var(--global-bg-color));
+    color: var(--global-text-color);
+    padding: 10px 15px;
+    border-radius: 16px;
     border-bottom-right-radius: 5px;
+    font-size: 0.98rem;
+    line-height: 1.55;
   }
 
   .assistant-results {
