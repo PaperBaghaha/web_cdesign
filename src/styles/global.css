@@ -881,11 +881,12 @@
   }
   .publications ol.bibliography li .title {
     font-weight: 700;
+    font-size: 1.0625rem;
     color: var(--global-text-color);
   }
   .publications ol.bibliography li .author {
     color: var(--global-text-color);
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
   }
   .publications ol.bibliography li .author a {
     border-bottom: 1px dashed var(--global-theme-color);
@@ -903,7 +904,7 @@
   }
   .publications ol.bibliography li .periodical {
     color: var(--global-text-color-light);
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
   }
   .publications ol.bibliography li .links {
     display: flex;

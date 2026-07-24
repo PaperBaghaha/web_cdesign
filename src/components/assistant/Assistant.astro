@@ -1,7 +1,10 @@
 ---
 import type { NavItem } from '@config/site';
 import { site } from '@config/site';
+import { getAuthors, getTitle, getVenue, getYear, parseBibtex } from '@utils/bibtex';
 import { getCollection } from 'astro:content';
+
+import bibRaw from '../../data/papers.bib?raw';
 
 const base = site.base || '';
 
@@ -51,16 +54,45 @@ const teaching = (await getCollection('teaching')).map((t): SearchItem => ({
   keywords: t.data.term ?? '',
 }));
 
-const contentItems: SearchItem[] = [...posts, ...projects, ...teaching];
+// ── Publications — every paper is answerable by title, authors, venue, year ──
+const publications = parseBibtex(bibRaw).map((entry): SearchItem => ({
+  title: getTitle(entry),
+  section: 'Publication',
+  href: `${base}/publications/${entry.key}/`,
+  keywords: [getAuthors(entry), getVenue(entry), String(getYear(entry) || ''), entry.fields.abbr ?? '']
+    .filter(Boolean)
+    .join(' '),
+}));
+
+// ── People — lab members answerable by name and role/interests ──
+const people = (await getCollection('people'))
+  .filter((p) => !p.data.noPage)
+  .map((p): SearchItem => ({
+    title: p.data.name,
+    section: 'People',
+    href: `${base}/people/${p.id}/`,
+    keywords: [p.data.role ?? '', ...(p.data.interests ?? [])].join(' '),
+  }));
+
+const contentItems: SearchItem[] = [...publications, ...people, ...projects, ...posts, ...teaching];
+
+// ── Lab facts — short direct answers for common "what/who is this lab" questions ──
+const labFacts = {
+  name: site.title ?? site.author.name,
+  description: site.description ?? '',
+  publicationCount: publications.length,
+  peopleCount: people.length,
+};
 
 const assistantName = `${site.author.name.split(' ')[0]}'s assistant`;
-const welcome = `Hi! I can help you find your way around this site. Ask me something like “where are the publications?” or pick a section below.`;
+const welcome = `Hi! Ask me anything about the Convergence Design Lab — our people, research projects, publications, or where to find something on the site.`;
 ---
 
 <div
   id="site-assistant"
   data-nav-items={JSON.stringify(navItems)}
   data-content-items={JSON.stringify(contentItems)}
+  data-lab-facts={JSON.stringify(labFacts)}
   data-pagefind-base={base}
   data-email={site.author.email}
   data-author={site.author.name}
@@ -98,7 +130,7 @@ const welcome = `Hi! I can help you find your way around this site. Ask me somet
       <input
         id="assistant-input"
         type="text"
-        placeholder="Ask me where to find something…"
+        placeholder="Ask about our people, papers, projects…"
         aria-label="Ask the site assistant"
       />
       <button type="submit" id="assistant-send" aria-label="Send message">
@@ -141,6 +173,14 @@ const welcome = `Hi! I can help you find your way around this site. Ask me somet
 
     const navItems: NavItem[] = JSON.parse(root.dataset.navItems ?? '[]');
     const contentItems: ContentItem[] = JSON.parse(root.dataset.contentItems ?? '[]');
+    const labFacts: {
+      name: string;
+      description: string;
+      publicationCount: number;
+      peopleCount: number;
+    } = JSON.parse(
+      root.dataset.labFacts ?? '{"name":"","description":"","publicationCount":0,"peopleCount":0}',
+    );
     const pagefindBase = root.dataset.pagefindBase ?? '';
     const email = root.dataset.email ?? '';
     const author = root.dataset.author ?? '';
@@ -211,27 +251,63 @@ const welcome = `Hi! I can help you find your way around this site. Ask me somet
       return pagefind;
     }
 
-    async function search(query: string) {
-      const q = query.toLowerCase();
+    // Question / filler words that shouldn't drive matching.
+    const STOPWORDS = new Set([
+      'a', 'an', 'the', 'is', 'are', 'was', 'were', 'do', 'does', 'did', 'of', 'in', 'on',
+      'at', 'to', 'for', 'and', 'or', 'with', 'about', 'who', 'what', 'when', 'where', 'which',
+      'how', 'why', 'me', 'i', 'you', 'your', 'my', 'can', 'could', 'would', 'tell', 'show',
+      'find', 'give', 'any', 'some', 'there', 'their', 'have', 'has', 'this', 'that', 'from',
+      'by', 'it', 'lab', 'cdl',
+    ]);
 
+    function tokenize(s: string): string[] {
+      return (s.toLowerCase().match(/[a-z0-9]+/g) ?? []).filter((w) => !STOPWORDS.has(w));
+    }
+
+    // Token-scored search over the pre-built index (publications, people, projects,
+    // posts, courses). Works identically in `yarn dev` and production.
+    function localSearch(query: string) {
+      const terms = tokenize(query);
+      if (terms.length === 0) return [];
+      return contentItems
+        .map((c) => {
+          const title = c.title.toLowerCase();
+          const hay = `${title} ${(c.keywords ?? '').toLowerCase()}`;
+          let score = 0;
+          for (const t of terms) {
+            if (title.includes(t)) score += 3; // title hits weigh most
+            else if (hay.includes(t)) score += 1;
+          }
+          return { c, score };
+        })
+        .filter((x) => x.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 6)
+        .map((x) => ({ title: x.c.title, href: x.c.href, section: x.c.section }));
+    }
+
+    async function search(query: string) {
+      const local = localSearch(query);
+
+      // In production, Pagefind adds full-text page matches. Merge, de-duplicating by href.
       const pf = await loadPagefind();
       if (pf) {
-        const response = await pf.search(q);
-        const data = await Promise.all(response.results.slice(0, 6).map((r: any) => r.data()));
-        if (data.length > 0) {
-          return data.map((d: any) => ({
-            title: d.meta?.title || d.url,
-            href: d.url,
-            section: '',
-          }));
+        try {
+          const response = await pf.search(tokenize(query).join(' ') || query);
+          const data = await Promise.all(response.results.slice(0, 6).map((r: any) => r.data()));
+          const seen = new Set(local.map((r) => r.href.replace(/\/$/, '')));
+          for (const d of data) {
+            const href = (d.url as string) ?? '';
+            if (!href || seen.has(href.replace(/\/$/, ''))) continue;
+            seen.add(href.replace(/\/$/, ''));
+            local.push({ title: d.meta?.title || href, href, section: '' });
+          }
+        } catch {
+          /* pagefind absent in dev — local results are enough */
         }
       }
 
-      // Fallback: filter the pre-built title/keyword index (works in `yarn dev`).
-      return contentItems
-        .filter((c) => `${c.title} ${c.keywords ?? ''}`.toLowerCase().includes(q))
-        .slice(0, 6)
-        .map((c) => ({ title: c.title, href: c.href, section: c.section }));
+      return local.slice(0, 6);
     }
 
     async function handleQuery(raw: string) {
@@ -246,6 +322,35 @@ const welcome = `Hi! I can help you find your way around this site. Ask me somet
         return;
       }
 
+      const navByLabel = (label: string) =>
+        navItems.find((n) => n.label.toLowerCase() === label.toLowerCase());
+
+      // Intent: what/who is the lab — describe it and point to About.
+      if (/\b(what|who|tell|about|describe)\b/i.test(query) && /\b(lab|cdl|convergence|you|this|research)\b/i.test(query)) {
+        if (labFacts.description) addBubble('bot', labFacts.description);
+        const about = navByLabel('About') ?? navByLabel('Home');
+        const research = navByLabel('Research') ?? navByLabel('Projects');
+        const links = [about, research].filter(Boolean) as NavItem[];
+        if (links.length) addLinks(links.map((l) => ({ title: l.label, href: l.href })));
+        return;
+      }
+
+      // Intent: how many publications / papers.
+      if (/\bhow many\b/i.test(query) && /\b(publication|paper|pub)/i.test(query)) {
+        addBubble('bot', `The lab lists ${labFacts.publicationCount} publications. Browse them all here:`);
+        const pubs = navByLabel('Publications');
+        if (pubs) addLinks([{ title: 'Publications', href: pubs.href }]);
+        return;
+      }
+
+      // Intent: how many people / members.
+      if (/\bhow many\b/i.test(query) && /\b(people|member|student|researcher)/i.test(query)) {
+        addBubble('bot', `There are ${labFacts.peopleCount} people listed. Meet the team here:`);
+        const ppl = navByLabel('People') ?? navByLabel('Team');
+        if (ppl) addLinks([{ title: 'People', href: ppl.href }]);
+        return;
+      }
+
       const thinking = addBubble('bot', 'Looking…');
       const results = await search(query);
       thinking.remove();
@@ -256,7 +361,7 @@ const welcome = `Hi! I can help you find your way around this site. Ask me somet
       } else {
         addBubble(
           'bot',
-          `I couldn't find a page matching that. Try one of the sections below, or rephrase your question.`,
+          `I couldn't find anything about that in the lab's pages. Try different words — a person's name, a paper title, or a research topic — or pick a section below.`,
         );
       }
     }
