@@ -459,6 +459,12 @@ const welcome = `Hi! Ask me anything about the Convergence Design Lab — our pe
       panel.hidden = true;
       toggle.setAttribute('aria-expanded', 'false');
       root?.classList.remove('is-open');
+      // Reset the whole conversation, so reopening the assistant starts fresh
+      // with just the greeting and the section shortcuts again.
+      log.replaceChildren();
+      chips.replaceChildren();
+      input.value = '';
+      greeted = false;
     }
 
     toggle.addEventListener('click', () => (panel.hidden ? open() : close()));
