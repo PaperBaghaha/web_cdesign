@@ -7,6 +7,26 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.3.0](https://github.com/PaperBaghaha/web_cdesign/compare/v1.2.0...v1.3.0) (2026-07-24)
+
+
+### Features
+
+* add floating site assistant ([ceb0e91](https://github.com/PaperBaghaha/web_cdesign/commit/ceb0e91120b03ea8b188e473b11cce90785ce346))
+* add floating site assistant ([ccf7d40](https://github.com/PaperBaghaha/web_cdesign/commit/ccf7d40351bbf5d170efa867df5339ceb5d25d50))
+* add motion and texture layer (scroll reveal, stat tiles, micro-interactions) ([2593709](https://github.com/PaperBaghaha/web_cdesign/commit/25937098e2ae50e07f2b9e62b414c1cbcea9c3ca))
+* add year/venue/topic filters to publications ([341afce](https://github.com/PaperBaghaha/web_cdesign/commit/341afcedcc5587b936ec61063224f63ba7db8723))
+* full editorial redesign — Space Grotesk, geometric hero, editorial layout ([ba17e0d](https://github.com/PaperBaghaha/web_cdesign/commit/ba17e0d9e97fc95a94363e43dfc1ac314817d305))
+* import full news archive with clickable cards ([6613e9e](https://github.com/PaperBaghaha/web_cdesign/commit/6613e9eb9c04b8a32d049bd057de168810e4d51b))
+* publication metadata pipeline, media support, and people profiles ([0aa183e](https://github.com/PaperBaghaha/web_cdesign/commit/0aa183e63b6df952fdd9c5af242ba34da4981822))
+* rebuild site as Convergence Design Lab on as-folio theme ([a78fc20](https://github.com/PaperBaghaha/web_cdesign/commit/a78fc201f00e7f946ed99a235463627c50066323))
+* self-host full news articles instead of linking to old site ([87160f6](https://github.com/PaperBaghaha/web_cdesign/commit/87160f65e6b8e339240f6378fb4ff6a5cc35c010))
+
+
+### Bug Fixes
+
+* regenerate yarn.lock in Yarn 4 format and format assistant SVGs ([b606e36](https://github.com/PaperBaghaha/web_cdesign/commit/b606e368d7b741cbe88e0e60ad113c527f3956aa))
+
 ## [1.2.0](https://github.com/dadangnh/as-folio/compare/v1.1.0...v1.2.0) (2026-06-21)
 
 ### Features
