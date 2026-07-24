@@ -922,18 +922,19 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     line-height: 1.65;
   }
 
-  /* User message: solid card bubble clearly on the right */
+  /* User message: white card bubble clearly on the right */
   :global(.assistant-msg--user) {
     align-self: flex-end;
     max-width: 82%;
-    background: color-mix(in srgb, var(--global-text-color) 22%, var(--global-bg-color));
+    background: #ffffff;
     border: 1px solid var(--global-divider-color);
-    color: var(--global-text-color);
+    color: #111111;
     padding: 11px 16px;
     border-radius: 18px;
     border-bottom-right-radius: 5px;
     font-size: 0.98rem;
     line-height: 1.55;
+    text-align: right;
   }
 
   :global(.assistant-results) {
