@@ -1,0 +1,93 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Visual admin (Decap CMS) configuration for Convergence Design Lab.
+#
+# This lets a non-technical editor add News items through a web form at /admin/.
+# When they click "Publish", the CMS commits a new markdown file to the repo and
+# the site rebuilds automatically — the news item then appears at /news/.
+#
+# Login is handled by Netlify Identity (email + password), so no GitHub account
+# is needed. See the setup checklist in the chat / README for the one-time steps
+# the site owner must do to switch this on.
+# ─────────────────────────────────────────────────────────────────────────────
+
+backend:
+  name: git-gateway
+  branch: main
+
+# Where uploaded photos are stored in the repo, and the path written into posts.
+# The News pages resolve this absolute path correctly (see src/pages/news.astro).
+media_folder: public/assets/img/news
+public_folder: /assets/img/news
+
+# Show a live preview link inside the editor.
+site_url: https://convergence-design-lab.example
+
+# Friendly labels.
+locale: en
+
+collections:
+  - name: news
+    label: 'News'
+    label_singular: 'News item'
+    description: 'Announcements, awards, and lab updates shown on the /news/ page.'
+    folder: src/content/announcements
+    create: true
+    # Filename becomes 2026-07-25-headline.md — matches the site convention.
+    slug: '{{year}}-{{month}}-{{day}}-{{title}}'
+    extension: md
+    format: frontmatter
+    sortable_fields: ['date', 'title']
+    fields:
+      - label: 'Date'
+        name: 'date'
+        widget: 'datetime'
+        date_format: 'YYYY-MM-DD'
+        time_format: false
+        picker_utc: true
+        hint: 'The day this happened. Shown on the news list.'
+
+      - label: 'Headline'
+        name: 'title'
+        widget: 'string'
+        hint: 'The bold title of the news item.'
+
+      - label: 'Photo (optional)'
+        name: 'image'
+        widget: 'image'
+        required: false
+        choose_url: false
+        media_library:
+          config:
+            max_file_size: 5242880 # 5 MB
+        hint: 'Upload a picture for this news item. Leave empty for text only.'
+
+      - label: 'Photo description (optional)'
+        name: 'alt'
+        widget: 'string'
+        required: false
+        hint: 'A short description of the photo, for accessibility.'
+
+      - label: 'Short summary (optional)'
+        name: 'excerpt'
+        widget: 'text'
+        required: false
+        hint: 'One line shown under the headline on the news list.'
+
+      - label: 'Source link (optional)'
+        name: 'source'
+        widget: 'string'
+        required: false
+        pattern: ['^https?://.+', 'Must start with http:// or https://']
+        hint: 'Link to the original article or press release, if any.'
+
+      - label: 'Pin to top'
+        name: 'pinned'
+        widget: 'boolean'
+        required: false
+        default: false
+        hint: 'Turn on to keep this item at the top of the news list.'
+
+      - label: 'Article text'
+        name: 'body'
+        widget: 'markdown'
+        hint: 'Write the news story here. Blank lines separate paragraphs.'

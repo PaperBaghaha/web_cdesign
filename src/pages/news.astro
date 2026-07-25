@@ -14,9 +14,18 @@ const announcements = (await getCollection('announcements'))
 const formatDate = (d: Date) =>
   d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
-/** Resolve a bare filename against /assets/img/news/, or pass a full URL through. */
+/**
+ * Resolve a news image. Accepts three shapes:
+ *  - a full URL (http…)                     → used as-is
+ *  - an absolute path (/assets/img/…)       → the CMS uploads store this; base-prefixed
+ *  - a bare filename (my-photo.jpg)          → resolved against /assets/img/news/
+ */
 const imageSrc = (image: string) =>
-  image.startsWith('http') ? image : withBase(`/assets/img/news/${image}`);
+  image.startsWith('http')
+    ? image
+    : image.startsWith('/')
+      ? withBase(image)
+      : withBase(`/assets/img/news/${image}`);
 
 /** Internal article page for an announcement. */
 const articleHref = (item: (typeof announcements)[number]) =>

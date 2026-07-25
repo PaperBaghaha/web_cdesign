@@ -24,7 +24,9 @@ const formatDate = (d: Date) =>
 const heroSrc = image
   ? image.startsWith('http')
     ? image
-    : withBase(`/assets/img/news/${image}`)
+    : image.startsWith('/')
+      ? withBase(image)
+      : withBase(`/assets/img/news/${image}`)
   : undefined;
 ---
 
