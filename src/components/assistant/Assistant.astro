@@ -586,6 +586,8 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       panel.hidden = false;
       toggle.setAttribute('aria-expanded', 'true');
       root?.classList.add('is-open');
+      // Push the page left so research stays readable beside the docked panel.
+      document.documentElement.classList.add('assistant-docked');
       if (!greeted) {
         greeted = true;
         renderChips();
@@ -598,6 +600,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       panel.hidden = true;
       toggle.setAttribute('aria-expanded', 'false');
       root?.classList.remove('is-open');
+      document.documentElement.classList.remove('assistant-docked');
       // Reset the whole conversation, so reopening the assistant starts fresh
       // with just the welcome hero and the suggested prompts again.
       log.replaceChildren();
@@ -698,22 +701,31 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   }
 
   /* Dimmed backdrop behind the side panel */
+  /* Overlay is intentionally transparent and click-through so the rest of the
+     page stays fully readable and interactive while the assistant is docked. */
   #assistant-overlay {
     position: fixed;
     inset: 0;
     z-index: 9998;
-    background: rgba(10, 10, 12, 0.45);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-    animation: assistant-fade 0.2s ease-out;
+    background: transparent;
+    pointer-events: none;
   }
 
-  @keyframes assistant-fade {
-    from {
-      opacity: 0;
+  /* Docked mode: when the assistant is open on desktop, gently push the whole
+     page (and the fixed navbar) to the left so the research content stays fully
+     visible beside the panel — you can read and chat at the same time. */
+  @media (min-width: 821px) {
+    :global(body) {
+      transition: padding-right 0.28s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    to {
-      opacity: 1;
+    :global(.navbar) {
+      transition: right 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    :global(html.assistant-docked body) {
+      padding-right: min(48vw, 560px);
+    }
+    :global(html.assistant-docked .navbar) {
+      right: min(48vw, 560px);
     }
   }
 
