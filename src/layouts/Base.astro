@@ -480,6 +480,60 @@ const personJsonLd = isHome ? JSON.stringify({
               { signal }
             );
           });
+
+          // ── Hero depth: mouse parallax on decorative layers ───────────
+          const hero = document.querySelector<HTMLElement>('.hero-bleed');
+          if (hero) {
+            const layers = (
+              [
+                ['.geo-frame', 24],
+                ['.side-rail-left', 14],
+                ['.side-rail-right', 14],
+              ] as const
+            )
+              .map(([sel, depth]) => ({ el: hero.querySelector<HTMLElement>(sel), depth }))
+              .filter((l): l is { el: HTMLElement; depth: number } => l.el !== null);
+
+            let raf = 0;
+            let nx = 0;
+            let ny = 0;
+            const apply = () => {
+              raf = 0;
+              for (const { el, depth } of layers) {
+                el.style.transform = `translate3d(${(-nx * depth).toFixed(1)}px, ${(-ny * depth).toFixed(1)}px, 0)`;
+              }
+            };
+            hero.addEventListener(
+              'pointermove',
+              (e) => {
+                const r = hero.getBoundingClientRect();
+                nx = (e.clientX - (r.left + r.width / 2)) / r.width;
+                ny = (e.clientY - (r.top + r.height / 2)) / r.height;
+                if (!raf) raf = requestAnimationFrame(apply);
+              },
+              { signal }
+            );
+            hero.addEventListener(
+              'pointerleave',
+              () => {
+                for (const { el } of layers) el.style.transform = '';
+              },
+              { signal }
+            );
+
+            // ── Scroll dissolve: hero content recedes as you scroll ─────
+            const heroContent = hero.querySelector<HTMLElement>('.hero-content');
+            if (heroContent) {
+              const dissolve = () => {
+                const h = hero.offsetHeight || 1;
+                const p = Math.min(Math.max(window.scrollY / h, 0), 1);
+                heroContent.style.opacity = String(1 - p * 0.85);
+                heroContent.style.transform = `translateY(${(p * 30).toFixed(1)}px) scale(${(1 - p * 0.03).toFixed(3)})`;
+              };
+              window.addEventListener('scroll', dissolve, { passive: true, signal });
+              dissolve();
+            }
+          }
         }
       }
 

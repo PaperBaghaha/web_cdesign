@@ -61,7 +61,7 @@ html {
 
 html.js-reveal [data-reveal] {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(22px) scale(0.985);
   filter: blur(6px);
 }
 

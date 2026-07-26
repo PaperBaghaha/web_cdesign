@@ -333,12 +333,19 @@ const items = site.navbar.items;
     background: var(--global-theme-color);
     transform: scaleX(0);
     transform-origin: right center;
-    transition: transform 0.25s ease;
+    transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .nav-link:hover::after,
   .nav-link.active::after {
     transform: scaleX(1);
     transform-origin: left center;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--global-theme-color) 55%, transparent);
+  }
+  .nav-link {
+    transition: color 0.25s ease;
+  }
+  .nav-link:hover {
+    color: var(--global-theme-color);
   }
   @media (prefers-reduced-motion: reduce) {
     .navbar-brand,
