@@ -66,6 +66,10 @@ const team = allPeople
 
 const personHref = (p: (typeof team)[number]) =>
   p.data.noPage ? p.data.website : `${site.base}/people/${p.id}/`;
+
+// Keep the card compact: show only the lead part of the role (before the "·"),
+// so a long PI title doesn't blow the card height out of line with the rest.
+const teamRole = (p: (typeof team)[number]) => p.data.role.split('·')[0].trim();
 ---
 
 <Page title={title} description={description} image={ogImagePath}>
@@ -183,7 +187,7 @@ const personHref = (p: (typeof team)[number]) =>
                       )}
                       <span class="team-info">
                         <span class="team-name">{person.data.name}</span>
-                        <span class="team-role">{person.data.role}</span>
+                        <span class="team-role">{teamRole(person)}</span>
                       </span>
                     </a>
                   ) : (
@@ -203,7 +207,7 @@ const personHref = (p: (typeof team)[number]) =>
                       )}
                       <span class="team-info">
                         <span class="team-name">{person.data.name}</span>
-                        <span class="team-role">{person.data.role}</span>
+                        <span class="team-role">{teamRole(person)}</span>
                       </span>
                     </div>
                   )}
@@ -407,15 +411,21 @@ const personHref = (p: (typeof team)[number]) =>
     padding: 0;
     margin: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 0.75rem;
+  }
+
+  /* Each grid cell stretches so every card is the exact same height. */
+  .team-member {
+    display: flex;
   }
 
   .team-link {
     display: flex;
     align-items: center;
     gap: 0.85rem;
-    padding: 0.6rem 0.75rem;
+    width: 100%;
+    padding: 0.7rem 0.85rem;
     border: 1px solid var(--global-divider-color);
     border-radius: 12px;
     background: var(--global-card-bg-color);
@@ -459,7 +469,18 @@ const personHref = (p: (typeof team)[number]) =>
   .team-info {
     display: flex;
     flex-direction: column;
+    gap: 0.1rem;
     min-width: 0;
+  }
+
+  /* Name + role each stay on a single line, ellipsised if too long — this is
+     what keeps every card the same compact height and the grid tidy. */
+  .team-name,
+  .team-role {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .team-name {
