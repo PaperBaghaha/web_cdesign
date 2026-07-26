@@ -594,51 +594,70 @@ const personJsonLd = isHome ? JSON.stringify({
             }
           }
 
-          // ── Scroll focus: project cards "bubble up" through a band ──────
-          // Scoped to project cards only (.col). As a card rises toward the
-          // focal line it scales up (bigger than its neighbours), sharpens and
-          // brightens; as it leaves the band it eases back, softens and blurs.
-          // Deliberately NOT applied to people / news / publications — those
-          // get their own, blur-free reveals. rAF-throttled, on-screen only.
-          const focusEls = Array.from(document.querySelectorAll<HTMLElement>('.col'));
-          if (focusEls.length) {
-            let focusRaf = 0;
-            const applyFocus = () => {
-              focusRaf = 0;
-              const vh = window.innerHeight;
-              const focal = vh * 0.46;
-              const range = vh * 0.62;
-              for (const el of focusEls) {
-                // Let the one-time entrance reveal finish before we take over.
-                if (el.hasAttribute('data-reveal') && !el.classList.contains('revealed')) {
-                  continue;
-                }
-                const r = el.getBoundingClientRect();
-                if (r.bottom < -60 || r.top > vh + 60) {
-                  if (el.dataset.foff !== '1') {
-                    el.style.transform = '';
-                    el.style.opacity = '';
-                    el.style.filter = '';
-                    el.dataset.foff = '1';
-                  }
-                  continue;
-                }
-                el.dataset.foff = '0';
-                const center = r.top + r.height / 2;
-                const d = Math.min(Math.abs(center - focal) / range, 1);
-                const eased = d * d * (3 - 2 * d); // smoothstep
-                el.style.transform = `scale(${(1.015 - eased * 0.05).toFixed(3)})`;
-                el.style.opacity = (1 - eased * 0.32).toFixed(3);
-                el.style.filter = `blur(${(eased * 2.2).toFixed(2)}px)`;
+          // ── Scroll focus: content "bubbles up" through a focal band ────
+          // As a block rises toward the focal line it scales up (bigger than
+          // its neighbours), sharpens and brightens; as it leaves the band it
+          // eases back, softens and blurs — a depth-of-field feel.
+          // Applies to project cards (.col), news items and publication rows.
+          // People pages opt OUT via [data-no-focus] so they never blur.
+          const FOCUS_SELECTOR =
+            '.col, .news-item, .publications ol.bibliography > li';
+          let focusEls: HTMLElement[] = [];
+          const collectFocus = () => {
+            focusEls = Array.from(
+              document.querySelectorAll<HTMLElement>(FOCUS_SELECTOR)
+            ).filter((el) => !el.closest('[data-no-focus]'));
+          };
+          collectFocus();
+
+          let focusRaf = 0;
+          const applyFocus = () => {
+            focusRaf = 0;
+            if (!focusEls.length) return;
+            const vh = window.innerHeight;
+            const focal = vh * 0.46;
+            const range = vh * 0.62;
+            for (const el of focusEls) {
+              // Let the one-time entrance reveal finish before we take over.
+              if (el.hasAttribute('data-reveal') && !el.classList.contains('revealed')) {
+                continue;
               }
+              // Publication rows animate in via .pub-reveal → .pub-in; wait.
+              if (el.classList.contains('pub-reveal') && !el.classList.contains('pub-in')) {
+                continue;
+              }
+              const r = el.getBoundingClientRect();
+              if (r.bottom < -60 || r.top > vh + 60) {
+                if (el.dataset.foff !== '1') {
+                  el.style.transform = '';
+                  el.style.opacity = '';
+                  el.style.filter = '';
+                  el.dataset.foff = '1';
+                }
+                continue;
+              }
+              el.dataset.foff = '0';
+              const center = r.top + r.height / 2;
+              const d = Math.min(Math.abs(center - focal) / range, 1);
+              const eased = d * d * (3 - 2 * d); // smoothstep
+              el.style.transform = `scale(${(1.015 - eased * 0.05).toFixed(3)})`;
+              el.style.opacity = (1 - eased * 0.32).toFixed(3);
+              el.style.filter = `blur(${(eased * 2.2).toFixed(2)}px)`;
+            }
+          };
+          const scheduleFocus = () => {
+            if (!focusRaf) focusRaf = requestAnimationFrame(applyFocus);
+          };
+          window.addEventListener('scroll', scheduleFocus, { passive: true, signal });
+          window.addEventListener('resize', scheduleFocus, { passive: true, signal });
+          // Publications render their list client-side (React), so expose a
+          // hook the page calls once rows exist to fold them into the system.
+          (window as unknown as { __cdlFocusRescan?: () => void }).__cdlFocusRescan =
+            () => {
+              collectFocus();
+              scheduleFocus();
             };
-            const scheduleFocus = () => {
-              if (!focusRaf) focusRaf = requestAnimationFrame(applyFocus);
-            };
-            window.addEventListener('scroll', scheduleFocus, { passive: true, signal });
-            window.addEventListener('resize', scheduleFocus, { passive: true, signal });
-            applyFocus();
-          }
+          applyFocus();
         }
       }
 

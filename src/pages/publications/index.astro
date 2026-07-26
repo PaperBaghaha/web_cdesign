@@ -131,6 +131,9 @@ const badges = site.publications.badges;
           io.observe(li);
         }
       });
+      // Rows exist now — fold them into the shared scroll-focus system so
+      // publications get the same depth-of-field blur as the rest of the site.
+      (window as unknown as { __cdlFocusRescan?: () => void }).__cdlFocusRescan?.();
     };
     setup();
   }

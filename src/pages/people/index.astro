@@ -152,7 +152,7 @@ const splitRole = (role: string) => {
           })}
         </div>
 
-        <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {members.map((person, i) => {
             const href = profileHref(person);
             const pubs = publicationCount(person.data.name, bibEntries, person.data.aliases);
@@ -540,16 +540,24 @@ const splitRole = (role: string) => {
   }
 
   .person-card {
-    padding: 1rem 0.5rem;
-    border-radius: 10px;
+    padding: 1.75rem 1.25rem;
+    border: 1px solid var(--global-divider-color);
+    border-radius: 16px;
+    background: var(--global-card-bg-color);
     transition:
-      background-color 0.25s ease,
-      transform 0.25s ease;
+      border-color 0.3s ease,
+      box-shadow 0.3s ease,
+      transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .person-card:hover {
-    background-color: var(--global-card-bg-color);
+    border-color: var(--global-theme-color);
     transform: translateY(-4px);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  html[data-theme='dark'] .person-card:hover {
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.45);
   }
 
   /* ── Avatar + publication badge ─────────────────────────────────────── */
@@ -575,7 +583,7 @@ const splitRole = (role: string) => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--global-card-bg-color);
+    background-color: var(--global-bg-color);
     font-family: 'Space Grotesk', system-ui, sans-serif;
     font-size: 2rem;
     font-weight: 700;
@@ -671,11 +679,9 @@ const splitRole = (role: string) => {
     background-color: var(--global-card-bg-color);
   }
 
-  /* People reveal as a clean rise + fade — no defocus blur (blur is reserved
-     for the project cards, per design). */
-  html.js-reveal .lead-card[data-reveal],
-  html.js-reveal .person-card[data-reveal] {
-    filter: none;
+  /* People reveal as a clean rise + fade — NO blur anywhere on this page. */
+  :global(html.js-reveal) [data-reveal] {
+    filter: none !important;
   }
 
   @media (prefers-reduced-motion: reduce) {

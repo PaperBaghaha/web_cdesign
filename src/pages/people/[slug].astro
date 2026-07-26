@@ -185,7 +185,7 @@ const jsonLd = {
   <!-- ═══ PROJECTS THEY LEAD / WORK ON ════════════════════════════════════ -->
   {
     myProjects.length > 0 && (
-      <section class="profile-projects" data-reveal>
+      <section class="profile-projects" data-reveal data-no-focus>
         <div class="pubs-header">
           <h2>Projects</h2>
           <div class="pubs-rule" />
@@ -572,6 +572,11 @@ const jsonLd = {
     padding: 2rem 0;
     color: var(--color-silver-dark);
     font-size: 0.9rem;
+  }
+
+  /* People profiles reveal as a clean rise + fade — no blur on this page. */
+  :global(html.js-reveal) [data-reveal] {
+    filter: none !important;
   }
 
   @media (prefers-reduced-motion: reduce) {
