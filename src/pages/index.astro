@@ -69,17 +69,30 @@ const renderedAnnouncements = await Promise.all(
 
       <!-- Sub row: chips + geo -->
       <div class="hero-sub-row" data-reveal style="--reveal-delay:0.1s">
-        <!-- Chips left -->
+        <!-- Stats left -->
         <div class="chip-col">
-          <p class="hero-sub-label">Research Areas</p>
-          <div class="chip-row">
-            {
-              researchAreas.map((p) => (
-                <a class="chip" href={`${site.base}/projects/${p.id}/`}>
-                  {p.data.title}
-                </a>
-              ))
-            }
+          <div class="hero-stats">
+            <a class="stat-item" href={`${site.base}/publications/`}>
+              <span class="stat-n" data-countup={bibEntries.length} data-suffix="+"
+                >{bibEntries.length}+</span
+              >
+              <span class="stat-l">Publications</span>
+            </a>
+            <a class="stat-item" href={`${site.base}/projects/`}>
+              <span class="stat-n" data-countup={researchAreas.length}>{researchAreas.length}</span>
+              <span class="stat-l">Research Areas</span>
+            </a>
+            <a class="stat-item" href={`${site.base}/people/`}>
+              <span class="stat-n" data-countup={peopleCount}>{peopleCount}</span>
+              <span class="stat-l">Lab Members</span>
+            </a>
+            <a class="stat-item" href={`${site.base}/news/`}>
+              <span class="stat-n" data-countup={yearsActive} data-suffix="+">{yearsActive}+</span>
+              <span class="stat-l">Years Active</span>
+            </a>
+          </div>
+          <div class="hero-social">
+            <SocialLinks />
           </div>
         </div>
 
@@ -135,31 +148,17 @@ const renderedAnnouncements = await Promise.all(
     </div>
   </section>
 
-  <!-- ═══ STATS BAR ════════════════════════════════════════════════════════════ -->
-  <section class="stats-bar page-container" data-reveal>
-    <a class="stat-item" href={`${site.base}/publications/`}>
-      <span class="stat-n" data-countup={bibEntries.length} data-suffix="+"
-        >{bibEntries.length}+</span
-      >
-      <span class="stat-l">Publications</span>
-    </a>
-    <div class="stat-div" aria-hidden="true"></div>
-    <a class="stat-item" href={`${site.base}/projects/`}>
-      <span class="stat-n" data-countup={researchAreas.length}>{researchAreas.length}</span>
-      <span class="stat-l">Research Areas</span>
-    </a>
-    <div class="stat-div" aria-hidden="true"></div>
-    <a class="stat-item" href={`${site.base}/people/`}>
-      <span class="stat-n" data-countup={peopleCount}>{peopleCount}</span>
-      <span class="stat-l">Lab Members</span>
-    </a>
-    <div class="stat-div" aria-hidden="true"></div>
-    <a class="stat-item" href={`${site.base}/news/`}>
-      <span class="stat-n" data-countup={yearsActive} data-suffix="+">{yearsActive}+</span>
-      <span class="stat-l">Years Active</span>
-    </a>
-    <div class="stat-social">
-      <SocialLinks />
+  <!-- ═══ RESEARCH AREAS BAND ══════════════════════════════════════════════════ -->
+  <section class="research-band page-container" data-reveal>
+    <h2 class="research-band-label">Research Areas</h2>
+    <div class="chip-row chip-row-sm">
+      {
+        researchAreas.map((p) => (
+          <a class="chip chip-sm" href={`${site.base}/projects/${p.id}/`}>
+            {p.data.title}
+          </a>
+        ))
+      }
     </div>
   </section>
 
@@ -414,15 +413,6 @@ const renderedAnnouncements = await Promise.all(
     .geo-frame {
       display: none;
     }
-  }
-
-  .hero-sub-label {
-    font-size: 0.62rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--color-silver-dark);
-    margin-bottom: 0.6rem;
   }
 
   /* ── Geometric composition ───────────────────────────────────────────── */
@@ -689,40 +679,24 @@ const renderedAnnouncements = await Promise.all(
     border-right-color: var(--color-silver-dark);
   }
 
-  /* ══ STATS BAR ══════════════════════════════════════════════════════════ */
+  /* ══ HERO STATS (in the sub-row, next to the logo) ══════════════════════ */
 
-  .stats-bar {
-    display: flex;
-    align-items: center;
-    padding-top: 1.75rem;
-    padding-bottom: 1.75rem;
-    border-bottom: 1px solid var(--global-divider-color);
-    gap: 0;
-    flex-wrap: wrap;
+  .hero-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem 2rem;
   }
 
   .stat-item {
     display: flex;
     flex-direction: column;
     gap: 0.15rem;
-    padding: 0.5rem 2.5rem;
     text-decoration: none;
     transition: opacity 0.2s ease;
   }
 
-  .stat-item:first-child {
-    padding-left: 0;
-  }
-
   .stat-item:hover {
     opacity: 0.7;
-  }
-
-  .stat-div {
-    width: 1px;
-    height: 2rem;
-    background: var(--global-divider-color);
-    flex-shrink: 0;
   }
 
   .stat-n {
@@ -744,12 +718,36 @@ const renderedAnnouncements = await Promise.all(
     color: var(--color-silver-dark);
   }
 
-  .stat-social {
-    margin-left: auto;
-    padding-left: 2rem;
+  .hero-social {
+    margin-top: 1.6rem;
     display: flex;
     align-items: center;
     color: var(--color-silver);
+  }
+
+  /* ══ RESEARCH AREAS BAND ════════════════════════════════════════════════ */
+
+  .research-band {
+    padding-top: 1.75rem;
+    padding-bottom: 1.75rem;
+    border-bottom: 1px solid var(--global-divider-color);
+  }
+
+  .research-band-label {
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.1rem;
+  }
+
+  /* Smaller pills for the research-areas band. */
+  .chip-row-sm {
+    gap: 0.4rem;
+  }
+
+  .chip-sm {
+    padding: 0.2rem 0.7rem;
+    font-size: 0.72rem;
   }
 
   /* ══ TWO-COLUMN SECTIONS ════════════════════════════════════════════════ */
