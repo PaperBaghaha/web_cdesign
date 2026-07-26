@@ -93,7 +93,7 @@ const renderedAnnouncements = await Promise.all(
           <div class="geo-monogram">
             <img
               class="geo-hand"
-              src={`${site.base}/assets/img/cdl-logo-icon.png`}
+              src={`${site.base}/assets/img/cdl-logo-icon-line.png`}
               alt="Convergence Design Lab"
               width="512"
               height="512"
@@ -486,21 +486,24 @@ const renderedAnnouncements = await Promise.all(
     perspective: 700px;
   }
 
-  /* The lab's hand mark rotates in 3D at the centre of the HUD reticle, with a
-     gold glow. It reads as a slowly turning coin — depth, not a flat 360. */
+  /* The lab's hand mark — pure line art on a TRANSPARENT background: just the
+     outer circle, hexagon, and hand outline, no plate or glow behind it.
+     The PNG ships as black lines; in dark mode we invert to white lines so the
+     outline always contrasts with the page (black on white, white on black). */
   .geo-hand {
-    width: 54%;
+    width: 62%;
     aspect-ratio: 1 / 1;
-    object-fit: cover;
-    /* Clip the logo's square white plate into a clean white disc — just the
-       circle and the hand mark, no black/white box behind it. */
-    border-radius: 50%;
-    background: #fff;
+    object-fit: contain;
+    background: transparent;
     transform-style: preserve-3d;
     transform-origin: 50% 50%;
     animation: geo-spin3d 9s cubic-bezier(0.65, 0, 0.35, 1) infinite;
     will-change: transform;
-    box-shadow: 0 0 22px color-mix(in srgb, var(--global-theme-color) 42%, transparent);
+  }
+
+  /* Dark mode → white outline. Light mode keeps the black lines as-is. */
+  :global(html[data-theme='dark']) .geo-hand {
+    filter: invert(1);
   }
 
   /* Tumbles on BOTH axes — a full 360° horizontal turn (Y) and a full 360°
