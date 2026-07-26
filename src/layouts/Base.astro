@@ -304,6 +304,9 @@ const personJsonLd = isHome ? JSON.stringify({
     <!-- Floating site assistant (client-side, reuses Pagefind search) -->
     {site.features.assistant && <Assistant transition:persist />}
 
+    <!-- Ambient light that trails the cursor (dynamic lighting / depth) -->
+    <div id="cursor-glow" aria-hidden="true"></div>
+
     <!-- Scroll progress indicator (fills as the page scrolls) -->
     <div id="scroll-progress" aria-hidden="true"></div>
 
@@ -441,6 +444,43 @@ const personJsonLd = isHome ? JSON.stringify({
         }
 
         if (!reduceMotion) {
+          // ── Ambient cursor light (lerps toward the pointer) ───────────
+          const glow = document.getElementById('cursor-glow');
+          if (glow) {
+            let gx = window.innerWidth / 2;
+            let gy = window.innerHeight / 2;
+            let gtx = gx;
+            let gty = gy;
+            let grun = false;
+            let gshown = false;
+            const gtick = () => {
+              gx += (gtx - gx) * 0.14;
+              gy += (gty - gy) * 0.14;
+              glow.style.transform = `translate3d(${gx.toFixed(1)}px, ${gy.toFixed(1)}px, 0)`;
+              if (Math.abs(gtx - gx) > 0.4 || Math.abs(gty - gy) > 0.4) {
+                requestAnimationFrame(gtick);
+              } else {
+                grun = false;
+              }
+            };
+            window.addEventListener(
+              'pointermove',
+              (e) => {
+                gtx = e.clientX;
+                gty = e.clientY;
+                if (!gshown) {
+                  gshown = true;
+                  glow.classList.add('is-visible');
+                }
+                if (!grun) {
+                  grun = true;
+                  requestAnimationFrame(gtick);
+                }
+              },
+              { passive: true, signal }
+            );
+          }
+
           // ── Pointer spotlight glow on cards ───────────────────────────
           document
             .querySelectorAll<HTMLElement>(

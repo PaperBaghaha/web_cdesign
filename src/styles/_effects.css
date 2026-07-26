@@ -99,6 +99,44 @@ html.js-reveal [data-reveal].revealed {
   will-change: transform;
 }
 
+/* ─── Ambient cursor light ───────────────────────────────────────────────── */
+/* A soft luminous halo that trails the cursor across the whole site, giving
+   the page dynamic depth and lighting (cyber-luxury feel). It blends with
+   `screen` so it only ever ADDS light — subtle in light mode, glowing in
+   dark. Position is driven by a lerp loop in Base.astro for buttery motion. */
+
+#cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 560px;
+  height: 560px;
+  margin-top: -280px;
+  margin-left: -280px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 8;
+  opacity: 0;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--global-theme-color) 60%, transparent) 0%,
+    color-mix(in srgb, var(--global-theme-color) 22%, transparent) 34%,
+    transparent 70%
+  );
+  filter: blur(52px);
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+  transition: opacity 0.5s ease;
+}
+
+#cursor-glow.is-visible {
+  opacity: 0.3;
+}
+
+html[data-theme='dark'] #cursor-glow.is-visible {
+  opacity: 0.62;
+}
+
 /* ─── Pointer spotlight on cards ─────────────────────────────────────────── */
 /* A soft gold glow follows the cursor. --mx/--my are set by JS in px; the
    glow layers over the card's existing background colour. */
@@ -530,11 +568,17 @@ html[data-theme='dark'] .person-card:hover {
 .card.hoverable:hover {
   transform: translateY(-5px);
   border-color: var(--global-theme-color) !important;
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.1) !important;
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.1),
+    0 0 0 1px color-mix(in srgb, var(--global-theme-color) 32%, transparent),
+    0 0 22px color-mix(in srgb, var(--global-theme-color) 20%, transparent) !important;
 }
 
 html[data-theme='dark'] .card.hoverable:hover {
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5) !important;
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.5),
+    0 0 0 1px color-mix(in srgb, var(--global-theme-color) 40%, transparent),
+    0 0 26px color-mix(in srgb, var(--global-theme-color) 26%, transparent) !important;
 }
 
 /* ─── Pagination buttons ─────────────────────────────────────────────────── */
@@ -579,6 +623,10 @@ html[data-theme='dark'] .card.hoverable:hover {
 
   [data-spotlight] {
     background-image: none;
+  }
+
+  #cursor-glow {
+    display: none !important;
   }
 
   [data-magnetic] {
