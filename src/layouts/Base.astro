@@ -601,7 +601,7 @@ const personJsonLd = isHome ? JSON.stringify({
           // Applies to project cards (.col), news items and publication rows.
           // People pages opt OUT via [data-no-focus] so they never blur.
           const FOCUS_SELECTOR =
-            '.col, .news-item, .publications ol.bibliography > li';
+            '.two-col-section, .stats-bar, .col, .news-item, .publications ol.bibliography > li';
           let focusEls: HTMLElement[] = [];
           const collectFocus = () => {
             focusEls = Array.from(

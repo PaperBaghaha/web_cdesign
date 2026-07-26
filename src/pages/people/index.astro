@@ -155,11 +155,16 @@ const splitRole = (role: string) => {
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {members.map((person, i) => {
             const href = profileHref(person);
+            const cardHref = href ?? person.data.website;
             const pubs = publicationCount(person.data.name, bibEntries, person.data.aliases);
             return (
               <div
                 class="person-card text-center"
                 data-reveal
+                data-href={cardHref}
+                role={cardHref ? 'link' : undefined}
+                tabindex={cardHref ? '0' : undefined}
+                aria-label={cardHref ? `View ${person.data.name}'s profile` : undefined}
                 style={`--reveal-delay: ${i * 0.04}s`}
               >
                 <div class="avatar-wrap">
@@ -218,6 +223,15 @@ const splitRole = (role: string) => {
                       aria-label={`${person.data.name} on Google Scholar`}
                     >
                       gs
+                    </a>
+                  )}
+                  {person.data.email && (
+                    <a
+                      href={`mailto:${person.data.email}`}
+                      class="social-mini"
+                      aria-label={`Email ${person.data.name}`}
+                    >
+                      email
                     </a>
                   )}
                 </div>
@@ -315,7 +329,30 @@ const splitRole = (role: string) => {
     input.addEventListener('input', apply);
   }
 
-  document.addEventListener('astro:page-load', initPeopleSearch);
+  // Make the whole person card clickable (photo included) — no need to aim for
+  // the name. Real links inside the card (email, GitHub, Scholar) still work.
+  function initPeopleCards() {
+    const cards = document.querySelectorAll<HTMLElement>('.person-card[data-href]');
+    cards.forEach((card) => {
+      const href = card.dataset.href;
+      if (!href) return;
+      card.addEventListener('click', (e) => {
+        if ((e.target as HTMLElement).closest('a')) return; // let inner links win
+        window.location.href = href;
+      });
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          window.location.href = href;
+        }
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    initPeopleSearch();
+    initPeopleCards();
+  });
 </script>
 
 <style>
@@ -548,6 +585,15 @@ const splitRole = (role: string) => {
       border-color 0.3s ease,
       box-shadow 0.3s ease,
       transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .person-card[data-href] {
+    cursor: pointer;
+  }
+
+  .person-card[data-href]:focus-visible {
+    outline: 2px solid var(--global-theme-color);
+    outline-offset: 3px;
   }
 
   .person-card:hover {

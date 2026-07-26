@@ -3,6 +3,7 @@ name: 'Fengming He'
 role: 'PhD Student'
 website: 'https://www.fengminghe.com/'
 scholar: '10WPau0AAAAJ'
+email: 'he418@purdue.edu'
 description: 'Builds context-aware AR/VR authoring systems covering hand-object pose estimation, gesture recognition, and spatial programming.'
 interests:
   - 'AR / VR / MR'

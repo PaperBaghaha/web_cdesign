@@ -482,33 +482,37 @@ const renderedAnnouncements = await Promise.all(
     display: flex;
     align-items: center;
     justify-content: center;
+    /* 3D stage so the hand mark flips in real perspective, not a flat spin. */
+    perspective: 700px;
   }
 
-  /* The lab's hand mark sits still at the centre while the HUD rings spin
-     around it; a slow float + gold glow keeps it feeling alive. */
+  /* The lab's hand mark rotates in 3D at the centre of the HUD reticle, with a
+     gold glow. It reads as a slowly turning coin — depth, not a flat 360. */
   .geo-hand {
     width: 56%;
     height: auto;
     object-fit: contain;
-    animation: geo-float 7s ease-in-out infinite;
+    transform-style: preserve-3d;
     transform-origin: 50% 50%;
+    animation: geo-spin3d 9s cubic-bezier(0.65, 0, 0.35, 1) infinite;
     will-change: transform;
-    filter: drop-shadow(0 0 14px color-mix(in srgb, var(--global-theme-color) 35%, transparent));
+    filter: drop-shadow(0 0 16px color-mix(in srgb, var(--global-theme-color) 38%, transparent));
   }
 
   /* Black line-art reads on the light hero; invert it for the dark theme. */
   html[data-theme='dark'] .geo-hand {
     filter: invert(1)
-      drop-shadow(0 0 14px color-mix(in srgb, var(--global-theme-color) 45%, transparent));
+      drop-shadow(0 0 16px color-mix(in srgb, var(--global-theme-color) 48%, transparent));
   }
 
-  @keyframes geo-float {
-    0%,
-    100% {
-      transform: translateY(-2%) scale(1);
+  /* A full 360° turn on Y, with a touch of X tilt so it feels three-dimensional
+     rather than a flat mirror flip. Eases at the ends to read the face longer. */
+  @keyframes geo-spin3d {
+    0% {
+      transform: rotateY(0deg) rotateX(8deg);
     }
-    50% {
-      transform: translateY(2%) scale(1.03);
+    100% {
+      transform: rotateY(360deg) rotateX(8deg);
     }
   }
 

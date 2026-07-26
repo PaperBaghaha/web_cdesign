@@ -5,6 +5,7 @@ photo: '/assets/img/people/chenfei-zhu.jpg'
 website: 'https://chenfei-zhu.github.io/'
 scholar: '5I-T9LkAAAAJ'
 github: 'chenfei-zhu'
+email: 'zhu1237@purdue.edu'
 description: 'Works on agentic AI for XR — generative XR, human-AI collaboration, and multimodal interaction, including tool-augmented LLM agents for AR authoring.'
 interests:
   - 'AI & Computer Vision'

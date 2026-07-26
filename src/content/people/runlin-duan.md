@@ -5,6 +5,7 @@ photo: '/assets/img/people/runlin-duan.png'
 website: 'https://runlinduan.com/'
 scholar: 'KYshup8AAAAJ'
 github: 'NeuroManer'
+email: 'duan92@purdue.edu'
 description: 'Develops human-AI collaboration systems for early-stage concept generation, large-scale design-space exploration, and parametric CAD modeling using LLMs and speech/gesture input.'
 interests:
   - 'Design Learning'
