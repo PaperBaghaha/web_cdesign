@@ -226,7 +226,7 @@ const renderedAnnouncements = await Promise.all(
   <!-- ═══ SELECTED PUBLICATIONS ════════════════════════════════════════════════ -->
   {
     site.selectedPapers.enabled && selectedPapers.length > 0 && (
-      <section class="two-col-section page-container" data-reveal>
+      <section class="two-col-section page-container">
         <div class="col-label">
           <a class="col-tag col-tag-link" href={`${site.base}/publications/`}>
             Selected Publications
@@ -237,7 +237,7 @@ const renderedAnnouncements = await Promise.all(
           </a>
         </div>
         <ol class="pub-list">
-          {selectedPapers.map((entry) => {
+          {selectedPapers.map((entry, i) => {
             const title = getTitle(entry);
             const authors = getAuthors(entry);
             const venue = getVenue(entry);
@@ -246,7 +246,7 @@ const renderedAnnouncements = await Promise.all(
             const url =
               entry.fields.html ?? (entry.fields.doi ? `https://doi.org/${entry.fields.doi}` : '');
             return (
-              <li class="pub-item">
+              <li class="pub-item" data-reveal style={`--reveal-delay:${(i * 0.05).toFixed(2)}s`}>
                 {abbr && <span class="pub-badge">{abbr}</span>}
                 {url ? (
                   <a class="pub-title" href={url} target="_blank" rel="noopener noreferrer">
@@ -1016,6 +1016,37 @@ const renderedAnnouncements = await Promise.all(
 
   .pub-item:first-child {
     border-top: none;
+  }
+
+  /* Scroll reveal for publications: alternate the entry direction — odd rows
+     slide in from the right, even rows from the left — with NO blur. Overrides
+     the default blur-up reveal just for this list. */
+  html.js-reveal .pub-list .pub-item {
+    opacity: 0;
+    filter: none;
+    transform: translateX(64px);
+  }
+
+  html.js-reveal .pub-list .pub-item:nth-child(even) {
+    transform: translateX(-64px);
+  }
+
+  html.js-reveal .pub-list .pub-item.revealed {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    transition:
+      opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--reveal-delay, 0s);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.js-reveal .pub-list .pub-item,
+    html.js-reveal .pub-list .pub-item:nth-child(even) {
+      opacity: 1;
+      transform: none;
+    }
   }
 
   .pub-item:hover {
