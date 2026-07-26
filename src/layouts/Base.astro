@@ -481,42 +481,61 @@ const personJsonLd = isHome ? JSON.stringify({
             );
           });
 
-          // ── Hero depth: mouse parallax on decorative layers ───────────
+          // ── Hero depth: SMOOTH mouse parallax (lerp toward target) ────
+          // A continuous rAF loop eases the layers toward the pointer target
+          // instead of snapping each frame, so motion feels buttery, not
+          // stepped. The loop parks itself once it has settled.
           const hero = document.querySelector<HTMLElement>('.hero-bleed');
           if (hero) {
             const layers = (
               [
-                ['.geo-frame', 24],
-                ['.side-rail-left', 14],
-                ['.side-rail-right', 14],
+                ['.geo-frame', 26],
+                ['.side-rail-left', 15],
+                ['.side-rail-right', 15],
               ] as const
             )
               .map(([sel, depth]) => ({ el: hero.querySelector<HTMLElement>(sel), depth }))
               .filter((l): l is { el: HTMLElement; depth: number } => l.el !== null);
 
-            let raf = 0;
-            let nx = 0;
-            let ny = 0;
-            const apply = () => {
-              raf = 0;
+            let curX = 0;
+            let curY = 0;
+            let tgtX = 0;
+            let tgtY = 0;
+            let running = false;
+            const tick = () => {
+              curX += (tgtX - curX) * 0.09;
+              curY += (tgtY - curY) * 0.09;
               for (const { el, depth } of layers) {
-                el.style.transform = `translate3d(${(-nx * depth).toFixed(1)}px, ${(-ny * depth).toFixed(1)}px, 0)`;
+                el.style.transform = `translate3d(${(-curX * depth).toFixed(2)}px, ${(-curY * depth).toFixed(2)}px, 0)`;
+              }
+              if (Math.abs(tgtX - curX) > 0.0004 || Math.abs(tgtY - curY) > 0.0004) {
+                requestAnimationFrame(tick);
+              } else {
+                running = false;
+              }
+            };
+            const kick = () => {
+              if (!running) {
+                running = true;
+                requestAnimationFrame(tick);
               }
             };
             hero.addEventListener(
               'pointermove',
               (e) => {
                 const r = hero.getBoundingClientRect();
-                nx = (e.clientX - (r.left + r.width / 2)) / r.width;
-                ny = (e.clientY - (r.top + r.height / 2)) / r.height;
-                if (!raf) raf = requestAnimationFrame(apply);
+                tgtX = (e.clientX - (r.left + r.width / 2)) / r.width;
+                tgtY = (e.clientY - (r.top + r.height / 2)) / r.height;
+                kick();
               },
               { signal }
             );
             hero.addEventListener(
               'pointerleave',
               () => {
-                for (const { el } of layers) el.style.transform = '';
+                tgtX = 0;
+                tgtY = 0;
+                kick();
               },
               { signal }
             );
@@ -533,6 +552,56 @@ const personJsonLd = isHome ? JSON.stringify({
               window.addEventListener('scroll', dissolve, { passive: true, signal });
               dissolve();
             }
+          }
+
+          // ── Scroll focus: content "bubbles up" & sharpens through a band ─
+          // Works on EVERY page. As a block rises toward the focal line it
+          // scales up (bigger than its neighbours), sharpens and brightens;
+          // as it leaves the band it eases back down, softens and blurs. The
+          // whole pass is rAF-throttled and only touches on-screen elements.
+          const focusEls = Array.from(
+            document.querySelectorAll<HTMLElement>(
+              '.col, .post-header, .profile-header, .profile-projects, .profile-pubs, ' +
+                'section[data-reveal]:not(.hero-content)'
+            )
+          );
+          if (focusEls.length) {
+            let focusRaf = 0;
+            const applyFocus = () => {
+              focusRaf = 0;
+              const vh = window.innerHeight;
+              const focal = vh * 0.46;
+              const range = vh * 0.62;
+              for (const el of focusEls) {
+                // Let the one-time entrance reveal finish before we take over.
+                if (el.hasAttribute('data-reveal') && !el.classList.contains('revealed')) {
+                  continue;
+                }
+                const r = el.getBoundingClientRect();
+                if (r.bottom < -60 || r.top > vh + 60) {
+                  if (el.dataset.foff !== '1') {
+                    el.style.transform = '';
+                    el.style.opacity = '';
+                    el.style.filter = '';
+                    el.dataset.foff = '1';
+                  }
+                  continue;
+                }
+                el.dataset.foff = '0';
+                const center = r.top + r.height / 2;
+                const d = Math.min(Math.abs(center - focal) / range, 1);
+                const eased = d * d * (3 - 2 * d); // smoothstep
+                el.style.transform = `scale(${(1.015 - eased * 0.05).toFixed(3)})`;
+                el.style.opacity = (1 - eased * 0.32).toFixed(3);
+                el.style.filter = `blur(${(eased * 2.2).toFixed(2)}px)`;
+              }
+            };
+            const scheduleFocus = () => {
+              if (!focusRaf) focusRaf = requestAnimationFrame(applyFocus);
+            };
+            window.addEventListener('scroll', scheduleFocus, { passive: true, signal });
+            window.addEventListener('resize', scheduleFocus, { passive: true, signal });
+            applyFocus();
           }
         }
       }

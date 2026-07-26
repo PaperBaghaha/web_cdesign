@@ -135,6 +135,13 @@ const people = defineCollection({
     aliases: z.array(z.string()).optional().default([]),
     /** Research interests, shown as chips on the profile page. */
     interests: z.array(z.string()).optional().default([]),
+    /**
+     * Project slugs (filenames in src/content/projects, without .md) that this
+     * person leads or works on. Shown as a "Projects" section on the profile
+     * page. If omitted, the page falls back to matching `interests` against
+     * project titles.
+     */
+    projects: z.array(z.string()).optional().default([]),
     /** Hide the auto-generated individual profile page for this person. */
     noPage: z.boolean().optional().default(false),
   }),

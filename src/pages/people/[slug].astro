@@ -1,4 +1,5 @@
 ---
+import ProjectCard from '@components/projects/ProjectCard.astro';
 import { site } from '@config/site';
 import Page from '@layouts/Page.astro';
 import { withBase } from '@utils/base';
@@ -20,6 +21,22 @@ export async function getStaticPaths() {
 
 const { person } = Astro.props;
 const { Content } = await render(person);
+
+// ── Projects this person leads / works on ────────────────────────────────
+// Prefer an explicit `projects:` list of slugs; otherwise fall back to
+// matching the person's `interests` against project titles (case-insensitive).
+const allProjects = await getCollection('projects');
+const norm = (s: string) => s.trim().toLowerCase();
+const wantedSlugs = new Set(person.data.projects.map(norm));
+const wantedInterests = new Set(person.data.interests.map(norm));
+const myProjects = allProjects
+  .filter(
+    (p) =>
+      wantedSlugs.has(norm(p.id)) ||
+      wantedSlugs.has(norm(p.data.title)) ||
+      wantedInterests.has(norm(p.data.title)),
+  )
+  .sort((a, b) => (a.data.importance ?? 999) - (b.data.importance ?? 999));
 
 const entries = parseBibtex(bibRaw);
 const publications = publicationsByPerson(person.data.name, entries, person.data.aliases);
@@ -164,6 +181,24 @@ const jsonLd = {
   <section class="profile-bio prose" data-reveal>
     <Content />
   </section>
+
+  <!-- ═══ PROJECTS THEY LEAD / WORK ON ════════════════════════════════════ -->
+  {
+    myProjects.length > 0 && (
+      <section class="profile-projects" data-reveal>
+        <div class="pubs-header">
+          <h2>Projects</h2>
+          <div class="pubs-rule" />
+          <span class="pubs-count">{myProjects.length}</span>
+        </div>
+        <div class="proj-grid">
+          {myProjects.map((project) => (
+            <ProjectCard project={project} />
+          ))}
+        </div>
+      </section>
+    )
+  }
 
   <!-- ═══ PUBLICATIONS ════════════════════════════════════════════════════ -->
   {
@@ -410,6 +445,18 @@ const jsonLd = {
 
   .profile-bio:empty {
     display: none;
+  }
+
+  /* ── Projects ───────────────────────────────────────────────────────── */
+
+  .profile-projects {
+    padding: 1rem 0 2.5rem;
+  }
+
+  .proj-grid {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -0.5rem;
   }
 
   /* ── Publications ───────────────────────────────────────────────────── */
