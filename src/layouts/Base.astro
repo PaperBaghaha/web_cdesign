@@ -304,8 +304,11 @@ const personJsonLd = isHome ? JSON.stringify({
     <!-- Floating site assistant (client-side, reuses Pagefind search) -->
     {site.features.assistant && <Assistant transition:persist />}
 
+    <!-- Scroll progress indicator (fills as the page scrolls) -->
+    <div id="scroll-progress" aria-hidden="true"></div>
+
     <!-- Back to top button -->
-    <button id="back-to-top" aria-label="Back to top" title="Back to top">
+    <button id="back-to-top" aria-label="Back to top" title="Back to top" data-magnetic>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="16"
@@ -422,6 +425,60 @@ const personJsonLd = isHome ? JSON.stringify({
         const elevate = () => nav?.classList.toggle('scrolled', window.scrollY > 8);
         window.addEventListener('scroll', elevate, { passive: true, signal });
         elevate();
+
+        // ── Scroll progress bar ─────────────────────────────────────────
+        const progress = document.getElementById('scroll-progress');
+        if (progress) {
+          const setProgress = () => {
+            const doc = document.documentElement;
+            const max = doc.scrollHeight - doc.clientHeight;
+            const p = max > 0 ? doc.scrollTop / max : 0;
+            progress.style.transform = `scaleX(${p})`;
+          };
+          window.addEventListener('scroll', setProgress, { passive: true, signal });
+          window.addEventListener('resize', setProgress, { passive: true, signal });
+          setProgress();
+        }
+
+        if (!reduceMotion) {
+          // ── Pointer spotlight glow on cards ───────────────────────────
+          document
+            .querySelectorAll<HTMLElement>('.stat-item, .stat-tile, .course-item')
+            .forEach((card) => {
+              card.setAttribute('data-spotlight', '');
+              card.addEventListener(
+                'pointermove',
+                (e) => {
+                  const r = card.getBoundingClientRect();
+                  card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+                  card.style.setProperty('--my', `${e.clientY - r.top}px`);
+                },
+                { signal }
+              );
+            });
+
+          // ── Magnetic buttons (lean toward the cursor) ─────────────────
+          document.querySelectorAll<HTMLElement>('[data-magnetic]').forEach((el) => {
+            const strength = 0.3;
+            el.addEventListener(
+              'pointermove',
+              (e) => {
+                const r = el.getBoundingClientRect();
+                const x = e.clientX - (r.left + r.width / 2);
+                const y = e.clientY - (r.top + r.height / 2);
+                el.style.transform = `translate(${x * strength}px, ${y * strength}px)`;
+              },
+              { signal }
+            );
+            el.addEventListener(
+              'pointerleave',
+              () => {
+                el.style.transform = '';
+              },
+              { signal }
+            );
+          });
+        }
       }
 
       initEffects();
