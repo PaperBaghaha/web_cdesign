@@ -62,11 +62,12 @@ const articleHref = (item: (typeof announcements)[number]) =>
           <p style="color: var(--global-text-color-light);">No announcements yet.</p>
         ) : (
           <ul class="news-list">
-            {announcements.map((item) => {
+            {announcements.map((item, i) => {
               const { title, image, alt, excerpt } = item.data;
               const href = articleHref(item);
               return (
-                <li class="news-item">
+                <li class="news-item" data-reveal style={`--reveal-delay: ${Math.min(i, 6) * 0.06}s`}>
+                  <span class="news-rule" aria-hidden="true" />
                   {image && (
                     <a class="news-thumb" href={href} tabindex="-1" aria-hidden="true">
                       <img src={imageSrc(image)} alt={alt ?? ''} loading="lazy" />
@@ -162,11 +163,59 @@ const articleHref = (item: (typeof announcements)[number]) =>
   }
 
   .news-item {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 2.75rem;
     padding: 2.75rem 0;
     border-bottom: 1px solid var(--global-divider-color);
+    transition: padding-left 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Gold accent rail that grows from the centre on hover */
+  .news-rule {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 2px;
+    height: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      var(--global-theme-color),
+      transparent
+    );
+    transform: translateY(-50%);
+    transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+
+  .news-item:hover {
+    padding-left: 1.25rem;
+  }
+
+  .news-item:hover .news-rule {
+    height: 64%;
+  }
+
+  @media (max-width: 768px) {
+    .news-item:hover {
+      padding-left: 0;
+    }
+    .news-rule {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .news-item,
+    .news-rule,
+    .news-thumb img {
+      transition: none !important;
+    }
+    .news-item:hover {
+      padding-left: 0;
+    }
   }
 
   .news-thumb {

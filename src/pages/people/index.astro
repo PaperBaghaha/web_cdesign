@@ -20,6 +20,21 @@ const current = all
 const alumni = all
   .filter((p) => p.data.group === 'alumni')
   .sort((a, b) => (a.data.importance ?? 999) - (b.data.importance ?? 999));
+
+// Lab hierarchy: the head(s) — PI / director / faculty — are featured in a
+// prominent card on top; everyone else sits in the grid below. Falls back to
+// the highest-ranked current member if no role matches.
+const leadRe = /principal investigator|director|professor|faculty|advisor|\bpi\b/i;
+let leads = current.filter((p) => leadRe.test(p.data.role));
+if (leads.length === 0 && current.length > 0) leads = [current[0]];
+const leadIds = new Set(leads.map((p) => p.id));
+const members = current.filter((p) => !leadIds.has(p.id));
+
+// Split a role on "·" so the first segment reads as a title eyebrow.
+const splitRole = (role: string) => {
+  const parts = role.split('·').map((s) => s.trim());
+  return { lead: parts[0], rest: parts.slice(1).join(' · ') };
+};
 ---
 
 <Page title="People" description={`Research group members of ${site.author.name}`}>
@@ -56,8 +71,89 @@ const alumni = all
         >
           Current Members
         </h2>
+
+        {/* ── Featured head(s) of the lab ─────────────────────────────── */}
+        <div class="lead-grid">
+          {leads.map((person) => {
+            const href = profileHref(person);
+            const pubs = publicationCount(person.data.name, bibEntries, person.data.aliases);
+            const role = splitRole(person.data.role);
+            return (
+              <div class="lead-card" data-reveal>
+                <div class="lead-avatar">
+                  {person.data.photo ? (
+                    <img
+                      src={withBase(person.data.photo)}
+                      alt={person.data.name}
+                      loading="eager"
+                      width="150"
+                      height="150"
+                    />
+                  ) : (
+                    <div class="avatar-fallback" aria-hidden="true">
+                      {person.data.name.charAt(0)}
+                    </div>
+                  )}
+                  {pubs > 0 && (
+                    <span class="pub-badge" title={`${pubs} publications`}>
+                      {pubs}
+                    </span>
+                  )}
+                </div>
+                <div class="lead-info">
+                  <p class="lead-eyebrow">{role.lead}</p>
+                  <h3 class="lead-name">
+                    {href ? (
+                      <a href={href}>{person.data.name}</a>
+                    ) : person.data.website ? (
+                      <a href={person.data.website} target="_blank" rel="noopener noreferrer">
+                        {person.data.name}
+                      </a>
+                    ) : (
+                      person.data.name
+                    )}
+                  </h3>
+                  {role.rest && <p class="lead-role">{role.rest}</p>}
+                  {person.data.description && <p class="lead-desc">{person.data.description}</p>}
+                  <div class="lead-links">
+                    {href && (
+                      <a class="lead-link primary" href={href}>
+                        View profile →
+                      </a>
+                    )}
+                    {person.data.website && (
+                      <a href={person.data.website} target="_blank" rel="noopener noreferrer">
+                        Website
+                      </a>
+                    )}
+                    {person.data.scholar && (
+                      <a
+                        href={`https://scholar.google.com/citations?user=${person.data.scholar}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Scholar
+                      </a>
+                    )}
+                    {person.data.github && (
+                      <a
+                        href={`https://github.com/${person.data.github}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        GitHub
+                      </a>
+                    )}
+                    {person.data.email && <a href={`mailto:${person.data.email}`}>Email</a>}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
         <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {current.map((person, i) => {
+          {members.map((person, i) => {
             const href = profileHref(person);
             const pubs = publicationCount(person.data.name, bibEntries, person.data.aliases);
             return (
@@ -190,7 +286,9 @@ const alumni = all
     const empty = document.getElementById('people-search-empty') as HTMLElement | null;
     if (!input) return;
 
-    const cards = Array.from(document.querySelectorAll<HTMLElement>('.person-card, .alumni-row'));
+    const cards = Array.from(
+      document.querySelectorAll<HTMLElement>('.lead-card, .person-card, .alumni-row'),
+    );
     const sections = Array.from(document.querySelectorAll<HTMLElement>('section.mb-10'));
 
     function apply() {
@@ -206,7 +304,7 @@ const alumni = all
       // Hide a whole section (heading + grid) when none of its people match.
       sections.forEach((section) => {
         const visible = section.querySelector(
-          '.person-card:not([style*="display: none"]), .alumni-row:not([style*="display: none"])',
+          '.lead-card:not([style*="display: none"]), .person-card:not([style*="display: none"]), .alumni-row:not([style*="display: none"])',
         );
         section.style.display = visible ? '' : 'none';
       });
@@ -249,8 +347,196 @@ const alumni = all
 
   h2,
   .person-name,
-  .pub-badge {
+  .pub-badge,
+  .lead-name,
+  .lead-eyebrow {
     font-family: 'Space Grotesk', system-ui, sans-serif;
+  }
+
+  /* ── Featured lab head(s) ───────────────────────────────────────────── */
+
+  .lead-grid {
+    display: grid;
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+
+  @media (min-width: 900px) {
+    .lead-grid:has(.lead-card:nth-child(2)) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .lead-card {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+    padding: 1.75rem;
+    border: 1px solid var(--global-divider-color);
+    border-radius: 16px;
+    background: var(--global-card-bg-color);
+    position: relative;
+    overflow: hidden;
+    transition:
+      transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  /* Gold accent rail on the leading edge */
+  .lead-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(
+      to bottom,
+      var(--global-theme-color),
+      color-mix(in srgb, var(--global-theme-color) 20%, transparent)
+    );
+    transform: scaleY(0);
+    transform-origin: top center;
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .lead-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--global-theme-color);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  html[data-theme='dark'] .lead-card:hover {
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .lead-card:hover::before {
+    transform: scaleY(1);
+  }
+
+  .lead-avatar {
+    position: relative;
+    flex: 0 0 auto;
+  }
+
+  .lead-avatar img,
+  .lead-avatar .avatar-fallback {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    transition:
+      box-shadow 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  .lead-card:hover .lead-avatar img,
+  .lead-card:hover .lead-avatar .avatar-fallback {
+    transform: scale(1.03);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--global-theme-color) 32%, transparent);
+  }
+
+  .lead-avatar .avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--global-bg-color);
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: var(--color-silver);
+  }
+
+  .lead-info {
+    min-width: 0;
+  }
+
+  .lead-eyebrow {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--global-theme-color);
+    margin: 0 0 0.35rem;
+  }
+
+  .lead-name {
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin: 0 0 0.3rem;
+  }
+
+  .lead-name a {
+    color: var(--global-text-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .lead-name a:hover {
+    color: var(--global-theme-color);
+  }
+
+  .lead-role {
+    font-size: 0.85rem;
+    color: var(--global-text-color-light);
+    margin: 0 0 0.6rem;
+    line-height: 1.4;
+  }
+
+  .lead-desc {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--global-text-color-light);
+    margin: 0 0 0.85rem;
+    max-width: 52ch;
+  }
+
+  .lead-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .lead-links a {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--global-text-color);
+    text-decoration: none;
+    padding-bottom: 2px;
+    border-bottom: 1px solid var(--global-divider-color);
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .lead-links a:hover {
+    color: var(--global-theme-color);
+    border-color: var(--global-theme-color);
+  }
+
+  .lead-links a.primary {
+    color: var(--global-theme-color);
+    border-color: color-mix(in srgb, var(--global-theme-color) 50%, transparent);
+  }
+
+  @media (max-width: 640px) {
+    .lead-card {
+      flex-direction: column;
+      text-align: center;
+      gap: 1rem;
+      padding: 1.5rem 1.25rem;
+    }
+    .lead-links {
+      justify-content: center;
+    }
+    .lead-avatar img,
+    .lead-avatar .avatar-fallback {
+      width: 128px;
+      height: 128px;
+    }
   }
 
   .person-card {
@@ -385,16 +671,33 @@ const alumni = all
     background-color: var(--global-card-bg-color);
   }
 
+  /* People reveal as a clean rise + fade — no defocus blur (blur is reserved
+     for the project cards, per design). */
+  html.js-reveal .lead-card[data-reveal],
+  html.js-reveal .person-card[data-reveal] {
+    filter: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .person-card,
     .person-card img,
     .person-card .avatar-fallback,
     .person-name a,
-    .pub-badge {
-      transition: none;
+    .pub-badge,
+    .lead-card,
+    .lead-card::before,
+    .lead-avatar img,
+    .lead-avatar .avatar-fallback {
+      transition: none !important;
     }
-    .person-card:hover {
+    .person-card:hover,
+    .lead-card:hover,
+    .lead-card:hover .lead-avatar img,
+    .lead-card:hover .lead-avatar .avatar-fallback {
       transform: none;
+    }
+    .lead-card:hover::before {
+      transform: scaleY(0);
     }
   }
 </style>

@@ -594,17 +594,13 @@ const personJsonLd = isHome ? JSON.stringify({
             }
           }
 
-          // ── Scroll focus: content "bubbles up" & sharpens through a band ─
-          // Works on EVERY page. As a block rises toward the focal line it
-          // scales up (bigger than its neighbours), sharpens and brightens;
-          // as it leaves the band it eases back down, softens and blurs. The
-          // whole pass is rAF-throttled and only touches on-screen elements.
-          const focusEls = Array.from(
-            document.querySelectorAll<HTMLElement>(
-              '.col, .post-header, .profile-header, .profile-projects, .profile-pubs, ' +
-                'section[data-reveal]:not(.hero-content)'
-            )
-          );
+          // ── Scroll focus: project cards "bubble up" through a band ──────
+          // Scoped to project cards only (.col). As a card rises toward the
+          // focal line it scales up (bigger than its neighbours), sharpens and
+          // brightens; as it leaves the band it eases back, softens and blurs.
+          // Deliberately NOT applied to people / news / publications — those
+          // get their own, blur-free reveals. rAF-throttled, on-screen only.
+          const focusEls = Array.from(document.querySelectorAll<HTMLElement>('.col'));
           if (focusEls.length) {
             let focusRaf = 0;
             const applyFocus = () => {

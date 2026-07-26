@@ -97,6 +97,48 @@ const badges = site.publications.badges;
   </div>
 </Page>
 
+<script>
+  // Staggered scroll-reveal for publication rows. BibSearch renders the list
+  // client-side, so we wait for it to appear, then only hide rows that start
+  // below the fold — above-the-fold rows never flash. Reduced-motion safe.
+  function initPubReveal() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let tries = 0;
+    const setup = () => {
+      const list = document.querySelector('ol.bibliography');
+      const items = list ? Array.from(list.querySelectorAll<HTMLElement>(':scope > li')) : [];
+      if (items.length === 0) {
+        if (tries++ < 20) setTimeout(setup, 150);
+        return;
+      }
+      const vh = window.innerHeight;
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              (e.target as HTMLElement).classList.add('pub-in');
+              io.unobserve(e.target);
+            }
+          });
+        },
+        { rootMargin: '0px 0px -8% 0px' },
+      );
+      items.forEach((li) => {
+        // Only animate rows that begin below the fold — no flash on load.
+        if (li.getBoundingClientRect().top > vh * 0.9) {
+          li.classList.add('pub-reveal');
+          io.observe(li);
+        }
+      });
+    };
+    setup();
+  }
+
+  initPubReveal();
+  document.addEventListener('astro:page-load', initPubReveal);
+</script>
+
 {showAltmetric && <script is:inline src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js" />}
 
 {showDimensions && <script is:inline async src="https://badge.dimensions.ai/badge.js" />}

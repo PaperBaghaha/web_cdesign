@@ -398,6 +398,21 @@ html[data-theme='dark'] .stat-tile:hover {
   border-left-color: var(--global-theme-color);
 }
 
+/* Scroll-reveal cascade for publication rows (JS-tagged in the page; only
+   below-the-fold rows are hidden, so nothing above the fold ever flashes). */
+.publications ol.bibliography li.pub-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.publications ol.bibliography li.pub-reveal.pub-in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 /* ─── Back-to-top: fade + slide instead of display toggle ────────────────── */
 
 #back-to-top {
@@ -627,6 +642,11 @@ html[data-theme='dark'] .card.hoverable:hover {
 
   #cursor-glow {
     display: none !important;
+  }
+
+  .publications ol.bibliography li.pub-reveal {
+    opacity: 1 !important;
+    transform: none !important;
   }
 
   [data-magnetic] {
