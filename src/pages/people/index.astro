@@ -35,6 +35,46 @@ const splitRole = (role: string) => {
   const parts = role.split('·').map((s) => s.trim());
   return { lead: parts[0], rest: parts.slice(1).join(' · ') };
 };
+
+// ── Popup data ────────────────────────────────────────────────────────────
+// Clicking a member card opens a modal with their details (built client-side
+// from this map), so visitors never leave the page to see who does what.
+const allProjectsForModal = await getCollection('projects');
+const normM = (s: string) => s.trim().toLowerCase();
+const resolveProjects = (person: (typeof members)[number]) => {
+  const wantSlugs = new Set(person.data.projects.map(normM));
+  const wantInts = new Set(person.data.interests.map(normM));
+  return allProjectsForModal
+    .filter(
+      (p) =>
+        wantSlugs.has(normM(p.id)) ||
+        wantSlugs.has(normM(p.data.title)) ||
+        wantInts.has(normM(p.data.title)),
+    )
+    .sort((a, b) => (a.data.importance ?? 999) - (b.data.importance ?? 999))
+    .map((p) => ({ title: p.data.title, href: `${site.base}/projects/${p.id}/` }));
+};
+const modalData = Object.fromEntries(
+  members.map((person) => [
+    person.id,
+    {
+      name: person.data.name,
+      role: person.data.role,
+      photo: person.data.photo ? withBase(person.data.photo) : null,
+      initial: person.data.name.charAt(0),
+      description: person.data.description ?? '',
+      projects: resolveProjects(person),
+      email: person.data.email ?? null,
+      website: person.data.website ?? null,
+      scholar: person.data.scholar
+        ? `https://scholar.google.com/citations?user=${person.data.scholar}`
+        : null,
+      github: person.data.github ? `https://github.com/${person.data.github}` : null,
+      pubs: publicationCount(person.data.name, bibEntries, person.data.aliases),
+      href: profileHref(person) ?? null,
+    },
+  ]),
+);
 ---
 
 <Page title="People" description={`Research group members of ${site.author.name}`}>
@@ -154,17 +194,16 @@ const splitRole = (role: string) => {
 
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {members.map((person, i) => {
-            const href = profileHref(person);
-            const cardHref = href ?? person.data.website;
             const pubs = publicationCount(person.data.name, bibEntries, person.data.aliases);
             return (
               <div
                 class="person-card text-center"
                 data-reveal
-                data-href={cardHref}
-                role={cardHref ? 'link' : undefined}
-                tabindex={cardHref ? '0' : undefined}
-                aria-label={cardHref ? `View ${person.data.name}'s profile` : undefined}
+                data-person-id={person.id}
+                role="button"
+                tabindex="0"
+                aria-haspopup="dialog"
+                aria-label={`View details for ${person.data.name}`}
                 style={`--reveal-delay: ${i * 0.04}s`}
               >
                 <div class="avatar-wrap">
@@ -188,55 +227,9 @@ const splitRole = (role: string) => {
                   )}
                 </div>
 
-                <h3 class="person-name">
-                  {href ? (
-                    <a href={href}>{person.data.name}</a>
-                  ) : person.data.website ? (
-                    <a href={person.data.website} target="_blank" rel="noopener noreferrer">
-                      {person.data.name}
-                    </a>
-                  ) : (
-                    person.data.name
-                  )}
-                </h3>
+                <h3 class="person-name">{person.data.name}</h3>
                 <p class="person-role">{person.data.role}</p>
-
-                {/* Social icons */}
-                <div class="mt-1 flex justify-center gap-2">
-                  {person.data.github && (
-                    <a
-                      href={`https://github.com/${person.data.github}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="social-mini"
-                      aria-label={`${person.data.name} on GitHub`}
-                    >
-                      gh
-                    </a>
-                  )}
-                  {person.data.scholar && (
-                    <a
-                      href={`https://scholar.google.com/citations?user=${person.data.scholar}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="social-mini"
-                      aria-label={`${person.data.name} on Google Scholar`}
-                    >
-                      gs
-                    </a>
-                  )}
-                  {person.data.email && (
-                    <a
-                      href={`mailto:${person.data.email}`}
-                      class="social-mini"
-                      aria-label={`Email ${person.data.name}`}
-                    >
-                      email
-                    </a>
-                  )}
-                </div>
-
-                {person.data.description && <p class="person-desc">{person.data.description}</p>}
+                <span class="person-cta" aria-hidden="true">View details →</span>
               </div>
             );
           })}
@@ -292,6 +285,50 @@ const splitRole = (role: string) => {
   }
 
   {all.length === 0 && <p style="color: var(--global-text-color-light);">No people entries yet.</p>}
+
+  {/* ── Member detail popup ─────────────────────────────────────────────── */}
+  <div
+    class="person-modal"
+    id="person-modal"
+    hidden
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="pm-name"
+  >
+    <div class="person-modal-backdrop" data-modal-close></div>
+    <div class="person-modal-card" role="document">
+      <button type="button" class="person-modal-close" data-modal-close aria-label="Close">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path
+            d="M6 6l12 12M18 6L6 18"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
+      <div class="pm-head">
+        <div class="pm-avatar">
+          <img id="pm-photo" alt="" width="96" height="96" hidden />
+          <span id="pm-initial" class="pm-initial" aria-hidden="true" hidden />
+          <span id="pm-badge" class="pm-badge" hidden />
+        </div>
+        <div class="pm-headtext">
+          <h2 class="pm-name" id="pm-name" />
+          <p class="pm-role" id="pm-role" />
+        </div>
+      </div>
+      <p class="pm-desc" id="pm-desc" hidden />
+      <div class="pm-block" id="pm-projects-wrap" hidden>
+        <p class="pm-label">Research areas</p>
+        <div class="pm-projects" id="pm-projects" />
+      </div>
+      <div class="pm-links" id="pm-links" />
+    </div>
+  </div>
+
+  <script type="application/json" id="people-modal-data" set:html={JSON.stringify(modalData)} />
 </Page>
 
 <script>
@@ -329,29 +366,154 @@ const splitRole = (role: string) => {
     input.addEventListener('input', apply);
   }
 
-  // Make the whole person card clickable (photo included) — no need to aim for
-  // the name. Real links inside the card (email, GitHub, Scholar) still work.
-  function initPeopleCards() {
-    const cards = document.querySelectorAll<HTMLElement>('.person-card[data-href]');
-    cards.forEach((card) => {
-      const href = card.dataset.href;
-      if (!href) return;
-      card.addEventListener('click', (e) => {
-        if ((e.target as HTMLElement).closest('a')) return; // let inner links win
-        window.location.href = href;
-      });
+  // Clicking a member card (photo included) opens a popup with their details —
+  // no page navigation. Data is embedded as JSON at build time.
+  type PMProject = { title: string; href: string };
+  type PMPerson = {
+    name: string;
+    role: string;
+    photo: string | null;
+    initial: string;
+    description: string;
+    projects: PMProject[];
+    email: string | null;
+    website: string | null;
+    scholar: string | null;
+    github: string | null;
+    pubs: number;
+    href: string | null;
+  };
+
+  function initPeopleModal() {
+    const dataEl = document.getElementById('people-modal-data');
+    const modal = document.getElementById('person-modal');
+    if (!dataEl || !modal) return;
+
+    let data: Record<string, PMPerson> = {};
+    try {
+      data = JSON.parse(dataEl.textContent || '{}');
+    } catch {
+      return;
+    }
+
+    const photo = document.getElementById('pm-photo') as HTMLImageElement | null;
+    const initial = document.getElementById('pm-initial');
+    const badge = document.getElementById('pm-badge');
+    const nameEl = document.getElementById('pm-name');
+    const roleEl = document.getElementById('pm-role');
+    const descEl = document.getElementById('pm-desc');
+    const projWrap = document.getElementById('pm-projects-wrap');
+    const projEl = document.getElementById('pm-projects');
+    const linksEl = document.getElementById('pm-links');
+    if (!photo || !initial || !badge || !nameEl || !roleEl || !descEl || !projWrap || !projEl || !linksEl)
+      return;
+
+    let lastFocus: HTMLElement | null = null;
+
+    const makeLink = (href: string, label: string, external: boolean, primary = false) => {
+      const a = document.createElement('a');
+      a.href = href;
+      a.textContent = label;
+      a.className = 'pm-link' + (primary ? ' primary' : '');
+      if (external) {
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+      }
+      return a;
+    };
+
+    const open = (id: string) => {
+      const p = data[id];
+      if (!p) return;
+
+      if (p.photo) {
+        photo.src = p.photo;
+        photo.alt = p.name;
+        photo.hidden = false;
+        initial.hidden = true;
+      } else {
+        initial.textContent = p.initial;
+        initial.hidden = false;
+        photo.hidden = true;
+      }
+      if (p.pubs > 0) {
+        badge.textContent = String(p.pubs);
+        badge.title = `${p.pubs} publications`;
+        badge.hidden = false;
+      } else {
+        badge.hidden = true;
+      }
+
+      nameEl.textContent = p.name;
+      roleEl.textContent = p.role;
+
+      if (p.description) {
+        descEl.textContent = p.description;
+        descEl.hidden = false;
+      } else {
+        descEl.hidden = true;
+      }
+
+      projEl.textContent = '';
+      if (p.projects.length) {
+        p.projects.forEach((pr) => {
+          const a = document.createElement('a');
+          a.href = pr.href;
+          a.textContent = pr.title;
+          a.className = 'pm-chip';
+          projEl.appendChild(a);
+        });
+        projWrap.hidden = false;
+      } else {
+        projWrap.hidden = true;
+      }
+
+      linksEl.textContent = '';
+      if (p.href) linksEl.appendChild(makeLink(p.href, 'Full profile →', false, true));
+      if (p.website) linksEl.appendChild(makeLink(p.website, 'Website', true));
+      if (p.scholar) linksEl.appendChild(makeLink(p.scholar, 'Scholar', true));
+      if (p.github) linksEl.appendChild(makeLink(p.github, 'GitHub', true));
+      if (p.email) linksEl.appendChild(makeLink(`mailto:${p.email}`, 'Email', false));
+
+      lastFocus = document.activeElement as HTMLElement;
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+      requestAnimationFrame(() => modal.classList.add('open'));
+      modal.querySelector<HTMLElement>('.person-modal-close')?.focus();
+    };
+
+    const close = () => {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+      window.setTimeout(() => {
+        if (!modal.classList.contains('open')) modal.hidden = true;
+      }, 300);
+      lastFocus?.focus();
+    };
+
+    document.querySelectorAll<HTMLElement>('.person-card[data-person-id]').forEach((card) => {
+      const id = card.dataset.personId;
+      if (!id) return;
+      card.addEventListener('click', () => open(id));
       card.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          window.location.href = href;
+          open(id);
         }
       });
+    });
+
+    modal.querySelectorAll('[data-modal-close]').forEach((el) =>
+      el.addEventListener('click', close),
+    );
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.hidden) close();
     });
   }
 
   document.addEventListener('astro:page-load', () => {
     initPeopleSearch();
-    initPeopleCards();
+    initPeopleModal();
   });
 </script>
 
@@ -587,13 +749,36 @@ const splitRole = (role: string) => {
       transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .person-card[data-href] {
+  .person-card[data-person-id] {
     cursor: pointer;
   }
 
-  .person-card[data-href]:focus-visible {
+  .person-card[data-person-id]:focus-visible {
     outline: 2px solid var(--global-theme-color);
     outline-offset: 3px;
+  }
+
+  /* "View details →" call-to-action shown on each card */
+  .person-cta {
+    display: inline-block;
+    margin-top: 0.6rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--color-silver-dark);
+    opacity: 0;
+    transform: translateY(3px);
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease,
+      color 0.3s ease;
+  }
+
+  .person-card:hover .person-cta,
+  .person-card:focus-visible .person-cta {
+    opacity: 1;
+    transform: translateY(0);
+    color: var(--global-theme-color);
   }
 
   .person-card:hover {
@@ -728,6 +913,268 @@ const splitRole = (role: string) => {
   /* People reveal as a clean rise + fade — NO blur anywhere on this page. */
   :global(html.js-reveal) [data-reveal] {
     filter: none !important;
+  }
+
+  /* ══ Member detail popup ═══════════════════════════════════════════════ */
+
+  .person-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+  }
+
+  .person-modal[hidden] {
+    display: none;
+  }
+
+  .person-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, #0a0a0a 55%, transparent);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .person-modal.open .person-modal-backdrop {
+    opacity: 1;
+  }
+
+  .person-modal-card {
+    position: relative;
+    width: min(30rem, 100%);
+    max-height: min(85vh, 42rem);
+    overflow-y: auto;
+    padding: 1.9rem 1.75rem 1.75rem;
+    border: 1px solid var(--global-divider-color);
+    border-radius: 20px;
+    background: var(--global-card-bg-color);
+    box-shadow:
+      0 24px 60px rgba(0, 0, 0, 0.28),
+      0 4px 14px rgba(0, 0, 0, 0.12);
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+    transition:
+      opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  html[data-theme='dark'] .person-modal-card {
+    box-shadow:
+      0 24px 60px rgba(0, 0, 0, 0.6),
+      0 4px 14px rgba(0, 0, 0, 0.4);
+  }
+
+  .person-modal.open .person-modal-card {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .person-modal-close {
+    position: absolute;
+    top: 0.85rem;
+    right: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid var(--global-divider-color);
+    border-radius: 50%;
+    background: var(--global-bg-color);
+    color: var(--global-text-color-light);
+    cursor: pointer;
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .person-modal-close:hover {
+    color: var(--global-text-color);
+    border-color: var(--global-theme-color);
+    transform: rotate(90deg);
+  }
+
+  .person-modal-close:focus-visible {
+    outline: 2px solid var(--global-theme-color);
+    outline-offset: 2px;
+  }
+
+  .pm-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-right: 2rem;
+  }
+
+  .pm-avatar {
+    position: relative;
+    flex: 0 0 auto;
+    width: 84px;
+    height: 84px;
+  }
+
+  .pm-avatar img,
+  .pm-initial {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .pm-initial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--global-bg-color);
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--color-silver);
+  }
+
+  .pm-badge {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    border-radius: 12px;
+    background: var(--global-theme-color);
+    color: #fff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 24px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    box-shadow: 0 0 0 3px var(--global-card-bg-color);
+  }
+
+  .pm-name {
+    margin: 0;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--global-text-color);
+  }
+
+  .pm-role {
+    margin: 0.3rem 0 0;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--global-theme-color);
+  }
+
+  .pm-desc {
+    margin: 1.15rem 0 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--global-text-color-light);
+  }
+
+  .pm-block {
+    margin-top: 1.25rem;
+  }
+
+  .pm-label {
+    margin: 0 0 0.55rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-silver-dark);
+  }
+
+  .pm-projects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .pm-chip {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--global-divider-color);
+    border-radius: 999px;
+    background: var(--global-bg-color);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--global-text-color);
+    text-decoration: none;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .pm-chip:hover {
+    border-color: var(--global-theme-color);
+    background: var(--global-theme-color);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+
+  .pm-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 1.4rem;
+  }
+
+  .pm-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.95rem;
+    border: 1px solid var(--global-divider-color);
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--global-text-color);
+    text-decoration: none;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .pm-link:hover {
+    border-color: var(--global-theme-color);
+    transform: translateY(-2px);
+  }
+
+  .pm-link.primary {
+    background: var(--global-theme-color);
+    border-color: var(--global-theme-color);
+    color: #fff;
+  }
+
+  .pm-link.primary:hover {
+    filter: brightness(1.08);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .person-modal-backdrop,
+    .person-modal-card {
+      transition: opacity 0.15s ease;
+      transform: none;
+    }
+    .person-modal-close:hover {
+      transform: none;
+    }
+    .person-cta {
+      transition: none;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

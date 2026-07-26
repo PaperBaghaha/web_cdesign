@@ -489,20 +489,18 @@ const renderedAnnouncements = await Promise.all(
   /* The lab's hand mark rotates in 3D at the centre of the HUD reticle, with a
      gold glow. It reads as a slowly turning coin — depth, not a flat 360. */
   .geo-hand {
-    width: 56%;
-    height: auto;
-    object-fit: contain;
+    width: 54%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    /* Clip the logo's square white plate into a clean white disc — just the
+       circle and the hand mark, no black/white box behind it. */
+    border-radius: 50%;
+    background: #fff;
     transform-style: preserve-3d;
     transform-origin: 50% 50%;
     animation: geo-spin3d 9s cubic-bezier(0.65, 0, 0.35, 1) infinite;
     will-change: transform;
-    filter: drop-shadow(0 0 16px color-mix(in srgb, var(--global-theme-color) 38%, transparent));
-  }
-
-  /* Black line-art reads on the light hero; invert it for the dark theme. */
-  html[data-theme='dark'] .geo-hand {
-    filter: invert(1)
-      drop-shadow(0 0 16px color-mix(in srgb, var(--global-theme-color) 48%, transparent));
+    box-shadow: 0 0 22px color-mix(in srgb, var(--global-theme-color) 42%, transparent);
   }
 
   /* A full 360° turn on Y, with a touch of X tilt so it feels three-dimensional
