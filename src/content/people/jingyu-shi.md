@@ -1,6 +1,7 @@
 ---
 name: 'Jingyu Shi'
 role: 'PhD Student'
+major: 'Electrical and Computer Engineering'
 website: 'https://jingyushi.me/'
 scholar: 'zbrLQdMAAAAJ'
 github: 'jingyushi'

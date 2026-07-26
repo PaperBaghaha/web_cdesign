@@ -1,6 +1,7 @@
 ---
 name: 'Dizhi Ma'
 role: 'PhD Student'
+major: 'Electrical and Computer Engineering'
 photo: '/assets/img/people/dizhi-ma.jpg'
 scholar: 'Kk_pY9EAAAAJ'
 github: 'dizhima'

@@ -113,6 +113,9 @@ const people = defineCollection({
   schema: z.object({
     name: z.string(),
     role: z.string(),
+    /** Academic degree major / department, e.g. "Mechanical Engineering".
+     * Shown next to the role on the people cards. */
+    major: z.string().optional(),
     /** Photo path in public/assets/img/. */
     photo: z.string().optional(),
     /** Brief description shown on profile card. */

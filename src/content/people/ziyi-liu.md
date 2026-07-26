@@ -1,6 +1,7 @@
 ---
 name: 'Ziyi Liu'
 role: 'PhD Student'
+major: 'Mechanical Engineering'
 photo: '/assets/img/people/ziyi-liu.png'
 website: 'https://www.ziyiliucn.com/'
 scholar: '3-2EKmkAAAAJ'

@@ -1,6 +1,7 @@
 ---
 name: 'Hyungjun Doh'
 role: 'PhD Student'
+major: 'Electrical and Computer Engineering'
 photo: '/assets/img/people/hyungjun-doh.jpg'
 website: 'https://danieldoh.github.io/'
 scholar: 'NAp6u_cAAAAJ'

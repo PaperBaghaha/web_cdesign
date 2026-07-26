@@ -1,6 +1,7 @@
 ---
 name: 'Runlin Duan'
 role: 'PhD Student'
+major: 'Mechanical Engineering'
 photo: '/assets/img/people/runlin-duan.png'
 website: 'https://runlinduan.com/'
 scholar: 'KYshup8AAAAJ'

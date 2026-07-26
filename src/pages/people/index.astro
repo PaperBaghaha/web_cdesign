@@ -230,9 +230,7 @@ const modalData = Object.fromEntries(
                 <h3 class="person-name">{person.data.name}</h3>
                 <p class="person-role">
                   {person.data.role}
-                  {person.data.interests?.[0] && (
-                    <span class="person-field"> · {person.data.interests[0]}</span>
-                  )}
+                  {person.data.major && <span class="person-field"> · {person.data.major}</span>}
                 </p>
                 <span class="person-cta" aria-hidden="true">View details →</span>
               </div>

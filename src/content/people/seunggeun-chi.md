@@ -1,6 +1,7 @@
 ---
 name: 'Seunggeun Chi'
 role: 'PhD Student'
+major: 'Electrical and Computer Engineering'
 photo: '/assets/img/people/seunggeun-chi.jpg'
 website: 'https://sgchi.github.io/'
 github: 'sgchi'

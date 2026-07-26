@@ -1,6 +1,7 @@
 ---
 name: 'Ananya Ipsita'
 role: 'PhD Student'
+major: 'Mechanical Engineering'
 scholar: '8D7cYcUAAAAJ'
 description: 'Researches computer vision, robotic systems, AR, and HCI with a focus on VR-based skill training and authoring.'
 interests:

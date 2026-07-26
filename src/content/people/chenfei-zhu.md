@@ -1,6 +1,7 @@
 ---
 name: 'Chenfei Zhu'
 role: 'PhD Student'
+major: 'Mechanical Engineering'
 photo: '/assets/img/people/chenfei-zhu.jpg'
 website: 'https://chenfei-zhu.github.io/'
 scholar: '5I-T9LkAAAAJ'

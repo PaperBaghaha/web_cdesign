@@ -1,6 +1,7 @@
 ---
 name: 'Mayank Patel'
 role: 'PhD Student'
+major: 'Mechanical Engineering'
 photo: '/assets/img/people/mayank-patel.png'
 description: 'Researches skill learning and VR authoring with integrated haptics, including handheld haptic devices for VR manufacturing training.'
 interests:

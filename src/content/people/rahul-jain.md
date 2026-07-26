@@ -1,6 +1,7 @@
 ---
 name: 'Rahul Jain'
 role: 'PhD Student'
+major: 'Electrical and Computer Engineering'
 photo: '/assets/img/people/rahul-jain.jpg'
 website: 'https://www.jain-rahul.com/'
 scholar: 'n8woqvsAAAAJ'
