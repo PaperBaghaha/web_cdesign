@@ -148,24 +148,32 @@ const renderedAnnouncements = await Promise.all(
     </div>
   </section>
 
-  <!-- ═══ RESEARCH AREAS BAND ══════════════════════════════════════════════════ -->
-  <section class="research-band page-container">
-    <h2 class="research-band-label" data-reveal>Research Areas</h2>
-    <div class="ra-grid">
-      {
-        researchAreas.map((p, i) => (
-          <a
-            class:list={['ra-item', i % 2 === 0 ? 'ra-left' : 'ra-right']}
-            href={`${site.base}/projects/${p.id}/`}
-            data-reveal
-            style={`--reveal-delay:${(Math.floor(i / 2) * 0.08).toFixed(2)}s`}
-          >
-            <span class="ra-num">{String(i + 1).padStart(2, '0')}</span>
-            <span class="ra-name">{p.data.title}</span>
-            <span class="ra-arrow" aria-hidden="true">→</span>
-          </a>
-        ))
-      }
+  <!-- ═══ RESEARCH AREAS BAND (scroll-pinned convergence) ═══════════════════════ -->
+  <section class="ra-pin-wrap" data-ra-wrap>
+    <div class="ra-pin">
+      <div class="page-container ra-pin-inner">
+        <h2 class="research-band-label">Research Areas</h2>
+        <div class="ra-grid">
+          {
+            Array.from({ length: Math.ceil(researchAreas.length / 2) }).map((_, row) => (
+              <div class="ra-row" data-ra-row>
+                {researchAreas.slice(row * 2, row * 2 + 2).map((p, j) => (
+                  <a
+                    class:list={['ra-item', j === 0 ? 'ra-left' : 'ra-right']}
+                    href={`${site.base}/projects/${p.id}/`}
+                  >
+                    <span class="ra-num">{String(row * 2 + j + 1).padStart(2, '0')}</span>
+                    <span class="ra-name">{p.data.title}</span>
+                    <span class="ra-arrow" aria-hidden="true">
+                      →
+                    </span>
+                  </a>
+                ))}
+              </div>
+            ))
+          }
+        </div>
+      </div>
     </div>
   </section>
 
@@ -734,44 +742,73 @@ const renderedAnnouncements = await Promise.all(
 
   /* ══ RESEARCH AREAS BAND ════════════════════════════════════════════════ */
 
-  .research-band {
-    padding-top: 2.5rem;
-    padding-bottom: 1rem;
+  /* Scroll-pinned runway: the section stays fixed on screen while the reader
+     scrolls, and each row's two items fly in from the two sides to meet in the
+     centre. Once all rows have arrived, the pin releases and normal scrolling
+     resumes. The height provides the scroll distance that drives the motion. */
+  .ra-pin-wrap {
+    position: relative;
+    height: 260vh;
+  }
+
+  .ra-pin {
+    position: sticky;
+    top: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     border-bottom: 1px solid var(--global-divider-color);
+    overflow: hidden;
+  }
+
+  .ra-pin-inner {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
   }
 
   .research-band-label {
-    font-size: 1.9rem;
+    font-size: 2.1rem;
     font-weight: 700;
     letter-spacing: -0.02em;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
   }
 
-  /* 3 rows × 2 big items. Left-column items slide in from the left, right-column
-     items slide in from the right — they converge toward the centre on scroll. */
   .ra-grid {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--global-divider-color);
+  }
+
+  .ra-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0;
-    border-top: 1px solid var(--global-divider-color);
+    /* --p is the row's 0→1 arrival progress, driven by JS on scroll. */
+    --p: 1;
   }
 
   .ra-item {
     display: flex;
     align-items: baseline;
     gap: 1.2rem;
-    padding: 1.6rem 1.5rem;
+    padding: 1.7rem 1.5rem;
     text-decoration: none;
     color: var(--global-text-color);
     border-bottom: 1px solid var(--global-divider-color);
-    transition:
-      background-color 0.3s ease,
-      padding 0.3s ease;
+    will-change: transform, opacity;
   }
 
-  /* Divider between the two columns. */
+  /* Left item enters from the left edge; right item from the right edge.
+     At --p:0 they sit ~62vw off-centre; at --p:1 they rest in place. */
   .ra-item.ra-left {
     border-right: 1px solid var(--global-divider-color);
+    transform: translateX(calc((var(--p) - 1) * 62vw));
+    opacity: var(--p);
+  }
+
+  .ra-item.ra-right {
+    transform: translateX(calc((1 - var(--p)) * 62vw));
+    opacity: var(--p);
   }
 
   .ra-num {
@@ -784,7 +821,7 @@ const renderedAnnouncements = await Promise.all(
   }
 
   .ra-name {
-    font-size: clamp(1.4rem, 2.6vw, 2.4rem);
+    font-size: clamp(1.4rem, 2.6vw, 2.5rem);
     font-weight: 700;
     letter-spacing: -0.03em;
     line-height: 1.05;
@@ -804,10 +841,6 @@ const renderedAnnouncements = await Promise.all(
       color 0.25s ease;
   }
 
-  .ra-item:hover {
-    background-color: color-mix(in srgb, var(--global-theme-color) 8%, transparent);
-  }
-
   .ra-item:hover .ra-name {
     color: var(--global-theme-color);
   }
@@ -818,29 +851,34 @@ const renderedAnnouncements = await Promise.all(
     color: var(--global-theme-color);
   }
 
-  /* Converge-on-scroll: override the default reveal transform per column so the
-     two items in a row fly in from opposite sides and meet in the middle. */
-  html.js-reveal .ra-item.ra-left {
-    transform: translateX(-70px) scale(0.98);
-    filter: blur(6px);
-  }
-
-  html.js-reveal .ra-item.ra-right {
-    transform: translateX(70px) scale(0.98);
-    filter: blur(6px);
-  }
-
-  html.js-reveal .ra-item.revealed {
-    transform: none;
-    filter: none;
-  }
-
+  /* Mobile: drop the pin and the horizontal fly-in — stack everything. */
   @media (max-width: 700px) {
-    .ra-grid {
+    .ra-pin-wrap {
+      height: auto;
+    }
+    .ra-pin {
+      position: static;
+      min-height: 0;
+      overflow: visible;
+    }
+    .ra-row {
       grid-template-columns: 1fr;
     }
     .ra-item.ra-left {
       border-right: none;
+    }
+    .ra-item.ra-left,
+    .ra-item.ra-right {
+      transform: none;
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ra-item.ra-left,
+    .ra-item.ra-right {
+      transform: none;
+      opacity: 1;
     }
   }
 
@@ -1021,3 +1059,54 @@ const renderedAnnouncements = await Promise.all(
     }
   }
 </style>
+
+<script>
+  // Scroll-pinned "Research Areas": as the reader scrolls through the tall
+  // wrapper, each row's two items slide in from the two sides to meet in the
+  // centre. Row N arrives during the Nth slice of the overall scroll progress.
+  (() => {
+    const wrap = document.querySelector<HTMLElement>('[data-ra-wrap]');
+    if (!wrap) return;
+    const rows = Array.from(wrap.querySelectorAll<HTMLElement>('[data-ra-row]'));
+    if (!rows.length) return;
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const mobile = window.matchMedia('(max-width: 700px)');
+
+    const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+    const clamp01 = (v: number) => Math.min(Math.max(v, 0), 1);
+
+    let ticking = false;
+
+    const apply = () => {
+      ticking = false;
+
+      // On mobile or with reduced motion, everything just sits in place.
+      if (reduce.matches || mobile.matches) {
+        rows.forEach((row) => row.style.setProperty('--p', '1'));
+        return;
+      }
+
+      const vh = window.innerHeight;
+      const travel = wrap.offsetHeight - vh; // scrollable distance while pinned
+      const scrolled = clamp01(travel > 0 ? -wrap.getBoundingClientRect().top / travel : 1);
+      const n = rows.length;
+
+      rows.forEach((row, i) => {
+        // Each row owns a 1/n slice of the total progress.
+        const local = clamp01(scrolled * n - i);
+        row.style.setProperty('--p', easeOut(local).toFixed(4));
+      });
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(apply);
+    };
+
+    apply();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', apply);
+  })();
+</script>
