@@ -149,13 +149,20 @@ const renderedAnnouncements = await Promise.all(
   </section>
 
   <!-- ═══ RESEARCH AREAS BAND ══════════════════════════════════════════════════ -->
-  <section class="research-band page-container" data-reveal>
-    <h2 class="research-band-label">Research Areas</h2>
-    <div class="chip-row chip-row-sm">
+  <section class="research-band page-container">
+    <h2 class="research-band-label" data-reveal>Research Areas</h2>
+    <div class="ra-grid">
       {
-        researchAreas.map((p) => (
-          <a class="chip chip-sm" href={`${site.base}/projects/${p.id}/`}>
-            {p.data.title}
+        researchAreas.map((p, i) => (
+          <a
+            class:list={['ra-item', i % 2 === 0 ? 'ra-left' : 'ra-right']}
+            href={`${site.base}/projects/${p.id}/`}
+            data-reveal
+            style={`--reveal-delay:${(Math.floor(i / 2) * 0.08).toFixed(2)}s`}
+          >
+            <span class="ra-num">{String(i + 1).padStart(2, '0')}</span>
+            <span class="ra-name">{p.data.title}</span>
+            <span class="ra-arrow" aria-hidden="true">→</span>
           </a>
         ))
       }
@@ -728,8 +735,8 @@ const renderedAnnouncements = await Promise.all(
   /* ══ RESEARCH AREAS BAND ════════════════════════════════════════════════ */
 
   .research-band {
-    padding-top: 1.75rem;
-    padding-bottom: 1.75rem;
+    padding-top: 2.5rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid var(--global-divider-color);
   }
 
@@ -737,17 +744,104 @@ const renderedAnnouncements = await Promise.all(
     font-size: 1.9rem;
     font-weight: 700;
     letter-spacing: -0.02em;
-    margin-bottom: 1.1rem;
+    margin-bottom: 1.5rem;
   }
 
-  /* Smaller pills for the research-areas band. */
-  .chip-row-sm {
-    gap: 0.4rem;
+  /* 3 rows × 2 big items. Left-column items slide in from the left, right-column
+     items slide in from the right — they converge toward the centre on scroll. */
+  .ra-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--global-divider-color);
   }
 
-  .chip-sm {
-    padding: 0.2rem 0.7rem;
-    font-size: 0.72rem;
+  .ra-item {
+    display: flex;
+    align-items: baseline;
+    gap: 1.2rem;
+    padding: 1.6rem 1.5rem;
+    text-decoration: none;
+    color: var(--global-text-color);
+    border-bottom: 1px solid var(--global-divider-color);
+    transition:
+      background-color 0.3s ease,
+      padding 0.3s ease;
+  }
+
+  /* Divider between the two columns. */
+  .ra-item.ra-left {
+    border-right: 1px solid var(--global-divider-color);
+  }
+
+  .ra-num {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--color-silver-dark);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
+  .ra-name {
+    font-size: clamp(1.4rem, 2.6vw, 2.4rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    transition: color 0.25s ease;
+  }
+
+  .ra-arrow {
+    margin-left: auto;
+    align-self: center;
+    font-size: 1.4rem;
+    color: var(--color-silver-dark);
+    opacity: 0;
+    transform: translateX(-8px);
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease,
+      color 0.25s ease;
+  }
+
+  .ra-item:hover {
+    background-color: color-mix(in srgb, var(--global-theme-color) 8%, transparent);
+  }
+
+  .ra-item:hover .ra-name {
+    color: var(--global-theme-color);
+  }
+
+  .ra-item:hover .ra-arrow {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--global-theme-color);
+  }
+
+  /* Converge-on-scroll: override the default reveal transform per column so the
+     two items in a row fly in from opposite sides and meet in the middle. */
+  html.js-reveal .ra-item.ra-left {
+    transform: translateX(-70px) scale(0.98);
+    filter: blur(6px);
+  }
+
+  html.js-reveal .ra-item.ra-right {
+    transform: translateX(70px) scale(0.98);
+    filter: blur(6px);
+  }
+
+  html.js-reveal .ra-item.revealed {
+    transform: none;
+    filter: none;
+  }
+
+  @media (max-width: 700px) {
+    .ra-grid {
+      grid-template-columns: 1fr;
+    }
+    .ra-item.ra-left {
+      border-right: none;
+    }
   }
 
   /* ══ TWO-COLUMN SECTIONS ════════════════════════════════════════════════ */
