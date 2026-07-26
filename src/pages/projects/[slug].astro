@@ -49,6 +49,23 @@ const relatedEntries =
   related_publications && related_publications.length > 0
     ? related_publications.map((key) => allEntries.find((e) => e.key === key)).filter(Boolean)
     : [];
+
+// ── People working on this project (reverse of the profile→project link) ──
+// Match anyone whose `projects` list includes this slug/title, or whose
+// `interests` match the project title (case-insensitive). PI-first ordering.
+const allPeople = await getCollection('people');
+const normP = (s: string) => s.trim().toLowerCase();
+const team = allPeople
+  .filter((person) => {
+    if (person.data.group !== 'current') return false;
+    const slugs = new Set(person.data.projects.map(normP));
+    const ints = new Set(person.data.interests.map(normP));
+    return slugs.has(normP(project.id)) || slugs.has(normP(title)) || ints.has(normP(title));
+  })
+  .sort((a, b) => (a.data.importance ?? 999) - (b.data.importance ?? 999));
+
+const personHref = (p: (typeof team)[number]) =>
+  p.data.noPage ? p.data.website : `${site.base}/people/${p.id}/`;
 ---
 
 <Page title={title} description={description} image={ogImagePath}>
@@ -138,6 +155,65 @@ const relatedEntries =
         <Content />
       </div>
     </article>
+
+    <!-- People working on this project -->
+    {
+      team.length > 0 && (
+        <div class="team-section">
+          <h2>People on this project</h2>
+          <ul class="team-grid">
+            {team.map((person) => {
+              const href = personHref(person);
+              return (
+                <li class="team-member">
+                  {href ? (
+                    <a href={href} class="team-link">
+                      {person.data.photo ? (
+                        <img
+                          src={withBase(person.data.photo)}
+                          alt={person.data.name}
+                          loading="lazy"
+                          width="56"
+                          height="56"
+                        />
+                      ) : (
+                        <span class="team-avatar-fallback" aria-hidden="true">
+                          {person.data.name.charAt(0)}
+                        </span>
+                      )}
+                      <span class="team-info">
+                        <span class="team-name">{person.data.name}</span>
+                        <span class="team-role">{person.data.role}</span>
+                      </span>
+                    </a>
+                  ) : (
+                    <div class="team-link">
+                      {person.data.photo ? (
+                        <img
+                          src={withBase(person.data.photo)}
+                          alt={person.data.name}
+                          loading="lazy"
+                          width="56"
+                          height="56"
+                        />
+                      ) : (
+                        <span class="team-avatar-fallback" aria-hidden="true">
+                          {person.data.name.charAt(0)}
+                        </span>
+                      )}
+                      <span class="team-info">
+                        <span class="team-name">{person.data.name}</span>
+                        <span class="team-role">{person.data.role}</span>
+                      </span>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )
+    }
 
     <!-- References section -->
     {
@@ -309,6 +385,102 @@ const relatedEntries =
     box-shadow:
       0 2px 5px 0 rgba(0, 0, 0, 0.16),
       0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  }
+
+  /* ── People on this project ───────────────────────────────────────────── */
+  .team-section {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--global-divider-color);
+  }
+
+  .team-section h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--global-text-color);
+    margin-bottom: 1.25rem;
+    font-family: var(--font-sans);
+  }
+
+  .team-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .team-link {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--global-divider-color);
+    border-radius: 12px;
+    background: var(--global-card-bg-color);
+    text-decoration: none;
+    transition:
+      border-color 0.25s ease,
+      transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.25s ease;
+  }
+
+  a.team-link:hover {
+    border-color: var(--global-theme-color);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  html[data-theme='dark'] a.team-link:hover {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  }
+
+  .team-link img,
+  .team-avatar-fallback {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .team-avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--global-bg-color);
+    font-family: var(--font-sans);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--color-silver);
+  }
+
+  .team-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .team-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--global-text-color);
+    line-height: 1.3;
+  }
+
+  .team-role {
+    font-size: 0.75rem;
+    color: var(--global-text-color-light);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .team-link {
+      transition: none;
+    }
+    a.team-link:hover {
+      transform: none;
+    }
   }
 
   /* ── References section ───────────────────────────────────────────────── */
