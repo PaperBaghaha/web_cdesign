@@ -90,7 +90,15 @@ const renderedAnnouncements = await Promise.all(
           <div class="geo-cross-h"></div>
           <div class="geo-cross-v"></div>
           <div class="geo-arc"></div>
-          <div class="geo-monogram">CDL</div>
+          <div class="geo-monogram">
+            <img
+              class="geo-hand"
+              src={`${site.base}/assets/img/cdl-logo-icon.png`}
+              alt="Convergence Design Lab"
+              width="512"
+              height="512"
+            />
+          </div>
           <div class="geo-corner geo-corner-tl"></div>
           <div class="geo-corner geo-corner-tr"></div>
           <div class="geo-corner geo-corner-bl"></div>
@@ -474,17 +482,34 @@ const renderedAnnouncements = await Promise.all(
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.4rem;
-    font-weight: 700;
-    letter-spacing: -0.05em;
-    background: linear-gradient(135deg, var(--global-text-color) 30%, var(--color-silver) 70%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    /* Continuously rotate the CDL monogram a full 360°. */
-    animation: spin 16s linear infinite;
+  }
+
+  /* The lab's hand mark sits still at the centre while the HUD rings spin
+     around it; a slow float + gold glow keeps it feeling alive. */
+  .geo-hand {
+    width: 56%;
+    height: auto;
+    object-fit: contain;
+    animation: geo-float 7s ease-in-out infinite;
     transform-origin: 50% 50%;
     will-change: transform;
+    filter: drop-shadow(0 0 14px color-mix(in srgb, var(--global-theme-color) 35%, transparent));
+  }
+
+  /* Black line-art reads on the light hero; invert it for the dark theme. */
+  html[data-theme='dark'] .geo-hand {
+    filter: invert(1)
+      drop-shadow(0 0 14px color-mix(in srgb, var(--global-theme-color) 45%, transparent));
+  }
+
+  @keyframes geo-float {
+    0%,
+    100% {
+      transform: translateY(-2%) scale(1);
+    }
+    50% {
+      transform: translateY(2%) scale(1.03);
+    }
   }
 
   .geo-corner {
@@ -836,7 +861,7 @@ const renderedAnnouncements = await Promise.all(
   @media (prefers-reduced-motion: reduce) {
     .geo-ring,
     .geo-arc,
-    .geo-monogram {
+    .geo-hand {
       animation: none;
     }
   }
