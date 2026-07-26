@@ -488,6 +488,55 @@ html[data-theme='dark'] .course-item:hover {
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5) !important;
 }
 
+/* ─── People cards + Project cards: lift + glow on hover ─────────────────── */
+
+.person-card {
+  border-radius: 10px;
+  padding: 0.75rem 0.5rem;
+  transition:
+    transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.28s ease;
+}
+
+.person-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme='dark'] .person-card:hover {
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5);
+}
+
+.person-card .avatar-wrap,
+.person-card .avatar-fallback {
+  transition:
+    transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.28s ease;
+}
+
+.person-card:hover .avatar-wrap,
+.person-card:hover .avatar-fallback {
+  transform: scale(1.04);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--global-theme-color) 30%, transparent);
+}
+
+.card.hoverable {
+  transition:
+    transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.28s ease,
+    box-shadow 0.28s ease !important;
+}
+
+.card.hoverable:hover {
+  transform: translateY(-5px);
+  border-color: var(--global-theme-color) !important;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.1) !important;
+}
+
+html[data-theme='dark'] .card.hoverable:hover {
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
 /* ─── Pagination buttons ─────────────────────────────────────────────────── */
 
 .pagination-btn {
@@ -547,9 +596,14 @@ html[data-theme='dark'] .course-item:hover {
   .chip::before,
   #back-to-top,
   .course-item,
+  .person-card,
+  .person-card .avatar-wrap,
+  .person-card .avatar-fallback,
+  .card.hoverable,
   .pagination-btn {
     transition: none !important;
     animation: none !important;
+    transform: none !important;
   }
 
   ::view-transition-new(root),

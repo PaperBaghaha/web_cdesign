@@ -443,7 +443,9 @@ const personJsonLd = isHome ? JSON.stringify({
         if (!reduceMotion) {
           // ── Pointer spotlight glow on cards ───────────────────────────
           document
-            .querySelectorAll<HTMLElement>('.stat-item, .stat-tile, .course-item')
+            .querySelectorAll<HTMLElement>(
+              '.stat-item, .stat-tile, .course-item, .person-card, .card.hoverable'
+            )
             .forEach((card) => {
               card.setAttribute('data-spotlight', '');
               card.addEventListener(
