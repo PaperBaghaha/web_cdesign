@@ -503,14 +503,17 @@ const renderedAnnouncements = await Promise.all(
     box-shadow: 0 0 22px color-mix(in srgb, var(--global-theme-color) 42%, transparent);
   }
 
-  /* A full 360° turn on Y, with a touch of X tilt so it feels three-dimensional
-     rather than a flat mirror flip. Eases at the ends to read the face longer. */
+  /* Tumbles on BOTH axes — a full 360° horizontal turn (Y) and a full 360°
+     vertical flip (X) — so it rotates in every direction, not just like a coin. */
   @keyframes geo-spin3d {
     0% {
-      transform: rotateY(0deg) rotateX(8deg);
+      transform: rotateY(0deg) rotateX(0deg);
+    }
+    50% {
+      transform: rotateY(180deg) rotateX(180deg);
     }
     100% {
-      transform: rotateY(360deg) rotateX(8deg);
+      transform: rotateY(360deg) rotateX(360deg);
     }
   }
 
