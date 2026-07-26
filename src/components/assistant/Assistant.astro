@@ -586,7 +586,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       panel.hidden = false;
       toggle.setAttribute('aria-expanded', 'true');
       root?.classList.add('is-open');
-      // Push the page left so research stays readable beside the docked panel.
+      // Lock page scroll so the blurred site behind the pop-up can't be used.
       document.documentElement.classList.add('assistant-docked');
       if (!greeted) {
         greeted = true;
@@ -701,60 +701,62 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   }
 
   /* Dimmed backdrop behind the side panel */
-  /* Overlay is intentionally transparent and click-through so the rest of the
-     page stays fully readable and interactive while the assistant is docked. */
+  /* Overlay dims AND blurs the whole page, and blocks clicks — so while the
+     assistant is open you focus on it and can't use the site behind it. */
   #assistant-overlay {
     position: fixed;
     inset: 0;
     z-index: 9998;
-    background: transparent;
-    pointer-events: none;
+    background: rgba(8, 8, 10, 0.55);
+    backdrop-filter: blur(9px) saturate(115%);
+    -webkit-backdrop-filter: blur(9px) saturate(115%);
+    pointer-events: auto;
+    animation: assistant-overlay-in 0.28s ease-out;
   }
 
-  /* Docked mode: when the assistant is open on desktop, gently push the whole
-     page (and the fixed navbar) to the left so the research content stays fully
-     visible beside the panel — you can read and chat at the same time. */
-  @media (min-width: 821px) {
-    :global(body) {
-      transition: padding-right 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  @keyframes assistant-overlay-in {
+    from {
+      opacity: 0;
     }
-    :global(.navbar) {
-      transition: right 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    :global(html.assistant-docked body) {
-      padding-right: min(48vw, 560px);
-    }
-    :global(html.assistant-docked .navbar) {
-      right: min(48vw, 560px);
+    to {
+      opacity: 1;
     }
   }
 
-  /* Docked half-screen panel on the right — big, but never covers everything. */
+  /* While the assistant is open, lock page scroll so the blurred site behind
+     stays put — the user can't scroll or interact with it. */
+  :global(html.assistant-docked),
+  :global(html.assistant-docked body) {
+    overflow: hidden;
+  }
+
+  /* Centered pop-up dialog in the middle of the screen. */
   #assistant-panel {
     position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: min(48vw, 560px);
-    min-width: 360px;
-    height: 100vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(92vw, 560px);
+    height: min(86vh, 760px);
     display: flex;
     flex-direction: column;
     overflow: hidden;
     z-index: 9999;
-    border-radius: 20px 0 0 20px;
+    border-radius: 20px;
     background: var(--global-card-bg-color, var(--global-bg-color));
-    border-left: 1px solid var(--global-divider-color);
-    box-shadow: -24px 0 70px rgba(0, 0, 0, 0.4);
-    animation: assistant-slide 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid var(--global-divider-color);
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
+    animation: assistant-pop-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  @keyframes assistant-slide {
+  @keyframes assistant-pop-in {
     from {
-      transform: translateX(100%);
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.94);
     }
     to {
-      transform: translateX(0);
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
     }
   }
 
@@ -1203,12 +1205,12 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     opacity: 0.75;
   }
 
-  /* On narrow screens the half-panel becomes a full-width sheet. */
+  /* On narrow screens the pop-up grows to nearly fill the screen, still centered. */
   @media (max-width: 820px) {
     #assistant-panel {
-      width: 100vw;
-      min-width: 0;
-      border-radius: 0;
+      width: 94vw;
+      height: 90vh;
+      border-radius: 16px;
     }
     #assistant-hero {
       padding: 28px 20px;

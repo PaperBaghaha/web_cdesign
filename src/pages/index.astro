@@ -477,6 +477,10 @@ const renderedAnnouncements = await Promise.all(
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    /* Continuously rotate the CDL monogram a full 360°. */
+    animation: spin 16s linear infinite;
+    transform-origin: 50% 50%;
+    will-change: transform;
   }
 
   .geo-corner {
@@ -827,7 +831,8 @@ const renderedAnnouncements = await Promise.all(
   /* ── Reduced motion ──────────────────────────────────────────────────── */
   @media (prefers-reduced-motion: reduce) {
     .geo-ring,
-    .geo-arc {
+    .geo-arc,
+    .geo-monogram {
       animation: none;
     }
   }
