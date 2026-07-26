@@ -228,7 +228,12 @@ const modalData = Object.fromEntries(
                 </div>
 
                 <h3 class="person-name">{person.data.name}</h3>
-                <p class="person-role">{person.data.role}</p>
+                <p class="person-role">
+                  {person.data.role}
+                  {person.data.interests?.[0] && (
+                    <span class="person-field"> · {person.data.interests[0]}</span>
+                  )}
+                </p>
                 <span class="person-cta" aria-hidden="true">View details →</span>
               </div>
             );
@@ -880,6 +885,12 @@ const modalData = Object.fromEntries(
     margin-top: 0.15rem;
     font-size: 0.75rem;
     color: var(--global-text-color-light);
+  }
+
+  /* Research field shown next to the role, e.g. "PhD Student · AR / VR / MR". */
+  .person-field {
+    color: var(--global-theme-color);
+    font-weight: 500;
   }
 
   .person-desc {
