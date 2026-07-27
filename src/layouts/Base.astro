@@ -227,6 +227,38 @@ const personJsonLd = isHome ? JSON.stringify({
     data-footer-position={site.footer.position}
     data-tooltips={site.features.tooltips ? 'true' : undefined}
   >
+    <!-- Faint background landmark: a blurred Purdue-style bell/clock tower.
+         Deliberately subtle — barely visible, small and centred, so it reads
+         as a quiet watermark rather than decoration. -->
+    <div class="bg-landmark" aria-hidden="true">
+      <svg viewBox="0 0 100 300" xmlns="http://www.w3.org/2000/svg">
+        <!-- spire -->
+        <path d="M50 6 L33 66 H67 Z" fill="var(--landmark-ink)" />
+        <!-- top cornice -->
+        <rect x="30" y="66" width="40" height="7" fill="var(--landmark-ink)" />
+        <!-- belfry / clock housing -->
+        <rect x="35" y="73" width="30" height="48" fill="var(--landmark-ink)" />
+        <!-- clock face (punched out of the housing) -->
+        <circle cx="50" cy="95" r="11" fill="var(--landmark-face)" />
+        <!-- clock hands -->
+        <path
+          d="M50 95 V88 M50 95 L56 98"
+          stroke="var(--landmark-ink)"
+          stroke-width="2"
+          stroke-linecap="round"
+          fill="none"
+        />
+        <!-- tower body -->
+        <rect x="37" y="121" width="26" height="116" fill="var(--landmark-ink)" />
+        <!-- bottom cornice -->
+        <rect x="32" y="237" width="36" height="7" fill="var(--landmark-ink)" />
+        <!-- base -->
+        <path d="M30 244 H70 V300 H30 Z" fill="var(--landmark-ink)" />
+        <!-- arched doorway (punched out) -->
+        <path d="M43 300 V278 a7 7 0 0 1 14 0 V300 Z" fill="var(--landmark-face)" />
+      </svg>
+    </div>
+
     <!-- Skip to main content (accessibility) -->
     <a
       href="#main-content"
