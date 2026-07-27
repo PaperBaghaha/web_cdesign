@@ -200,6 +200,15 @@ const personJsonLd = isHome ? JSON.stringify({
       }
       applyTheme();
       document.addEventListener('astro:after-swap', applyTheme);
+
+      // Safety: never carry the intro's scroll-lock into another page. If the
+      // visitor clicks a link while the homepage intro is still up, releasing
+      // the lock here keeps the next page fully scrollable (not "stuck").
+      function releaseScrollLock() {
+        document.documentElement.style.overflow = '';
+      }
+      document.addEventListener('astro:before-swap', releaseScrollLock);
+      document.addEventListener('astro:after-swap', releaseScrollLock);
     </script>
 
     <!--
