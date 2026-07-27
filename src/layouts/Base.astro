@@ -204,20 +204,23 @@ const personJsonLd = isHome ? JSON.stringify({
 
     <!--
       Intro curtain gate: decide BEFORE first paint whether to show the
-      spinning-monogram intro. It plays on every full page load / reload, but
-      NOT with reduced motion. (During in-site click navigation the script
-      keeps `intro-done` on <html> for that page's lifetime, so the curtain
-      only shows on real loads — see the intro script below.)
+      spinning-monogram intro. It plays on every full page load / reload of the
+      HOMEPAGE only, but NOT with reduced motion. (During in-site click
+      navigation the script keeps `intro-done` on <html> for that page's
+      lifetime, so the curtain only shows on real loads — see the intro script
+      below.)
     -->
-    <script is:inline>
-      try {
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          document.documentElement.classList.add('intro-done');
+    {isHome && (
+      <script is:inline>
+        try {
+          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.documentElement.classList.add('intro-done');
+          }
+        } catch (e) {
+          /* matchMedia unavailable — let the intro play */
         }
-      } catch (e) {
-        /* matchMedia unavailable — let the intro play */
-      }
-    </script>
+      </script>
+    )}
 
     <!--
       Netlify Identity widget: catches the invite/recovery link from the email
@@ -246,29 +249,33 @@ const personJsonLd = isHome ? JSON.stringify({
   >
     <!-- Intro curtain: the lab monogram (circle + hexagon line art spinning in
          3D, hand static in the centre — an exact replica of the hero mark)
-         pops in, then the curtain wipes away to reveal the site. -->
-    <div id="cdl-intro" aria-hidden="true">
-      <div class="cdl-intro-mark">
-        <svg class="cdl-intro-circle" viewBox="0 0 200 200" aria-hidden="true">
-          <circle cx="100" cy="100" r="94" fill="none" stroke="currentColor" stroke-width="3" />
-        </svg>
-        <svg class="cdl-intro-hex" viewBox="0 0 200 200" aria-hidden="true">
-          <polygon
-            points="100,16 173,58 173,142 100,184 27,142 27,58"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="3"
+         pops in with a 0→100% counter, then the curtain wipes away to reveal
+         the site. Homepage only. -->
+    {isHome && (
+      <div id="cdl-intro" aria-hidden="true">
+        <div class="cdl-intro-mark">
+          <svg class="cdl-intro-circle" viewBox="0 0 200 200" aria-hidden="true">
+            <circle cx="100" cy="100" r="94" fill="none" stroke="currentColor" stroke-width="3" />
+          </svg>
+          <svg class="cdl-intro-hex" viewBox="0 0 200 200" aria-hidden="true">
+            <polygon
+              points="100,16 173,58 173,142 100,184 27,142 27,58"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+            />
+          </svg>
+          <img
+            class="cdl-intro-hand"
+            src={`${site.base}/assets/img/cdl-hand-only.png`}
+            alt=""
+            width="325"
+            height="325"
           />
-        </svg>
-        <img
-          class="cdl-intro-hand"
-          src={`${site.base}/assets/img/cdl-hand-only.png`}
-          alt=""
-          width="325"
-          height="325"
-        />
+        </div>
+        <span class="cdl-intro-count">0%</span>
       </div>
-    </div>
+    )}
 
     <!-- Skip to main content (accessibility) -->
     <a
@@ -752,37 +759,57 @@ const personJsonLd = isHome ? JSON.stringify({
       document.addEventListener('astro:after-swap', initEffects);
     </script>
 
-    <script>
-      // ── Intro curtain: hold the spinning monogram, then wipe away ────────
-      // The monogram's pop-in and 3D spins are pure CSS. This script just
-      // times the exit and cleans up. It plays on every full page load /
-      // reload. During in-site click navigation it does NOT replay: `finish`
-      // leaves `intro-done` on <html>, which persists for that page's
-      // lifetime and hides the curtain that the next swapped-in page renders.
-      (() => {
-        const html = document.documentElement;
-        const intro = document.getElementById('cdl-intro');
-        if (!intro || html.classList.contains('intro-done')) return;
+    {isHome && (
+      <script is:inline>
+        {`
+        // ── Intro curtain: spinning monogram + 0→100% counter, then wipe ────
+        // Fast (~1.2s) and can NEVER get stuck: a hard failsafe forces the
+        // exit at 2.2s no matter what. The monogram pop-in and 3D spins are
+        // pure CSS; this script drives the counter, times the exit, and
+        // cleans up. Homepage only. During in-site click navigation it does
+        // NOT replay: 'finish' leaves 'intro-done' on <html>, which persists.
+        (function () {
+          var html = document.documentElement;
+          var intro = document.getElementById('cdl-intro');
+          if (!intro || html.classList.contains('intro-done')) return;
+          var countEl = intro.querySelector('.cdl-intro-count');
 
-        // Lock scroll while the curtain is up.
-        const prevOverflow = html.style.overflow;
-        html.style.overflow = 'hidden';
+          // Lock scroll while the curtain is up.
+          var prevOverflow = html.style.overflow;
+          html.style.overflow = 'hidden';
 
-        const finish = () => {
-          intro.classList.add('is-out');
-          html.style.overflow = prevOverflow;
-          const done = () => {
-            html.classList.add('intro-done');
-            intro.remove();
-          };
-          intro.addEventListener('transitionend', done, { once: true });
-          // Failsafe in case the transition never fires.
-          setTimeout(done, 900);
-        };
+          var finished = false;
+          function finish() {
+            if (finished) return;
+            finished = true;
+            if (countEl) countEl.textContent = '100%';
+            intro.classList.add('is-out');
+            html.style.overflow = prevOverflow;
+            function done() {
+              html.classList.add('intro-done');
+              if (intro && intro.parentNode) intro.remove();
+            }
+            intro.addEventListener('transitionend', done, { once: true });
+            setTimeout(done, 700);
+          }
 
-        // Let the monogram pop in and spin for a beat, then wipe the curtain.
-        setTimeout(finish, 2200);
-      })();
-    </script>
+          // Drive the counter 0 → 100 over ~1.2s, then wipe the curtain.
+          var DUR = 1200;
+          var start = performance.now();
+          function tick(now) {
+            if (finished) return;
+            var t = Math.min((now - start) / DUR, 1);
+            if (countEl) countEl.textContent = Math.round(t * 100) + '%';
+            if (t < 1) requestAnimationFrame(tick);
+            else finish();
+          }
+          requestAnimationFrame(tick);
+
+          // Hard failsafe — never stuck on screen.
+          setTimeout(finish, 2200);
+        })();
+        `}
+      </script>
+    )}
   </body>
 </html>

@@ -738,14 +738,28 @@ html[data-theme='dark'] .card.hoverable:hover {
   inset: 0;
   z-index: 9999;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 1.5rem;
   background-color: var(--global-bg-color);
   /* wipe-away transition applied when .is-out is added */
   transition:
     opacity 0.6s ease,
     transform 0.7s cubic-bezier(0.7, 0, 0.3, 1);
   will-change: transform, opacity;
+}
+
+/* Loading counter under the monogram (0% → 100%). */
+.cdl-intro-count {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  color: var(--color-silver-dark);
+  font-variant-numeric: tabular-nums;
+  /* nudge to visually centre despite the letter-spacing on the right */
+  padding-left: 0.28em;
 }
 
 /* Already seen this session, or reduced motion → never show the curtain. */
