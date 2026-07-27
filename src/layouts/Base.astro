@@ -638,7 +638,13 @@ const personJsonLd = isHome ? JSON.stringify({
               }
               el.dataset.foff = '0';
               const center = r.top + r.height / 2;
-              const d = Math.min(Math.abs(center - focal) / range, 1);
+              let d = Math.min(Math.abs(center - focal) / range, 1);
+              // Publications: keep a band of ~2 rows fully sharp before the
+              // blur ramps in, instead of only a single row being in focus.
+              if (el.closest('.publications')) {
+                const PLATEAU = 0.42;
+                d = d <= PLATEAU ? 0 : (d - PLATEAU) / (1 - PLATEAU);
+              }
               const eased = d * d * (3 - 2 * d); // smoothstep
               el.style.transform = `scale(${(1.015 - eased * 0.05).toFixed(3)})`;
               el.style.opacity = (1 - eased * 0.32).toFixed(3);
