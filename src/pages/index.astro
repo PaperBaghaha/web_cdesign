@@ -417,6 +417,14 @@ const renderedAnnouncements = await Promise.all(
     padding-left: 0.18em;
   }
 
+  /* Phones: the 4rem clamp minimum is wider than a small screen, so the title
+     overflows off the right edge. Scale it down so it always fits. */
+  @media (max-width: 600px) {
+    .title-word {
+      font-size: clamp(2.5rem, 12.5vw, 4rem);
+    }
+  }
+
   /* ── Sub row ──────────────────────────────────────────────────────────── */
 
   .hero-sub-row {
@@ -1051,6 +1059,11 @@ const renderedAnnouncements = await Promise.all(
     display: flex;
     flex-direction: column;
     gap: 0;
+    /* The scroll-reveal below translates items ±64px horizontally before they
+       enter. On narrow phones that push overflows the viewport and creates a
+       horizontal scrollbar. Clip it here (safe — this is not the sticky
+       research pin's ancestor) so the slide-in stays contained. */
+    overflow-x: clip;
   }
 
   .pub-item {
