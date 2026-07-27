@@ -309,6 +309,13 @@ const personJsonLd = isHome ? JSON.stringify({
     data-footer-position={site.footer.position}
     data-tooltips={site.features.tooltips ? 'true' : undefined}
   >
+    <!-- Premium-feel layers (decorative, non-interactive). Film grain adds a
+         subtle cinematic texture; the custom cursor reacts to interactive
+         elements. Both are hidden on touch and disabled for reduced motion. -->
+    <div class="fx-grain" aria-hidden="true"></div>
+    <div class="fx-cursor-ring" aria-hidden="true"></div>
+    <div class="fx-cursor-dot" aria-hidden="true"></div>
+
     <!-- Intro curtain: the lab monogram (circle + hexagon line art spinning in
          3D, hand static in the centre — an exact replica of the hero mark)
          pops in with a 0→100% counter, then the curtain wipes away to reveal
@@ -819,6 +826,82 @@ const personJsonLd = isHome ? JSON.stringify({
 
       initEffects();
       document.addEventListener('astro:after-swap', initEffects);
+    </script>
+
+    <script>
+      // ── Custom cursor + magnetic elements ────────────────────────────────
+      // Only runs on fine pointers (mouse/trackpad) with motion allowed. The
+      // dot snaps to the pointer; the ring eases behind it and swells over
+      // interactive targets. Magnetic elements pull gently toward the cursor.
+      const finePointer = window.matchMedia('(pointer: fine)').matches;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (finePointer && !reduce) {
+        const html = document.documentElement;
+        const dot = document.querySelector<HTMLElement>('.fx-cursor-dot');
+        const ring = document.querySelector<HTMLElement>('.fx-cursor-ring');
+
+        if (dot && ring) {
+          html.classList.add('fx-cursor-on');
+
+          let mx = window.innerWidth / 2;
+          let my = window.innerHeight / 2;
+          let rx = mx;
+          let ry = my;
+
+          window.addEventListener(
+            'pointermove',
+            (e) => {
+              mx = e.clientX;
+              my = e.clientY;
+              dot.style.transform = `translate3d(${mx}px, ${my}px, 0) translate(-50%, -50%)`;
+            },
+            { passive: true },
+          );
+
+          const raf = () => {
+            rx += (mx - rx) * 0.18;
+            ry += (my - ry) * 0.18;
+            ring.style.transform = `translate3d(${rx}px, ${ry}px, 0) translate(-50%, -50%)`;
+            requestAnimationFrame(raf);
+          };
+          requestAnimationFrame(raf);
+
+          window.addEventListener('pointerdown', () => html.classList.add('fx-cursor-down'));
+          window.addEventListener('pointerup', () => html.classList.remove('fx-cursor-down'));
+
+          const HOT = 'a, button, [data-href], .magnetic, input, textarea, select, summary';
+          document.addEventListener('pointerover', (e) => {
+            if ((e.target as Element)?.closest?.(HOT)) html.classList.add('fx-cursor-hot');
+          });
+          document.addEventListener('pointerout', (e) => {
+            if ((e.target as Element)?.closest?.(HOT)) html.classList.remove('fx-cursor-hot');
+          });
+        }
+
+        // Magnetic pull for buttons, nav links, and anything tagged .magnetic.
+        function initMagnetic(): void {
+          const targets = document.querySelectorAll<HTMLElement>(
+            '.magnetic, .navbar a, .btn, .col-tag-link, .col-more',
+          );
+          targets.forEach((el) => {
+            if (el.dataset.magneticBound === '1') return;
+            el.dataset.magneticBound = '1';
+            const strength = 0.35;
+            el.addEventListener('pointermove', (e) => {
+              const r = el.getBoundingClientRect();
+              const x = (e.clientX - (r.left + r.width / 2)) * strength;
+              const y = (e.clientY - (r.top + r.height / 2)) * strength;
+              el.style.transform = `translate(${x}px, ${y}px)`;
+            });
+            el.addEventListener('pointerleave', () => {
+              el.style.transform = '';
+            });
+          });
+        }
+        initMagnetic();
+        document.addEventListener('astro:after-swap', initMagnetic);
+      }
     </script>
 
     {isHome && <script is:inline set:html={introScript} />}
