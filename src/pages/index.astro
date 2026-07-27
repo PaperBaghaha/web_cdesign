@@ -152,7 +152,7 @@ const renderedAnnouncements = await Promise.all(
   <section class="ra-pin-wrap" data-ra-wrap>
     <div class="ra-pin">
       <div class="page-container ra-pin-inner">
-        <h2 class="research-band-label">Research Areas</h2>
+        <h2 class="research-band-label mask-reveal" data-reveal>Research Areas</h2>
         <div class="ra-grid">
           {
             Array.from({ length: Math.ceil(researchAreas.length / 2) }).map((_, row) => (
@@ -939,12 +939,48 @@ const renderedAnnouncements = await Promise.all(
     color: var(--global-text-color);
   }
 
+  /* Gold underline that sweeps in on hover — a small "premium" flourish for
+     the section links, tinted with the Purdue theme colour. */
+  .col-tag-link,
+  .col-more {
+    position: relative;
+  }
+  .col-tag-link::after,
+  .col-more::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 100%;
+    height: 1.5px;
+    background: var(--global-theme-color);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .col-tag-link:hover::after,
+  .col-more:hover::after {
+    transform: scaleX(1);
+  }
+
   .col-tag-rule {
     width: 1.5px;
     flex: 1;
     max-height: 120px;
     background: linear-gradient(to bottom, var(--color-silver-dark), transparent);
     border-radius: 1px;
+  }
+
+  /* Divider draws itself in (top → down) when its section reveals. Guarded by
+     .js-reveal so it's always visible when scripts don't run. */
+  html.js-reveal .two-col-section .col-tag-rule {
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: 0.15s;
+  }
+  html.js-reveal .two-col-section.revealed .col-tag-rule {
+    transform: scaleY(1);
   }
 
   .col-more {

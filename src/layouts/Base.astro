@@ -244,15 +244,30 @@ const personJsonLd = isHome ? JSON.stringify({
     data-footer-position={site.footer.position}
     data-tooltips={site.features.tooltips ? 'true' : undefined}
   >
-    <!-- Intro curtain: spinning logo, then wipes away to reveal the site. -->
+    <!-- Intro curtain: the lab monogram (circle + hexagon line art spinning in
+         3D, hand static in the centre — an exact replica of the hero mark)
+         pops in, then the curtain wipes away to reveal the site. -->
     <div id="cdl-intro" aria-hidden="true">
-      <img
-        class="cdl-intro-logo"
-        src={`${site.base}/assets/img/cdl-logo-icon.png`}
-        alt=""
-        width="512"
-        height="512"
-      />
+      <div class="cdl-intro-mark">
+        <svg class="cdl-intro-circle" viewBox="0 0 200 200" aria-hidden="true">
+          <circle cx="100" cy="100" r="94" fill="none" stroke="currentColor" stroke-width="3" />
+        </svg>
+        <svg class="cdl-intro-hex" viewBox="0 0 200 200" aria-hidden="true">
+          <polygon
+            points="100,16 173,58 173,142 100,184 27,142 27,58"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+          />
+        </svg>
+        <img
+          class="cdl-intro-hand"
+          src={`${site.base}/assets/img/cdl-hand-only.png`}
+          alt=""
+          width="325"
+          height="325"
+        />
+      </div>
     </div>
 
     <!-- Skip to main content (accessibility) -->
@@ -738,10 +753,11 @@ const personJsonLd = isHome ? JSON.stringify({
     </script>
 
     <script>
-      // ── Intro curtain: spin the logo up, then wipe the curtain away ──────
-      // Runs once per browser session. The head gate already added
-      // `intro-done` (and hid the curtain) if it was seen or reduced-motion,
-      // so here we bail out early in those cases.
+      // ── Intro curtain: hold the spinning monogram, then wipe away ────────
+      // The monogram's pop-in and 3D spins are pure CSS. This script just
+      // times the exit and cleans up. Runs once per browser session — the
+      // head gate already added `intro-done` (hiding the curtain) if it was
+      // seen or reduced-motion, so we bail out early in those cases.
       (() => {
         const html = document.documentElement;
         const intro = document.getElementById('cdl-intro');
@@ -768,27 +784,8 @@ const personJsonLd = isHome ? JSON.stringify({
           setTimeout(done, 900);
         };
 
-        const start = performance.now();
-        const SPIN_MS = 1700; // total spin time before the wipe
-        let angle = 0;
-        let last = start;
-
-        const frame = (now: number) => {
-          const t = Math.min((now - start) / SPIN_MS, 1); // 0 → 1
-          const dt = now - last;
-          last = now;
-          // Angular speed ramps from gentle to a fast whip (ease-in cubic),
-          // measured in degrees per millisecond.
-          const speed = 0.15 + Math.pow(t, 3) * 2.6;
-          angle += speed * dt;
-          intro.style.setProperty('--spin', angle.toFixed(1));
-          if (t < 1) {
-            requestAnimationFrame(frame);
-          } else {
-            finish();
-          }
-        };
-        requestAnimationFrame(frame);
+        // Let the monogram pop in and spin for a beat, then wipe the curtain.
+        setTimeout(finish, 2200);
       })();
     </script>
   </body>
