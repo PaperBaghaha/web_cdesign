@@ -859,7 +859,10 @@ const renderedAnnouncements = await Promise.all(
     color: var(--global-theme-color);
   }
 
-  /* Mobile: drop the pin and the horizontal fly-in — stack everything. */
+  /* Mobile: drop the sticky pin (janky on phones) but KEEP the fly-in. Each
+     row stacks to one column, and its two items still slide in from the two
+     screen edges when the row scrolls into view — driven by --p via an
+     IntersectionObserver + a CSS transition (see the script below). */
   @media (max-width: 700px) {
     .ra-pin-wrap {
       height: auto;
@@ -867,7 +870,8 @@ const renderedAnnouncements = await Promise.all(
     .ra-pin {
       position: static;
       min-height: 0;
-      overflow: visible;
+      /* clip the off-screen items so they can't cause a horizontal scrollbar */
+      overflow: hidden;
     }
     .ra-row {
       grid-template-columns: 1fr;
@@ -875,10 +879,17 @@ const renderedAnnouncements = await Promise.all(
     .ra-item.ra-left {
       border-right: none;
     }
-    .ra-item.ra-left,
+    .ra-item {
+      transition:
+        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    /* Bigger travel so items clearly enter from the phone's edges. */
+    .ra-item.ra-left {
+      transform: translateX(calc((var(--p) - 1) * 90vw));
+    }
     .ra-item.ra-right {
-      transform: none;
-      opacity: 1;
+      transform: translateX(calc((1 - var(--p)) * 90vw));
     }
   }
 
@@ -1115,37 +1126,57 @@ const renderedAnnouncements = await Promise.all(
     const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
     const clamp01 = (v: number) => Math.min(Math.max(v, 0), 1);
 
-    let ticking = false;
+    // Reduced motion: skip all animation, just show the finished grid.
+    if (reduce.matches) {
+      rows.forEach((row) => row.style.setProperty('--p', '1'));
+      return;
+    }
 
+    // ── Phone: no sticky pin. Start each row off-centre and let the two items
+    //    slide in (via the CSS transition) the moment the row scrolls into
+    //    view. This keeps the "converge from both sides" effect working on a
+    //    small screen without the janky full-height pinned runway.
+    const runMobile = () => {
+      rows.forEach((row) => row.style.setProperty('--p', '0'));
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            (entry.target as HTMLElement).style.setProperty('--p', '1');
+            io.unobserve(entry.target);
+          });
+        },
+        { threshold: 0.3, rootMargin: '0px 0px -8% 0px' },
+      );
+      rows.forEach((row) => io.observe(row));
+    };
+
+    // ── Desktop: scroll-scrubbed pinned convergence, row by row.
+    let ticking = false;
     const apply = () => {
       ticking = false;
-
-      // On mobile or with reduced motion, everything just sits in place.
-      if (reduce.matches || mobile.matches) {
-        rows.forEach((row) => row.style.setProperty('--p', '1'));
-        return;
-      }
-
       const vh = window.innerHeight;
       const travel = wrap.offsetHeight - vh; // scrollable distance while pinned
       const scrolled = clamp01(travel > 0 ? -wrap.getBoundingClientRect().top / travel : 1);
       const n = rows.length;
-
       rows.forEach((row, i) => {
         // Each row owns a 1/n slice of the total progress.
         const local = clamp01(scrolled * n - i);
         row.style.setProperty('--p', easeOut(local).toFixed(4));
       });
     };
-
     const onScroll = () => {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(apply);
     };
+    const runDesktop = () => {
+      apply();
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', apply);
+    };
 
-    apply();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', apply);
+    if (mobile.matches) runMobile();
+    else runDesktop();
   })();
 </script>
