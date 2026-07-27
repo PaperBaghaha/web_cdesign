@@ -51,6 +51,47 @@ const colorOverrideStyle = [
   .filter(Boolean)
   .join('');
 
+// Intro curtain script (homepage only). Kept as a raw string and injected via
+// `set:html` so the browser receives it verbatim — an `is:inline` script whose
+// children contain a JSX template literal gets emitted as literal text and
+// never executes. Drives the 0→100% counter, then wipes the curtain. Fast
+// (~1.2s) with a hard 2.2s failsafe so it can NEVER get stuck on screen.
+const introScript = `
+(function () {
+  var html = document.documentElement;
+  var intro = document.getElementById('cdl-intro');
+  if (!intro || html.classList.contains('intro-done')) return;
+  var countEl = intro.querySelector('.cdl-intro-count');
+  var prevOverflow = html.style.overflow;
+  html.style.overflow = 'hidden';
+  var finished = false;
+  function finish() {
+    if (finished) return;
+    finished = true;
+    if (countEl) countEl.textContent = '100%';
+    intro.classList.add('is-out');
+    html.style.overflow = prevOverflow;
+    function done() {
+      html.classList.add('intro-done');
+      if (intro && intro.parentNode) intro.remove();
+    }
+    intro.addEventListener('transitionend', done, { once: true });
+    setTimeout(done, 700);
+  }
+  var DUR = 1200;
+  var start = performance.now();
+  function tick(now) {
+    if (finished) return;
+    var t = Math.min((now - start) / DUR, 1);
+    if (countEl) countEl.textContent = Math.round(t * 100) + '%';
+    if (t < 1) requestAnimationFrame(tick);
+    else finish();
+  }
+  requestAnimationFrame(tick);
+  setTimeout(finish, 2200);
+})();
+`;
+
 // Person JSON-LD for homepage — helps search engines associate content with the author
 const personJsonLd = isHome ? JSON.stringify({
   '@context': 'https://schema.org',
@@ -768,57 +809,6 @@ const personJsonLd = isHome ? JSON.stringify({
       document.addEventListener('astro:after-swap', initEffects);
     </script>
 
-    {isHome && (
-      <script is:inline>
-        {`
-        // ── Intro curtain: spinning monogram + 0→100% counter, then wipe ────
-        // Fast (~1.2s) and can NEVER get stuck: a hard failsafe forces the
-        // exit at 2.2s no matter what. The monogram pop-in and 3D spins are
-        // pure CSS; this script drives the counter, times the exit, and
-        // cleans up. Homepage only. During in-site click navigation it does
-        // NOT replay: 'finish' leaves 'intro-done' on <html>, which persists.
-        (function () {
-          var html = document.documentElement;
-          var intro = document.getElementById('cdl-intro');
-          if (!intro || html.classList.contains('intro-done')) return;
-          var countEl = intro.querySelector('.cdl-intro-count');
-
-          // Lock scroll while the curtain is up.
-          var prevOverflow = html.style.overflow;
-          html.style.overflow = 'hidden';
-
-          var finished = false;
-          function finish() {
-            if (finished) return;
-            finished = true;
-            if (countEl) countEl.textContent = '100%';
-            intro.classList.add('is-out');
-            html.style.overflow = prevOverflow;
-            function done() {
-              html.classList.add('intro-done');
-              if (intro && intro.parentNode) intro.remove();
-            }
-            intro.addEventListener('transitionend', done, { once: true });
-            setTimeout(done, 700);
-          }
-
-          // Drive the counter 0 → 100 over ~1.2s, then wipe the curtain.
-          var DUR = 1200;
-          var start = performance.now();
-          function tick(now) {
-            if (finished) return;
-            var t = Math.min((now - start) / DUR, 1);
-            if (countEl) countEl.textContent = Math.round(t * 100) + '%';
-            if (t < 1) requestAnimationFrame(tick);
-            else finish();
-          }
-          requestAnimationFrame(tick);
-
-          // Hard failsafe — never stuck on screen.
-          setTimeout(finish, 2200);
-        })();
-        `}
-      </script>
-    )}
+    {isHome && <script is:inline set:html={introScript} />}
   </body>
 </html>
