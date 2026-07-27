@@ -203,6 +203,23 @@ const personJsonLd = isHome ? JSON.stringify({
     </script>
 
     <!--
+      Intro curtain gate: decide BEFORE first paint whether to show the
+      spinning-logo intro. It only plays on the first page of a browser
+      session (and never with reduced motion), so on repeat page loads we
+      add `intro-done` immediately to keep the curtain hidden (no flash).
+    -->
+    <script is:inline>
+      try {
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduce || sessionStorage.getItem('cdl-intro-done')) {
+          document.documentElement.classList.add('intro-done');
+        }
+      } catch (e) {
+        document.documentElement.classList.add('intro-done');
+      }
+    </script>
+
+    <!--
       Netlify Identity widget: catches the invite/recovery link from the email
       the professor receives, then bounces them into the /admin/ editor. Harmless
       when Identity is not enabled — it simply does nothing.
@@ -227,6 +244,17 @@ const personJsonLd = isHome ? JSON.stringify({
     data-footer-position={site.footer.position}
     data-tooltips={site.features.tooltips ? 'true' : undefined}
   >
+    <!-- Intro curtain: spinning logo, then wipes away to reveal the site. -->
+    <div id="cdl-intro" aria-hidden="true">
+      <img
+        class="cdl-intro-logo"
+        src={`${site.base}/assets/img/cdl-logo-icon.png`}
+        alt=""
+        width="512"
+        height="512"
+      />
+    </div>
+
     <!-- Skip to main content (accessibility) -->
     <a
       href="#main-content"
@@ -707,6 +735,61 @@ const personJsonLd = isHome ? JSON.stringify({
 
       initEffects();
       document.addEventListener('astro:after-swap', initEffects);
+    </script>
+
+    <script>
+      // ── Intro curtain: spin the logo up, then wipe the curtain away ──────
+      // Runs once per browser session. The head gate already added
+      // `intro-done` (and hid the curtain) if it was seen or reduced-motion,
+      // so here we bail out early in those cases.
+      (() => {
+        const html = document.documentElement;
+        const intro = document.getElementById('cdl-intro');
+        if (!intro || html.classList.contains('intro-done')) return;
+
+        // Lock scroll while the curtain is up.
+        const prevOverflow = html.style.overflow;
+        html.style.overflow = 'hidden';
+
+        const finish = () => {
+          try {
+            sessionStorage.setItem('cdl-intro-done', '1');
+          } catch (e) {
+            /* private mode — just proceed */
+          }
+          intro.classList.add('is-out');
+          html.style.overflow = prevOverflow;
+          const done = () => {
+            html.classList.add('intro-done');
+            intro.remove();
+          };
+          intro.addEventListener('transitionend', done, { once: true });
+          // Failsafe in case the transition never fires.
+          setTimeout(done, 900);
+        };
+
+        const start = performance.now();
+        const SPIN_MS = 1700; // total spin time before the wipe
+        let angle = 0;
+        let last = start;
+
+        const frame = (now: number) => {
+          const t = Math.min((now - start) / SPIN_MS, 1); // 0 → 1
+          const dt = now - last;
+          last = now;
+          // Angular speed ramps from gentle to a fast whip (ease-in cubic),
+          // measured in degrees per millisecond.
+          const speed = 0.15 + Math.pow(t, 3) * 2.6;
+          angle += speed * dt;
+          intro.style.setProperty('--spin', angle.toFixed(1));
+          if (t < 1) {
+            requestAnimationFrame(frame);
+          } else {
+            finish();
+          }
+        };
+        requestAnimationFrame(frame);
+      })();
     </script>
   </body>
 </html>

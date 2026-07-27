@@ -679,3 +679,57 @@ html[data-theme='dark'] .card.hoverable:hover {
     animation: none !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   INTRO LOADER — a full-screen entry curtain. The lab logo spins up (slow →
+   accelerating → one fast whip), then the curtain wipes away to reveal the
+   site. Shown once per browser session (JS sets sessionStorage), and skipped
+   entirely for reduced-motion or on repeat page loads (html.intro-done).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#cdl-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--global-bg-color);
+  /* wipe-away transition applied when .is-out is added */
+  transition:
+    opacity 0.6s ease,
+    transform 0.7s cubic-bezier(0.7, 0, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+/* Already seen this session, or reduced motion → never show the curtain. */
+html.intro-done #cdl-intro {
+  display: none;
+}
+
+#cdl-intro .cdl-intro-logo {
+  width: clamp(96px, 16vw, 168px);
+  height: auto;
+  /* rotation is driven by JS via the --spin custom property (in degrees) */
+  transform: rotate(calc(var(--spin, 0) * 1deg));
+  filter: drop-shadow(0 8px 30px color-mix(in srgb, var(--global-theme-color) 30%, transparent));
+}
+
+/* The logo art is dark ink — flip it to light on dark backgrounds. */
+:global([data-theme='dark']) #cdl-intro .cdl-intro-logo {
+  filter: invert(1) brightness(1.9)
+    drop-shadow(0 8px 30px color-mix(in srgb, var(--global-theme-color) 30%, transparent));
+}
+
+/* Curtain exit: lift up and fade. */
+#cdl-intro.is-out {
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #cdl-intro {
+    display: none;
+  }
+}
