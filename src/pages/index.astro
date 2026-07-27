@@ -178,7 +178,7 @@ const renderedAnnouncements = await Promise.all(
   </section>
 
   <!-- ═══ ABOUT ════════════════════════════════════════════════════════════════ -->
-  <section class="two-col-section page-container" data-reveal>
+  <section class="two-col-section page-container slide-reveal" data-reveal>
     <div class="col-label">
       <span class="col-tag">About</span>
       <div class="col-tag-rule"></div>
@@ -191,7 +191,7 @@ const renderedAnnouncements = await Promise.all(
   <!-- ═══ NEWS ════════════════════════════════════════════════════════════════ -->
   {
     site.announcements.enabled && renderedAnnouncements.length > 0 && (
-      <section class="two-col-section page-container" data-reveal>
+      <section class="two-col-section page-container slide-reveal slide-from-right" data-reveal>
         <div class="col-label">
           <a class="col-tag col-tag-link" href={`${site.base}/news/`}>
             News

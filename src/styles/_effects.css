@@ -95,6 +95,30 @@ html.js-reveal [data-reveal].mask-reveal.revealed {
   transition-delay: var(--reveal-delay, 0s);
 }
 
+/* Directional slide reveal: the block sweeps into view from one side. Done
+   with clip-path (not translate) so it never creates a horizontal scrollbar
+   and never breaks the sticky research pin. Alternate the entry side with the
+   `slide-from-right` modifier. Opt in with `slide-reveal` + `data-reveal`. */
+html.js-reveal [data-reveal].slide-reveal {
+  opacity: 0;
+  clip-path: inset(0 100% 0 0); /* clipped from the right → wipes in from left */
+  filter: none;
+  transform: none;
+}
+
+html.js-reveal [data-reveal].slide-reveal.slide-from-right {
+  clip-path: inset(0 0 0 100%); /* clipped from the left → wipes in from right */
+}
+
+html.js-reveal [data-reveal].slide-reveal.revealed {
+  opacity: 1;
+  clip-path: inset(0 0 0 0);
+  transition:
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    clip-path 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0s);
+}
+
 /* ─── Scroll progress indicator ──────────────────────────────────────────── */
 /* Thin glowing gold line at the very top that fills as the page scrolls.
    Scaled via transform (GPU-friendly), updated by the effects script. */
