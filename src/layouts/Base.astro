@@ -499,6 +499,44 @@ const personJsonLd = isHome ? JSON.stringify({
               );
             });
 
+          // ── 3D tilt on cards (site-wide depth) ────────────────────────
+          // Each card leans in 3D toward the cursor: rotateX/rotateY around
+          // its centre with a perspective, plus a small translateZ pop, so
+          // the whole site reads as layered/3D. Fine-pointer only, so touch
+          // devices never get a stuck tilt (pointerleave is unreliable there).
+          if (window.matchMedia('(pointer: fine)').matches) {
+            const TILT_MAX = 7; // degrees
+            document
+              .querySelectorAll<HTMLElement>(
+                '.stat-item, .stat-tile, .course-item, .person-card, .card.hoverable'
+              )
+              .forEach((card) => {
+                card.style.transformStyle = 'preserve-3d';
+                card.addEventListener(
+                  'pointermove',
+                  (e) => {
+                    const r = card.getBoundingClientRect();
+                    const px = (e.clientX - r.left) / r.width - 0.5; // -0.5..0.5
+                    const py = (e.clientY - r.top) / r.height - 0.5;
+                    card.style.transition = 'none';
+                    card.style.transform =
+                      `perspective(800px) rotateX(${(-py * TILT_MAX).toFixed(2)}deg) ` +
+                      `rotateY(${(px * TILT_MAX).toFixed(2)}deg) translateZ(6px)`;
+                  },
+                  { signal }
+                );
+                card.addEventListener(
+                  'pointerleave',
+                  () => {
+                    card.style.transition =
+                      'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+                    card.style.transform = '';
+                  },
+                  { signal }
+                );
+              });
+          }
+
           // ── Magnetic buttons (lean toward the cursor) ─────────────────
           document.querySelectorAll<HTMLElement>('[data-magnetic]').forEach((el) => {
             const strength = 0.3;
