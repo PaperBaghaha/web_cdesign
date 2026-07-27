@@ -204,18 +204,18 @@ const personJsonLd = isHome ? JSON.stringify({
 
     <!--
       Intro curtain gate: decide BEFORE first paint whether to show the
-      spinning-logo intro. It only plays on the first page of a browser
-      session (and never with reduced motion), so on repeat page loads we
-      add `intro-done` immediately to keep the curtain hidden (no flash).
+      spinning-monogram intro. It plays on every full page load / reload, but
+      NOT with reduced motion. (During in-site click navigation the script
+      keeps `intro-done` on <html> for that page's lifetime, so the curtain
+      only shows on real loads — see the intro script below.)
     -->
     <script is:inline>
       try {
-        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (reduce || sessionStorage.getItem('cdl-intro-done')) {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
           document.documentElement.classList.add('intro-done');
         }
       } catch (e) {
-        document.documentElement.classList.add('intro-done');
+        /* matchMedia unavailable — let the intro play */
       }
     </script>
 
@@ -755,9 +755,10 @@ const personJsonLd = isHome ? JSON.stringify({
     <script>
       // ── Intro curtain: hold the spinning monogram, then wipe away ────────
       // The monogram's pop-in and 3D spins are pure CSS. This script just
-      // times the exit and cleans up. Runs once per browser session — the
-      // head gate already added `intro-done` (hiding the curtain) if it was
-      // seen or reduced-motion, so we bail out early in those cases.
+      // times the exit and cleans up. It plays on every full page load /
+      // reload. During in-site click navigation it does NOT replay: `finish`
+      // leaves `intro-done` on <html>, which persists for that page's
+      // lifetime and hides the curtain that the next swapped-in page renders.
       (() => {
         const html = document.documentElement;
         const intro = document.getElementById('cdl-intro');
@@ -768,11 +769,6 @@ const personJsonLd = isHome ? JSON.stringify({
         html.style.overflow = 'hidden';
 
         const finish = () => {
-          try {
-            sessionStorage.setItem('cdl-intro-done', '1');
-          } catch (e) {
-            /* private mode — just proceed */
-          }
           intro.classList.add('is-out');
           html.style.overflow = prevOverflow;
           const done = () => {
