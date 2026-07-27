@@ -137,35 +137,6 @@ html[data-theme='dark'] #cursor-glow.is-visible {
   opacity: 0.62;
 }
 
-/* ─── Faint background landmark ──────────────────────────────────────────── */
-/* A small, heavily softened bell/clock-tower silhouette parked in the centre
-   of the viewport, behind all content. It's intentionally near-invisible — a
-   quiet watermark you only notice if you look for it, never a focal point. */
-
-.bg-landmark {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: clamp(150px, 16vw, 220px);
-  z-index: -1;
-  pointer-events: none;
-  filter: blur(1.8px);
-  /* `ink` draws the silhouette; `face` punches holes to match the page bg. */
-  --landmark-ink: rgba(0, 0, 0, 0.05);
-  --landmark-face: var(--global-bg-color);
-}
-
-html[data-theme='dark'] .bg-landmark {
-  --landmark-ink: rgba(255, 255, 255, 0.045);
-}
-
-.bg-landmark svg {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
 /* ─── Pointer spotlight on cards ─────────────────────────────────────────── */
 /* A soft gold glow follows the cursor. --mx/--my are set by JS in px; the
    glow layers over the card's existing background colour. */
