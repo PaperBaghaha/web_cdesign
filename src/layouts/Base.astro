@@ -64,13 +64,14 @@ const introScript = `
   var countEl = intro.querySelector('.cdl-intro-count');
   var prevOverflow = html.style.overflow;
   html.style.overflow = 'hidden';
+
   var finished = false;
   function finish() {
     if (finished) return;
     finished = true;
     if (countEl) countEl.textContent = '100%';
     intro.classList.add('is-out');
-    html.style.overflow = prevOverflow;
+    html.style.overflow = prevOverflow || '';
     function done() {
       html.classList.add('intro-done');
       if (intro && intro.parentNode) intro.remove();
@@ -78,6 +79,8 @@ const introScript = `
     intro.addEventListener('transitionend', done, { once: true });
     setTimeout(done, 700);
   }
+
+  // Progress-driven counter (0 → 100%) over ~1.2s.
   var DUR = 1200;
   var start = performance.now();
   function tick(now) {
@@ -88,7 +91,16 @@ const introScript = `
     else finish();
   }
   requestAnimationFrame(tick);
+
+  // Layered safety nets — the curtain can NEVER get stuck on screen:
+  //  1) hard timeout, fires even if rAF is throttled (e.g. background tab)
+  //  2) window 'load', in case something delayed first paint
+  //  3) a click / key / touch anywhere skips straight to the site
   setTimeout(finish, 2200);
+  window.addEventListener('load', function () { setTimeout(finish, 1500); });
+  ['pointerdown', 'keydown', 'touchstart', 'wheel'].forEach(function (ev) {
+    window.addEventListener(ev, finish, { once: true, passive: true });
+  });
 })();
 `;
 
