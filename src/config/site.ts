@@ -134,7 +134,7 @@ export const site = {
      * Text shown in footer. HTML is supported.
      * Leave empty string to hide.
      */
-    text: `© Convergence Design Lab · Purdue University · West Lafayette, IN 47907`,
+    text: `Purdue University · West Lafayette, IN 47907`,
     /** Show "Last updated" timestamp in footer. */
     lastUpdated: false,
     /** Path to impressum/legal page (EU GDPR). Leave undefined to hide. */
