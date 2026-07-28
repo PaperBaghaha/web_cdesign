@@ -236,38 +236,40 @@ const renderedAnnouncements = await Promise.all(
         </div>
         <ul class="featured-grid">
           {featuredPapers.map((p, i) => (
-            <li class="feat-card" data-reveal style={`--reveal-delay:${(i * 0.06).toFixed(2)}s`}>
-              <a class="feat-media" href={p.href} tabindex="-1" aria-hidden="true">
-                {p.imgSrc ? (
-                  <img src={p.imgSrc} alt={p.imgAlt} loading="lazy" />
-                ) : (
-                  <span class="feat-mono">{p.codename}</span>
-                )}
-                <span class="feat-venue">{p.venue}</span>
-              </a>
-              <div class="feat-body">
-                <a class="feat-name" href={p.href}>
-                  {p.title}
-                </a>
-                {p.blurb && <p class="feat-blurb">{p.blurb}</p>}
-                {p.tags.length > 0 && (
-                  <div class="feat-tags">
-                    {p.tags.map((t) => (
-                      <span class="feat-tag">{t}</span>
-                    ))}
-                  </div>
-                )}
-                <div class="feat-actions">
-                  <a class="feat-btn feat-btn-primary" href={p.href}>
-                    Details →
-                  </a>
-                  {p.url && (
-                    <a class="feat-btn" href={p.url} target="_blank" rel="noopener noreferrer">
-                      Paper ↗
-                    </a>
+            <li class="feat-cell" data-reveal style={`--reveal-delay:${(i * 0.06).toFixed(2)}s`}>
+              <article class="feat-card">
+                <a class="feat-media" href={p.href} tabindex="-1" aria-hidden="true">
+                  {p.imgSrc ? (
+                    <img src={p.imgSrc} alt={p.imgAlt} loading="lazy" />
+                  ) : (
+                    <span class="feat-mono">{p.codename}</span>
                   )}
+                  <span class="feat-venue">{p.venue}</span>
+                </a>
+                <div class="feat-body">
+                  <a class="feat-name" href={p.href}>
+                    {p.title}
+                  </a>
+                  {p.blurb && <p class="feat-blurb">{p.blurb}</p>}
+                  {p.tags.length > 0 && (
+                    <div class="feat-tags">
+                      {p.tags.map((t) => (
+                        <span class="feat-tag">{t}</span>
+                      ))}
+                    </div>
+                  )}
+                  <div class="feat-actions">
+                    <a class="feat-btn feat-btn-primary" href={p.href}>
+                      Details →
+                    </a>
+                    {p.url && (
+                      <a class="feat-btn" href={p.url} target="_blank" rel="noopener noreferrer">
+                        Paper ↗
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </article>
             </li>
           ))}
         </ul>
@@ -377,7 +379,7 @@ const renderedAnnouncements = await Promise.all(
   .hero-bleed {
     position: relative;
     width: 100%;
-    padding-top: 2.5rem;
+    padding-top: 1.5rem;
     padding-bottom: 0;
     overflow: hidden;
   }
@@ -460,7 +462,7 @@ const renderedAnnouncements = await Promise.all(
   .hero-content {
     position: relative;
     z-index: 2;
-    padding-bottom: 2.5rem;
+    padding-bottom: 1.75rem;
   }
 
   .hero-eyebrow {
@@ -473,14 +475,14 @@ const renderedAnnouncements = await Promise.all(
   }
 
   .hero-title {
-    margin: 0 0 2.5rem;
+    margin: 0 0 1.5rem;
     line-height: 0.92;
     letter-spacing: -0.03em;
   }
 
   .title-word {
     display: inline;
-    font-size: clamp(4rem, 9.5vw, 10rem);
+    font-size: clamp(3rem, 7vw, 7rem);
     font-weight: 700;
     color: var(--global-text-color);
   }
@@ -503,8 +505,8 @@ const renderedAnnouncements = await Promise.all(
 
   .hero-sub-row {
     display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 3rem;
+    grid-template-columns: 1fr 240px;
+    gap: 2rem;
     align-items: center;
   }
 
@@ -521,8 +523,8 @@ const renderedAnnouncements = await Promise.all(
 
   .geo-frame {
     position: relative;
-    width: 260px;
-    height: 260px;
+    width: 220px;
+    height: 220px;
     margin-left: auto;
     transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
     will-change: transform;
@@ -786,17 +788,17 @@ const renderedAnnouncements = await Promise.all(
   .hero-stats {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    gap: 0.7rem;
   }
 
   /* Each stat sits in its own bordered box/card. */
   .stat-item {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
-    padding: 1.15rem 1.35rem;
+    gap: 0.25rem;
+    padding: 0.8rem 1rem;
     border: 1px solid var(--global-divider-color);
-    border-radius: 14px;
+    border-radius: 12px;
     background-color: color-mix(in srgb, var(--global-text-color) 3%, transparent);
     text-decoration: none;
     transition:
@@ -810,7 +812,7 @@ const renderedAnnouncements = await Promise.all(
   }
 
   .stat-n {
-    font-size: 2.7rem;
+    font-size: 2rem;
     font-weight: 700;
     letter-spacing: -0.04em;
     line-height: 1;
@@ -845,13 +847,15 @@ const renderedAnnouncements = await Promise.all(
     position: relative;
     /* Scroll distance that drives the fly-in. Kept tight so the pinned band
        doesn't read as a big empty gap before the rows arrive. */
-    height: 180vh;
+    height: 150vh;
   }
 
   .ra-pin {
     position: sticky;
     top: 0;
-    min-height: 100vh;
+    /* Shorter than a full viewport so the centred content doesn't leave a big
+       empty band above and below the rows. */
+    min-height: 84vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -860,15 +864,15 @@ const renderedAnnouncements = await Promise.all(
   }
 
   .ra-pin-inner {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
   }
 
   .research-band-label {
-    font-size: 2.1rem;
+    font-size: 1.7rem;
     font-weight: 700;
     letter-spacing: -0.02em;
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
   }
 
   .ra-grid {
@@ -887,8 +891,8 @@ const renderedAnnouncements = await Promise.all(
   .ra-item {
     display: flex;
     align-items: baseline;
-    gap: 1.2rem;
-    padding: 1.7rem 1.5rem;
+    gap: 1rem;
+    padding: 1.05rem 1.3rem;
     text-decoration: none;
     color: var(--global-text-color);
     border-bottom: 1px solid var(--global-divider-color);
@@ -918,7 +922,7 @@ const renderedAnnouncements = await Promise.all(
   }
 
   .ra-name {
-    font-size: clamp(1.4rem, 2.6vw, 2.5rem);
+    font-size: clamp(1.15rem, 2vw, 1.85rem);
     font-weight: 700;
     letter-spacing: -0.03em;
     line-height: 1.05;
@@ -994,10 +998,10 @@ const renderedAnnouncements = await Promise.all(
 
   .two-col-section {
     display: grid;
-    grid-template-columns: 180px 1fr;
-    gap: 3.5rem;
-    padding-top: 3.5rem;
-    padding-bottom: 3.5rem;
+    grid-template-columns: 150px 1fr;
+    gap: 2.25rem;
+    padding-top: 2.25rem;
+    padding-bottom: 2.25rem;
     border-bottom: 1px solid var(--global-divider-color);
   }
 
@@ -1129,56 +1133,95 @@ const renderedAnnouncements = await Promise.all(
   /* ── Featured Projects cards ─────────────────────────────────────────── */
 
   .featured {
-    margin-top: 2.75rem;
-    margin-bottom: 1rem;
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
   }
 
   .featured-head {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.1rem;
   }
 
   .featured-title {
-    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    font-size: clamp(1.35rem, 2.3vw, 1.7rem);
     font-weight: 700;
     letter-spacing: -0.02em;
-    margin: 0 0 0.35rem;
+    margin: 0 0 0.25rem;
   }
 
   .featured-sub {
-    font-size: 0.9rem;
+    font-size: 0.82rem;
     color: var(--color-silver-dark);
     margin: 0;
   }
 
   /* auto-fill keeps the cards a fixed, comfortable width and simply wraps to a
      new row instead of stretching huge — this is what keeps the layout from
-     getting "too big" on wide screens. */
+     getting "too big" on wide screens. `perspective` gives the children a
+     shared vanishing point so the hover tilt below reads as real 3D. */
   .featured-grid {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 1.1rem;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.85rem;
+  }
+
+  /* Grid cell: carries the scroll reveal only, so the card inside is free to
+     own the 3D transform. */
+  .feat-cell {
+    display: flex;
   }
 
   .feat-card {
+    flex: 1;
     display: flex;
     flex-direction: column;
     border: 1px solid var(--global-divider-color);
-    border-radius: 12px;
+    border-radius: 11px;
     overflow: hidden;
     background: var(--global-card-bg-color);
+    transform-style: preserve-3d;
+    /* --rx / --ry are set per-card by the pointer script; they tilt the card
+       toward the cursor. --lift pops it forward on the Z axis. */
+    --rx: 0deg;
+    --ry: 0deg;
+    --lift: 0px;
+    transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry))
+      translate3d(0, var(--lift), 0);
     transition:
-      transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
       border-color 0.25s ease,
-      box-shadow 0.25s ease;
+      box-shadow 0.35s ease;
   }
 
-  .feat-card:hover {
-    transform: translateY(-4px);
-    border-color: color-mix(in srgb, var(--global-theme-color) 55%, transparent);
-    box-shadow: 0 12px 32px -14px color-mix(in srgb, var(--global-theme-color) 50%, transparent);
+  /* Pop-up on hover: the card lifts, tilts toward the pointer and casts a
+     deeper shadow so it reads as floating above the page. */
+  .feat-card:hover,
+  .feat-card:focus-within {
+    --lift: -6px;
+    border-color: color-mix(in srgb, var(--global-theme-color) 60%, transparent);
+    box-shadow:
+      0 18px 40px -16px color-mix(in srgb, var(--global-theme-color) 55%, transparent),
+      0 6px 14px -8px rgb(0 0 0 / 0.35);
+    z-index: 2;
+  }
+
+  /* The picture pushes forward slightly more than the card for extra depth. */
+  .feat-card:hover .feat-media img,
+  .feat-card:hover .feat-mono {
+    transform: scale(1.06);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .feat-card {
+      transform: none;
+      transition: border-color 0.25s ease;
+    }
+    .feat-card:hover .feat-media img,
+    .feat-card:hover .feat-mono {
+      transform: none;
+    }
   }
 
   /* Media / preview — the "picture outline": a soft highlighted frame that
@@ -1188,7 +1231,7 @@ const renderedAnnouncements = await Promise.all(
     display: flex;
     align-items: center;
     justify-content: center;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
     text-decoration: none;
     border-bottom: 1px solid var(--global-divider-color);
@@ -1204,17 +1247,19 @@ const renderedAnnouncements = await Promise.all(
     height: 100%;
     object-fit: cover;
     display: block;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .feat-mono {
     font-family: 'Space Grotesk', system-ui, sans-serif;
     font-weight: 700;
-    font-size: clamp(1.1rem, 2.4vw, 1.55rem);
+    font-size: clamp(0.95rem, 2vw, 1.3rem);
     letter-spacing: -0.02em;
     color: var(--global-text-color);
     opacity: 0.9;
-    padding: 0 1rem;
+    padding: 0 0.75rem;
     text-align: center;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .feat-venue {
@@ -1236,13 +1281,13 @@ const renderedAnnouncements = await Promise.all(
   .feat-body {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.9rem 0.95rem 1rem;
+    gap: 0.4rem;
+    padding: 0.7rem 0.8rem 0.8rem;
     flex: 1;
   }
 
   .feat-name {
-    font-size: 0.92rem;
+    font-size: 0.84rem;
     font-weight: 700;
     line-height: 1.3;
     letter-spacing: -0.01em;
@@ -1255,13 +1300,13 @@ const renderedAnnouncements = await Promise.all(
   }
 
   .feat-blurb {
-    font-size: 0.78rem;
-    line-height: 1.5;
+    font-size: 0.73rem;
+    line-height: 1.45;
     color: var(--color-silver-dark);
     margin: 0;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -1559,4 +1604,52 @@ const renderedAnnouncements = await Promise.all(
     // Clean up before an in-site view-transition swap.
     document.addEventListener('astro:before-swap', () => cancelAnimationFrame(raf), { once: true });
   })();
+</script>
+
+<script>
+  // 3D pop-up tilt for the Featured Projects cards: the card leans toward the
+  // pointer. CSS owns the lift/shadow (see .feat-card:hover) — this only feeds
+  // the two rotation angles, so the effect degrades to a plain lift without JS.
+  function initFeatTilt(): void {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // Skip touch devices: there's no hover, and the tilt would stick after a tap.
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    const MAX_TILT = 7; // degrees — subtle enough to stay readable
+
+    document.querySelectorAll<HTMLElement>('.feat-card').forEach((card) => {
+      let raf = 0;
+
+      const onMove = (e: PointerEvent) => {
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          const r = card.getBoundingClientRect();
+          // Pointer position within the card, normalised to -0.5…0.5.
+          const px = (e.clientX - r.left) / r.width - 0.5;
+          const py = (e.clientY - r.top) / r.height - 0.5;
+          // Moving right tilts the right edge away (positive rotateY);
+          // moving down tilts the bottom away (negative rotateX).
+          card.style.setProperty('--ry', `${(px * MAX_TILT * 2).toFixed(2)}deg`);
+          card.style.setProperty('--rx', `${(-py * MAX_TILT * 2).toFixed(2)}deg`);
+        });
+      };
+
+      const reset = () => {
+        if (raf) {
+          cancelAnimationFrame(raf);
+          raf = 0;
+        }
+        card.style.setProperty('--rx', '0deg');
+        card.style.setProperty('--ry', '0deg');
+      };
+
+      card.addEventListener('pointermove', onMove);
+      card.addEventListener('pointerleave', reset);
+      card.addEventListener('blur', reset, true);
+    });
+  }
+
+  initFeatTilt();
+  document.addEventListener('astro:page-load', initFeatTilt);
 </script>

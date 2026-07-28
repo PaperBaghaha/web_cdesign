@@ -788,6 +788,15 @@ const personJsonLd = isHome ? JSON.stringify({
             const vh = window.innerHeight;
             const focal = vh * 0.46;
             const range = vh * 0.62;
+            // How much scroll is left in the document. The last blocks on a
+            // page can never rise to the focal line — the page runs out of
+            // scroll first — so without this they'd stay stuck blurred and
+            // faded at the bottom. We subtract that unavoidable shortfall
+            // below so they resolve fully sharp as you reach the end.
+            const remaining = Math.max(
+              0,
+              document.documentElement.scrollHeight - (window.scrollY + vh)
+            );
             for (const el of focusEls) {
               // Let the one-time entrance reveal finish before we take over.
               if (el.hasAttribute('data-reveal') && !el.classList.contains('revealed')) {
@@ -809,7 +818,15 @@ const personJsonLd = isHome ? JSON.stringify({
               }
               el.dataset.foff = '0';
               const center = r.top + r.height / 2;
-              let d = Math.min(Math.abs(center - focal) / range, 1);
+              // The closest this block will ever get to the focal line, given
+              // the scroll that's actually left. For blocks near the end of
+              // the document that shortfall is unavoidable, so discount it —
+              // otherwise the final row is permanently out of focus.
+              const shortfall = Math.max(0, center - remaining - focal);
+              let d = Math.min(
+                Math.max(Math.abs(center - focal) - shortfall, 0) / range,
+                1
+              );
               // Publications: keep a band of ~2 rows fully sharp before the
               // blur ramps in, instead of only a single row being in focus.
               if (el.closest('.publications')) {
