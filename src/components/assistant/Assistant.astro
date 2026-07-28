@@ -29,7 +29,32 @@ function flattenNav(items: NavItem[]) {
 const navItems = flattenNav(site.navbar.items);
 
 // ── Content index (built at build time; enables title/keyword search in dev too) ──
-type SearchItem = { title: string; section: string; href: string; keywords: string };
+// `summary` is what lets the assistant *answer* rather than merely link: it is a
+// short skim of the item, composed at build time. `meta` is a one-line factual
+// header (venue/year, term, role) shown before the skim.
+type SearchItem = {
+  title: string;
+  section: string;
+  href: string;
+  keywords: string;
+  summary?: string;
+  meta?: string;
+};
+
+/** Trim prose down to a couple of sentences so answers stay skimmable. */
+function skim(text: string | undefined, maxChars = 260): string {
+  if (!text) return '';
+  const clean = text.replace(/\s+/g, ' ').trim();
+  if (clean.length <= maxChars) return clean;
+  const sentences = clean.split(/(?<=[.!?])\s/);
+  let out = '';
+  for (const s of sentences) {
+    if (out && (out + ' ' + s).length > maxChars) break;
+    out = out ? `${out} ${s}` : s;
+  }
+  if (!out) out = clean.slice(0, maxChars);
+  return out.length < clean.length ? `${out.replace(/[.,;:\s]+$/, '')}…` : out;
+}
 
 const posts = (await getCollection('posts'))
   .filter((p) => !p.data.hidden && !p.data.draft)
@@ -38,6 +63,8 @@ const posts = (await getCollection('posts'))
     section: 'Blog',
     href: `${base}/blog/${p.id}/`,
     keywords: [...(p.data.tags ?? []), ...(p.data.categories ?? [])].join(' '),
+    summary: skim(p.data.description),
+    meta: p.data.date ? `Blog post, ${p.data.date.getFullYear()}` : 'Blog post',
   }));
 
 const projects = (await getCollection('projects')).map((p): SearchItem => ({
@@ -45,13 +72,17 @@ const projects = (await getCollection('projects')).map((p): SearchItem => ({
   section: 'Research',
   href: `${base}/projects/${p.id}/`,
   keywords: p.data.category ?? '',
+  summary: skim(p.data.description),
+  meta: p.data.category ? `Research area — ${p.data.category}` : 'Research area',
 }));
 
 const teaching = (await getCollection('teaching')).map((t): SearchItem => ({
   title: t.data.title,
   section: 'Courses',
   href: `${base}/teaching/`,
-  keywords: t.data.term ?? '',
+  keywords: [t.data.term ?? '', t.data.code ?? ''].join(' ').trim(),
+  summary: skim(t.data.description),
+  meta: [t.data.code, t.data.term, t.data.institution].filter(Boolean).join(' · '),
 }));
 
 // ── Publications — every paper is answerable by title, authors, venue, year ──
@@ -62,6 +93,8 @@ const publications = parseBibtex(bibRaw).map((entry): SearchItem => ({
   keywords: [getAuthors(entry), getVenue(entry), String(getYear(entry) || ''), entry.fields.abbr ?? '']
     .filter(Boolean)
     .join(' '),
+  summary: skim(entry.fields.abstract),
+  meta: [getAuthors(entry), getVenue(entry), String(getYear(entry) || '')].filter(Boolean).join(' · '),
 }));
 
 // ── People — lab members answerable by name and role/interests ──
@@ -72,6 +105,8 @@ const people = peopleEntries.map((p): SearchItem => ({
   section: 'People',
   href: `${base}/people/${p.id}/`,
   keywords: [p.data.role ?? '', ...(p.data.interests ?? [])].join(' '),
+  summary: skim(p.data.description),
+  meta: [p.data.role, p.data.major].filter(Boolean).join(' · '),
 }));
 
 // Rich people facts — let the assistant answer "who is …" directly, not just link.
@@ -91,6 +126,10 @@ const labFacts = {
   description: site.description ?? '',
   publicationCount: publications.length,
   peopleCount: people.length,
+  /** Research-area titles, so "what research do you do" gets a real answer. */
+  areas: projects.map((p) => p.title),
+  /** A couple of recent papers, for "what are you working on" style questions. */
+  recentPapers: publications.slice(0, 3).map((p) => p.title),
 };
 
 const logoIcon = `${base}/assets/img/cdl-logo-icon.png`;
@@ -198,7 +237,14 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
 
 <script>
   type NavItem = { label: string; href: string };
-  type ContentItem = { title: string; section: string; href: string; keywords?: string };
+  type ContentItem = {
+    title: string;
+    section: string;
+    href: string;
+    keywords?: string;
+    summary?: string;
+    meta?: string;
+  };
 
   function initAssistant() {
     const root = document.getElementById('site-assistant');
@@ -242,8 +288,11 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       description: string;
       publicationCount: number;
       peopleCount: number;
+      areas: string[];
+      recentPapers: string[];
     } = JSON.parse(
-      root.dataset.labFacts ?? '{"name":"","description":"","publicationCount":0,"peopleCount":0}',
+      root.dataset.labFacts ??
+        '{"name":"","description":"","publicationCount":0,"peopleCount":0,"areas":[],"recentPapers":[]}',
     );
     const pagefindBase = root.dataset.pagefindBase ?? '';
     const email = root.dataset.email ?? '';
@@ -380,24 +429,29 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
 
     // Token-scored search over the pre-built index (publications, people, projects,
     // posts, courses). Works identically in `yarn dev` and production.
-    function localSearch(query: string) {
+    function localSearch(query: string): ContentItem[] {
       const terms = tokenize(query);
       if (terms.length === 0) return [];
       return contentItems
         .map((c) => {
           const title = c.title.toLowerCase();
           const hay = `${title} ${(c.keywords ?? '').toLowerCase()}`;
+          const summary = (c.summary ?? '').toLowerCase();
           let score = 0;
           for (const t of terms) {
             if (title.includes(t)) score += 3; // title hits weigh most
             else if (hay.includes(t)) score += 1;
+            // A summary hit is weak on its own but breaks ties sensibly and lets
+            // topic questions ("hand tracking") reach papers that never say it
+            // in the title.
+            if (summary.includes(t)) score += 0.5;
           }
           return { c, score };
         })
         .filter((x) => x.score > 0)
         .sort((a, b) => b.score - a.score)
         .slice(0, 6)
-        .map((x) => ({ title: x.c.title, href: x.c.href, section: x.c.section }));
+        .map((x) => x.c);
     }
 
     // Find the lab member a query is asking about. Returns the best name match and
@@ -455,6 +509,55 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       }
 
       return local.slice(0, 8);
+    }
+
+    // ── Direct answers ─────────────────────────────────────────────────────────
+    // The assistant should *answer*, not just hand over a list of links. We take
+    // the best-matching item, speak its summary as a short highlight, and only
+    // then offer links underneath for readers who want the full page.
+
+    /** Article for a section name, so the lead sentence reads naturally. */
+    function describeSection(section: string): string {
+      switch (section) {
+        case 'Publication':
+          return 'a paper from the lab';
+        case 'People':
+          return 'a member of the lab';
+        case 'Research':
+          return 'one of our research areas';
+        case 'Courses':
+          return 'a course we teach';
+        case 'Blog':
+          return 'a post on our blog';
+        default:
+          return 'a page on this site';
+      }
+    }
+
+    /**
+     * Speak a highlight for `item`, then link it (plus any related hits).
+     * Returns false when there's nothing worth speaking, so the caller can fall
+     * back to a plain link list.
+     */
+    function answerFromItem(item: ContentItem, related: ContentItem[]): boolean {
+      if (!item.summary) return false;
+
+      const lead = `${item.title} — ${describeSection(item.section)}.`;
+      const parts = [lead];
+      if (item.meta) parts.push(`(${item.meta})`);
+      parts.push(item.summary);
+      addBubble('bot', parts.join(' '), true);
+
+      const links: { title: string; section?: string; href: string }[] = [
+        { title: `Read the full page: ${item.title}`, section: item.section, href: item.href },
+      ];
+      // Detailed mode offers more of the related trail; fast mode keeps it tight.
+      const extra = related
+        .filter((r) => r.href !== item.href)
+        .slice(0, mode === 'detailed' ? 4 : 2);
+      for (const r of extra) links.push({ title: r.title, section: r.section, href: r.href });
+      addLinks(links);
+      return true;
     }
 
     // Answer a single query.
@@ -517,9 +620,59 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
         return 'answer';
       }
 
+      // Intent: what research does the lab do — name the areas outright.
+      // Must precede the generic "what is the lab" intent, which also matches
+      // the word "research".
+      if (
+        /\b(research|work|working|topic|area|focus|study|studies)\b/i.test(query) &&
+        /\b(what|which|kind|kinds|type|types|tell|describe|list|overview|areas?|about)\b/i.test(query) &&
+        labFacts.areas.length > 0 &&
+        !findPerson(query)
+      ) {
+        const list = labFacts.areas.slice(0, 6).join(', ');
+        addBubble(
+          'bot',
+          `We work across ${labFacts.areas.length} main research areas: ${list}. Across them we've published ${labFacts.publicationCount} papers. Pick an area below for the full write-up.`,
+          true,
+        );
+        const areaLinks = contentItems
+          .filter((c) => c.section === 'Research')
+          .slice(0, mode === 'detailed' ? 6 : 4)
+          .map((c) => ({ title: c.title, section: c.section, href: c.href }));
+        const researchNav = navByLabel('Research') ?? navByLabel('Projects');
+        if (researchNav) areaLinks.push({ title: 'All research areas', section: '', href: researchNav.href });
+        addLinks(areaLinks);
+        return 'answer';
+      }
+
+      // Intent: who's in the lab — name a few, then link the roster.
+      // Requires an explicit roster word — a bare "who…" is usually about a
+      // specific person or paper, which the intents above/below handle better.
+      if (
+        /\b(people|members?|team|students?|researchers?|staff|lab\s?mates?)\b/i.test(query) &&
+        !/\b(paper|publication|wrote|author)/i.test(query) &&
+        peopleFacts.length > 0
+      ) {
+        const names = peopleFacts.slice(0, 5).map((p) => p.name).join(', ');
+        const more = peopleFacts.length > 5 ? `, and ${peopleFacts.length - 5} more` : '';
+        addBubble(
+          'bot',
+          `The lab has ${labFacts.peopleCount} people listed, including ${names}${more}. Ask me about anyone by name and I'll tell you what they work on.`,
+          true,
+        );
+        const ppl = navByLabel('People') ?? navByLabel('Team');
+        if (ppl) addLinks([{ title: 'Meet the whole team', href: ppl.href, section: 'People' }]);
+        return 'answer';
+      }
+
       // Intent: what/who is the lab — describe it and point to About.
       if (/\b(what|who|tell|about|describe)\b/i.test(query) && /\b(lab|cdl|convergence|you|this|research)\b/i.test(query)) {
-        if (labFacts.description) addBubble('bot', labFacts.description, true);
+        if (labFacts.description) {
+          const scale = labFacts.peopleCount
+            ? ` We're ${labFacts.peopleCount} people with ${labFacts.publicationCount} publications.`
+            : '';
+          addBubble('bot', `${labFacts.description}${scale}`, true);
+        }
         const about = navByLabel('About') ?? navByLabel('Home');
         if (about) addLinks([{ title: about.label, href: about.href }]);
         return 'answer';
@@ -527,7 +680,14 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
 
       // Intent: how many publications / papers.
       if (/\bhow many\b/i.test(query) && /\b(publication|paper|pub)/i.test(query)) {
-        addBubble('bot', `The lab lists ${labFacts.publicationCount} publications. Browse them all here:`);
+        const recent = labFacts.recentPapers.length
+          ? ` Recent ones include ${labFacts.recentPapers.join('; ')}.`
+          : '';
+        addBubble(
+          'bot',
+          `The lab lists ${labFacts.publicationCount} publications.${recent}`,
+          true,
+        );
         const pubs = navByLabel('Publications');
         if (pubs) addLinks([{ title: 'Publications', href: pubs.href }]);
         return 'answer';
@@ -541,18 +701,21 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
         return 'answer';
       }
 
-      const thinking = addBubble('bot', 'Looking…');
+      const thinking = addBubble('bot', 'Thinking…');
       const found = await search(query);
       thinking.remove();
 
-      // Fast mode keeps it to the top few; Detailed surfaces more related links.
+      // Preferred path: speak a highlight from the best match, links underneath.
+      const best = found.find((r) => r.summary);
+      if (best && answerFromItem(best, found)) return 'answer';
+
+      // Nothing had a written summary — fall back to a link list.
       const results = found.slice(0, mode === 'detailed' ? 8 : 4);
       if (results.length > 0) {
-        const lead =
-          mode === 'detailed'
-            ? `Here's what I found for “${query}” — including related work:`
-            : `Here's what I found for “${query}”:`;
-        addBubble('bot', lead);
+        addBubble(
+          'bot',
+          `I don't have a written summary for that, but these pages cover “${query}”:`,
+        );
         addLinks(results);
         return 'answer';
       }
