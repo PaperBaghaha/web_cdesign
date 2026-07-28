@@ -262,6 +262,20 @@ const personJsonLd = isHome ? JSON.stringify({
       }
       document.addEventListener('astro:before-swap', releaseScrollLock);
       document.addEventListener('astro:after-swap', releaseScrollLock);
+
+      // Critical anti-stuck fix: with view transitions, navigating back to the
+      // homepage re-inserts the intro overlay markup, but its inline script can
+      // NOT re-run (browsers don't execute scripts inserted during a swap). That
+      // would leave the loading curtain frozen on screen forever. So after every
+      // in-site navigation, forcibly remove any intro overlay and unlock scroll —
+      // the intro is only meant to play on a true first page load, never on SPA
+      // navigation.
+      function killIntroOverlay() {
+        var intro = document.getElementById('cdl-intro');
+        if (intro && intro.parentNode) intro.remove();
+        document.documentElement.style.overflow = '';
+      }
+      document.addEventListener('astro:after-swap', killIntroOverlay);
     </script>
 
     <!--
