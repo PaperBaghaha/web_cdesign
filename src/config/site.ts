@@ -247,7 +247,7 @@ export const site = {
      * Enable Astro View Transitions for smooth page-to-page animations.
      * Disable if you prefer full page reloads (e.g. for accessibility reasons).
      */
-    viewTransitions: true,
+    viewTransitions: false,
     /** Show social sharing links (X, LinkedIn, Facebook, email) at the bottom of blog posts. */
     socialShare: true,
     /**
