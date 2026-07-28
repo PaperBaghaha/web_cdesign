@@ -2,7 +2,8 @@
 import SocialLinks from '@components/SocialLinks.astro';
 import { site } from '@config/site';
 import Base from '@layouts/Base.astro';
-import { getAuthors, getBoolField, getTitle, getVenue, getYear, parseBibtex } from '@utils/bibtex';
+import { getBoolField, getTitle, getVenue, getYear, parseBibtex } from '@utils/bibtex';
+import { withBase } from '@utils/base';
 import { getCollection, render } from 'astro:content';
 
 import AboutContent from '../data/about.mdx';
@@ -32,6 +33,74 @@ const researchAreas = (await getCollection('projects')).sort(
 );
 const pubYears = bibEntries.map((e) => getYear(e)).filter((y) => y > 1900);
 const yearsActive = pubYears.length > 0 ? new Date().getFullYear() - Math.min(...pubYears) : 0;
+
+// ── Featured Projects cards (built from `selected = {true}` publications) ──────
+// Maps a research-area slug back to its human-readable title for the tag chips.
+const areaTitleBySlug = new Map(researchAreas.map((p) => [p.id, p.data.title]));
+
+// Long booktitles ("Proceedings of the 2026 CHI Conference…") → short acronyms.
+const VENUE_ALIASES: [RegExp, string][] = [
+  [/Human Factors in Computing Systems/i, 'CHI'],
+  [/Intelligent User Interfaces/i, 'IUI'],
+  [/User Interface Software/i, 'UIST'],
+  [/Robotics and Automation/i, 'ICRA'],
+  [/Computer Vision and Pattern Recognition/i, 'CVPR'],
+  [/Computer Supported Cooperative Work/i, 'CSCW'],
+];
+
+function shortVenue(entry: (typeof bibEntries)[number]): string {
+  const raw = getVenue(entry);
+  const year = getYear(entry);
+  let label = entry.fields.abbr ?? '';
+  if (!label) {
+    for (const [re, alias] of VENUE_ALIASES) {
+      if (re.test(raw)) {
+        label = alias;
+        break;
+      }
+    }
+  }
+  if (!label) label = raw.length > 24 ? `${raw.slice(0, 22).trim()}…` : raw;
+  return year > 1900 ? `${label} ${year}` : label;
+}
+
+const featuredPapers = selectedPapers.map((entry) => {
+  const title = getTitle(entry);
+  // Codename shown on the placeholder card = the short system name. Use the
+  // text before the first colon; if the title has no colon (so that text is a
+  // long sentence), fall back to just the first word.
+  let codename = title.split(':')[0].trim();
+  if (codename.length > 16) codename = codename.split(/\s+/)[0];
+  const abstract = entry.fields.abstract ?? '';
+  const firstSentence = abstract.split(/(?<=[.!?])\s/)[0] ?? '';
+  const blurb =
+    firstSentence.length > 165 ? `${firstSentence.slice(0, 162).trim()}…` : firstSentence;
+  const preview = entry.fields.preview;
+  const imgSrc = preview
+    ? preview.startsWith('http')
+      ? preview
+      : withBase(`${site.publications.previewDir}${preview}`)
+    : '';
+  const tags = (entry.fields.topics ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map((slug) => areaTitleBySlug.get(slug) ?? slug)
+    .slice(0, 2);
+  const url = entry.fields.html ?? (entry.fields.doi ? `https://doi.org/${entry.fields.doi}` : '');
+  return {
+    key: entry.key,
+    href: withBase(`/publications/${entry.key}/`),
+    title,
+    codename,
+    venue: shortVenue(entry),
+    blurb,
+    imgSrc,
+    imgAlt: entry.fields.preview_alt ?? title,
+    tags,
+    url,
+  };
+});
 
 const renderedAnnouncements = await Promise.all(
   allAnnouncements.map(async (item) => ({ item, rendered: await render(item) })),
@@ -153,6 +222,64 @@ const renderedAnnouncements = await Promise.all(
     </div>
   </section>
 
+  <!-- ═══ FEATURED PROJECTS (compact cards, right below the stats board) ════════ -->
+  {
+    featuredPapers.length > 0 && (
+      <section class="featured page-container" aria-labelledby="featured-heading">
+        <div class="featured-head" data-reveal>
+          <h2 id="featured-heading" class="featured-title">
+            Featured Projects
+          </h2>
+          <p class="featured-sub">
+            A selection of research projects. Click through for papers, videos, and demos.
+          </p>
+        </div>
+        <ul class="featured-grid">
+          {featuredPapers.map((p, i) => (
+            <li class="feat-card" data-reveal style={`--reveal-delay:${(i * 0.06).toFixed(2)}s`}>
+              <a class="feat-media" href={p.href} tabindex="-1" aria-hidden="true">
+                {p.imgSrc ? (
+                  <img src={p.imgSrc} alt={p.imgAlt} loading="lazy" />
+                ) : (
+                  <span class="feat-mono">{p.codename}</span>
+                )}
+                <span class="feat-venue">{p.venue}</span>
+              </a>
+              <div class="feat-body">
+                <a class="feat-name" href={p.href}>
+                  {p.title}
+                </a>
+                {p.blurb && <p class="feat-blurb">{p.blurb}</p>}
+                {p.tags.length > 0 && (
+                  <div class="feat-tags">
+                    {p.tags.map((t) => (
+                      <span class="feat-tag">{t}</span>
+                    ))}
+                  </div>
+                )}
+                <div class="feat-actions">
+                  <a class="feat-btn feat-btn-primary" href={p.href}>
+                    Details →
+                  </a>
+                  {p.url && (
+                    <a class="feat-btn" href={p.url} target="_blank" rel="noopener noreferrer">
+                      Paper ↗
+                    </a>
+                  )}
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <div class="featured-foot" data-reveal>
+          <a class="feat-all" href={`${site.base}/publications/`}>
+            View all {bibEntries.length}+ publications →
+          </a>
+        </div>
+      </section>
+    )
+  }
+
   <!-- ═══ RESEARCH AREAS BAND (scroll-pinned convergence) ═══════════════════════ -->
   <section class="ra-pin-wrap" data-ra-wrap>
     <div class="ra-pin">
@@ -228,59 +355,6 @@ const renderedAnnouncements = await Promise.all(
     )
   }
 
-  <!-- ═══ SELECTED PUBLICATIONS ════════════════════════════════════════════════ -->
-  {
-    site.selectedPapers.enabled && selectedPapers.length > 0 && (
-      <section class="two-col-section page-container">
-        <div class="col-label">
-          <a class="col-tag col-tag-link" href={`${site.base}/publications/`}>
-            Selected Publications
-          </a>
-          <div class="col-tag-rule" />
-          <a class="col-more" href={`${site.base}/publications/`}>
-            All {bibEntries.length}+ →
-          </a>
-        </div>
-        <ol class="pub-list">
-          {selectedPapers.map((entry, i) => {
-            const title = getTitle(entry);
-            const authors = getAuthors(entry);
-            const venue = getVenue(entry);
-            const year = getYear(entry);
-            const abbr = entry.fields.abbr;
-            const url =
-              entry.fields.html ?? (entry.fields.doi ? `https://doi.org/${entry.fields.doi}` : '');
-            return (
-              <li class="pub-item" data-reveal style={`--reveal-delay:${(i * 0.05).toFixed(2)}s`}>
-                {abbr && <span class="pub-badge">{abbr}</span>}
-                {url ? (
-                  <a class="pub-title" href={url} target="_blank" rel="noopener noreferrer">
-                    {title}
-                  </a>
-                ) : (
-                  <strong class="pub-title">{title}</strong>
-                )}
-                <span class="pub-meta">
-                  {authors}
-                  {(venue || year) && (
-                    <>
-                      {' '}
-                      ·{' '}
-                      <em>
-                        {venue}
-                        {venue && year ? ', ' : ''}
-                        {year || ''}
-                      </em>
-                    </>
-                  )}
-                </span>
-              </li>
-            );
-          })}
-        </ol>
-      </section>
-    )
-  }
 </Base>
 
 <style>
@@ -769,7 +843,9 @@ const renderedAnnouncements = await Promise.all(
      resumes. The height provides the scroll distance that drives the motion. */
   .ra-pin-wrap {
     position: relative;
-    height: 260vh;
+    /* Scroll distance that drives the fly-in. Kept tight so the pinned band
+       doesn't read as a big empty gap before the rows arrive. */
+    height: 180vh;
   }
 
   .ra-pin {
@@ -1050,107 +1126,217 @@ const renderedAnnouncements = await Promise.all(
     border-top: none;
   }
 
-  /* ── Publications list ───────────────────────────────────────────────── */
+  /* ── Featured Projects cards ─────────────────────────────────────────── */
 
-  .pub-list {
-    list-style: none;
-    padding: 0;
+  .featured {
+    margin-top: 2.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .featured-head {
+    margin-bottom: 1.5rem;
+  }
+
+  .featured-title {
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.35rem;
+  }
+
+  .featured-sub {
+    font-size: 0.9rem;
+    color: var(--color-silver-dark);
     margin: 0;
+  }
+
+  /* auto-fill keeps the cards a fixed, comfortable width and simply wraps to a
+     new row instead of stretching huge — this is what keeps the layout from
+     getting "too big" on wide screens. */
+  .featured-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1.1rem;
+  }
+
+  .feat-card {
     display: flex;
     flex-direction: column;
-    gap: 0;
-    /* The scroll-reveal below translates items ±64px horizontally before they
-       enter. On narrow phones that push overflows the viewport and creates a
-       horizontal scrollbar. Clip it here (safe — this is not the sticky
-       research pin's ancestor) so the slide-in stays contained. */
-    overflow-x: clip;
+    border: 1px solid var(--global-divider-color);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--global-card-bg-color);
+    transition:
+      transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
   }
 
-  .pub-item {
+  .feat-card:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--global-theme-color) 55%, transparent);
+    box-shadow: 0 12px 32px -14px color-mix(in srgb, var(--global-theme-color) 50%, transparent);
+  }
+
+  /* Media / preview — the "picture outline": a soft highlighted frame that
+     surrounds every teaser image (or its placeholder). */
+  .feat-media {
+    position: relative;
     display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    padding: 1rem 1rem 1rem 1.25rem;
-    border-top: 1px solid var(--global-divider-color);
-    border-left: 2px solid transparent;
-    transition:
-      border-left-color 0.2s ease,
-      background-color 0.2s ease,
-      padding-left 0.2s ease;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    text-decoration: none;
+    border-bottom: 1px solid var(--global-divider-color);
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--global-theme-color) 16%, transparent),
+      color-mix(in srgb, var(--global-text-color) 7%, transparent)
+    );
   }
 
-  .pub-item:first-child {
-    border-top: none;
+  .feat-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
-  /* Scroll reveal for publications: alternate the entry direction — odd rows
-     slide in from the right, even rows from the left — with NO blur. Overrides
-     the default blur-up reveal just for this list. */
-  html.js-reveal .pub-list .pub-item {
-    opacity: 0;
-    filter: none;
-    transform: translateX(64px);
+  .feat-mono {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.1rem, 2.4vw, 1.55rem);
+    letter-spacing: -0.02em;
+    color: var(--global-text-color);
+    opacity: 0.9;
+    padding: 0 1rem;
+    text-align: center;
   }
 
-  html.js-reveal .pub-list .pub-item:nth-child(even) {
-    transform: translateX(-64px);
-  }
-
-  html.js-reveal .pub-list .pub-item.revealed {
-    opacity: 1;
-    filter: none;
-    transform: none;
-    transition:
-      opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    transition-delay: var(--reveal-delay, 0s);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    html.js-reveal .pub-list .pub-item,
-    html.js-reveal .pub-list .pub-item:nth-child(even) {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
-  .pub-item:hover {
-    border-left-color: var(--color-silver);
-    background-color: var(--global-card-bg-color);
-    padding-left: 1.5rem;
-  }
-
-  .pub-badge {
-    display: inline-block;
-    padding: 0.1em 0.5em;
-    border-radius: 2px;
+  .feat-venue {
+    position: absolute;
+    top: 0.6rem;
+    left: 0.6rem;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
     font-size: 0.62rem;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    background: var(--color-silver-dark);
-    color: var(--global-bg-color);
-    align-self: flex-start;
-    margin-bottom: 0.15rem;
-    font-family: 'Space Grotesk', system-ui, sans-serif;
+    padding: 0.2em 0.6em;
+    border-radius: 999px;
+    background: var(--global-bg-color);
+    color: var(--global-text-color);
+    border: 1px solid var(--global-divider-color);
   }
 
-  .pub-title {
-    font-size: 0.93rem;
-    font-weight: 600;
+  .feat-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.9rem 0.95rem 1rem;
+    flex: 1;
+  }
+
+  .feat-name {
+    font-size: 0.92rem;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
     color: var(--global-text-color);
     text-decoration: none;
-    line-height: 1.45;
     transition: color 0.2s ease;
   }
-  .pub-title:hover {
-    color: var(--color-silver);
+  .feat-name:hover {
+    color: var(--global-theme-color);
   }
 
-  .pub-meta {
-    font-size: 0.8rem;
+  .feat-blurb {
+    font-size: 0.78rem;
+    line-height: 1.5;
     color: var(--color-silver-dark);
-    line-height: 1.4;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .feat-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: auto;
+  }
+
+  .feat-tag {
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.2em 0.6em;
+    border-radius: 999px;
+    color: var(--color-silver-dark);
+    background: color-mix(in srgb, var(--global-text-color) 7%, transparent);
+  }
+
+  .feat-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    padding-top: 0.15rem;
+  }
+
+  .feat-btn {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.35em 0.75em;
+    border-radius: 7px;
+    text-decoration: none;
+    border: 1px solid var(--global-divider-color);
+    color: var(--global-text-color);
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
+  }
+  .feat-btn:hover {
+    border-color: var(--global-theme-color);
+    color: var(--global-theme-color);
+  }
+
+  .feat-btn-primary {
+    background: var(--global-theme-color);
+    border-color: var(--global-theme-color);
+    color: var(--global-bg-color);
+  }
+  .feat-btn-primary:hover {
+    color: var(--global-bg-color);
+    filter: brightness(1.08);
+  }
+
+  .featured-foot {
+    margin-top: 1.4rem;
+    text-align: center;
+  }
+
+  .feat-all {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-silver-dark);
+    text-decoration: none;
+  }
+  .feat-all:hover {
+    color: var(--global-theme-color);
+  }
+
+  @media (max-width: 520px) {
+    .featured-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   /* ── Reduced motion ──────────────────────────────────────────────────── */
