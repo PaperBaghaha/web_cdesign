@@ -3,7 +3,9 @@ import type { NavItem } from '@config/site';
 import { site } from '@config/site';
 import { getAuthors, getTitle, getVenue, getYear, parseBibtex } from '@utils/bibtex';
 import { getCollection } from 'astro:content';
+import yaml from 'js-yaml';
 
+import glossaryRaw from '../../data/glossary.yml?raw';
 import bibRaw from '../../data/papers.bib?raw';
 
 const base = site.base || '';
@@ -39,6 +41,8 @@ type SearchItem = {
   keywords: string;
   summary?: string;
   meta?: string;
+  /** Fuller page text. The assistant quotes the sentences that match the question. */
+  body?: string;
 };
 
 /** Trim prose down to a couple of sentences so answers stay skimmable. */
@@ -56,6 +60,27 @@ function skim(text: string | undefined, maxChars = 260): string {
   return out.length < clean.length ? `${out.replace(/[.,;:\s]+$/, '')}…` : out;
 }
 
+/**
+ * Markdown body → plain sentences the assistant can quote. Strips the syntax that
+ * would otherwise be read aloud as gibberish (code fences, images, link markup,
+ * headings, HTML tags) and caps the length so the payload stays small.
+ */
+function plainBody(md: string | undefined, maxChars = 900): string {
+  if (!md) return '';
+  return md
+    .replace(/```[\s\S]*?```/g, ' ') // fenced code
+    .replace(/`([^`]*)`/g, '$1') // inline code
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ') // images
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // links → their text
+    .replace(/<[^>]+>/g, ' ') // raw HTML
+    .replace(/^\s{0,3}#{1,6}\s+/gm, '') // headings
+    .replace(/^\s{0,3}[-*+]\s+/gm, '') // bullets
+    .replace(/[*_>]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, maxChars);
+}
+
 const posts = (await getCollection('posts'))
   .filter((p) => !p.data.hidden && !p.data.draft)
   .map((p): SearchItem => ({
@@ -65,6 +90,7 @@ const posts = (await getCollection('posts'))
     keywords: [...(p.data.tags ?? []), ...(p.data.categories ?? [])].join(' '),
     summary: skim(p.data.description),
     meta: p.data.date ? `Blog post, ${p.data.date.getFullYear()}` : 'Blog post',
+    body: plainBody(p.body),
   }));
 
 const projects = (await getCollection('projects')).map((p): SearchItem => ({
@@ -74,6 +100,7 @@ const projects = (await getCollection('projects')).map((p): SearchItem => ({
   keywords: p.data.category ?? '',
   summary: skim(p.data.description),
   meta: p.data.category ? `Research area — ${p.data.category}` : 'Research area',
+  body: plainBody(p.body),
 }));
 
 const teaching = (await getCollection('teaching')).map((t): SearchItem => ({
@@ -83,6 +110,7 @@ const teaching = (await getCollection('teaching')).map((t): SearchItem => ({
   keywords: [t.data.term ?? '', t.data.code ?? ''].join(' ').trim(),
   summary: skim(t.data.description),
   meta: [t.data.code, t.data.term, t.data.institution].filter(Boolean).join(' · '),
+  body: plainBody(t.body),
 }));
 
 // ── Publications — every paper is answerable by title, authors, venue, year ──
@@ -90,15 +118,27 @@ const publications = parseBibtex(bibRaw).map((entry): SearchItem => ({
   title: getTitle(entry),
   section: 'Publication',
   href: `${base}/publications/${entry.key}/`,
-  keywords: [getAuthors(entry), getVenue(entry), String(getYear(entry) || ''), entry.fields.abbr ?? '']
+  keywords: [
+    getAuthors(entry),
+    getVenue(entry),
+    String(getYear(entry) || ''),
+    entry.fields.abbr ?? '',
+  ]
     .filter(Boolean)
     .join(' '),
   summary: skim(entry.fields.abstract),
-  meta: [getAuthors(entry), getVenue(entry), String(getYear(entry) || '')].filter(Boolean).join(' · '),
+  body: plainBody(entry.fields.abstract),
+  meta: [getAuthors(entry), getVenue(entry), String(getYear(entry) || '')]
+    .filter(Boolean)
+    .join(' · '),
 }));
 
 // ── People — lab members answerable by name and role/interests ──
-const peopleEntries = (await getCollection('people')).filter((p) => !p.data.noPage);
+// Sorted by `importance` so the assistant names the PI and senior members first
+// when it introduces the team, rather than whoever is alphabetically first.
+const peopleEntries = (await getCollection('people'))
+  .filter((p) => !p.data.noPage)
+  .sort((a, b) => (a.data.importance ?? 999) - (b.data.importance ?? 999));
 
 const people = peopleEntries.map((p): SearchItem => ({
   title: p.data.name,
@@ -107,6 +147,7 @@ const people = peopleEntries.map((p): SearchItem => ({
   keywords: [p.data.role ?? '', ...(p.data.interests ?? [])].join(' '),
   summary: skim(p.data.description),
   meta: [p.data.role, p.data.major].filter(Boolean).join(' · '),
+  body: plainBody(p.body),
 }));
 
 // Rich people facts — let the assistant answer "who is …" directly, not just link.
@@ -132,6 +173,29 @@ const labFacts = {
   recentPapers: publications.slice(0, 3).map((p) => p.title),
 };
 
+// ── Glossary — immediate answers for "what is X?" questions ────────────────────
+// The site has no AI model behind it, so definitions have to be written down.
+// src/data/glossary.yml is the place to add more.
+type GlossaryEntry = { term: string; aliases?: string[]; answer: string; related?: string };
+
+const projectHrefBySlug = new Map(
+  (await getCollection('projects')).map((p) => [
+    p.id,
+    { title: p.data.title, href: `${base}/projects/${p.id}/` },
+  ]),
+);
+
+const glossary = ((yaml.load(glossaryRaw) ?? []) as GlossaryEntry[]).map((g) => {
+  const link = g.related ? projectHrefBySlug.get(g.related) : undefined;
+  return {
+    term: g.term,
+    aliases: g.aliases ?? [],
+    answer: g.answer.replace(/\s+/g, ' ').trim(),
+    relatedTitle: link?.title ?? '',
+    relatedHref: link?.href ?? '',
+  };
+});
+
 const logoIcon = `${base}/assets/img/cdl-logo-icon.png`;
 const assistantName = 'CDL AI Assistant';
 const welcomeHeading = `Welcome to ${assistantName}! How can I help you today?`;
@@ -145,6 +209,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   data-content-items={JSON.stringify(contentItems)}
   data-people-facts={JSON.stringify(peopleFacts)}
   data-lab-facts={JSON.stringify(labFacts)}
+  data-glossary={JSON.stringify(glossary)}
   data-pagefind-base={base}
   data-email={site.author.email}
   data-author={site.author.name}
@@ -154,7 +219,14 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   data-disclaimer={disclaimer}
 >
   <button id="assistant-toggle" aria-label="Open the site assistant" aria-expanded="false">
-    <img src={logoIcon} alt="" class="assistant-toggle-logo" aria-hidden="true" width="512" height="512" />
+    <img
+      src={logoIcon}
+      alt=""
+      class="assistant-toggle-logo"
+      aria-hidden="true"
+      width="512"
+      height="512"
+    />
   </button>
 
   <div id="assistant-overlay" hidden></div>
@@ -162,7 +234,14 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   <div id="assistant-panel" role="dialog" aria-label="Site assistant" aria-modal="true" hidden>
     <header id="assistant-head">
       <span id="assistant-title">
-        <img src={logoIcon} alt="" class="assistant-title-logo" aria-hidden="true" width="512" height="512" />
+        <img
+          src={logoIcon}
+          alt=""
+          class="assistant-title-logo"
+          aria-hidden="true"
+          width="512"
+          height="512"
+        />
         <span id="assistant-title-text"></span>
       </span>
       <button id="assistant-close" aria-label="Close the assistant">
@@ -206,7 +285,16 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
         <div id="assistant-controls">
           <div class="assistant-controls-left">
             <button type="button" id="assistant-new-thread">
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                width="15"
+                height="15"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.4"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
                 <path d="M12 5v14M5 12h14"></path>
               </svg>
               New Thread
@@ -218,12 +306,33 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
                 <option value="fast">Fast</option>
                 <option value="detailed">Detailed</option>
               </select>
-              <svg class="assistant-mode-caret" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <svg
+                class="assistant-mode-caret"
+                viewBox="0 0 24 24"
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
                 <polyline points="6 9 12 15 18 9"></polyline>
               </svg>
             </div>
             <button type="submit" id="assistant-send" aria-label="Send message">
-              <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                width="19"
+                height="19"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
                 <path d="M12 19V5M5 12l7-7 7 7"></path>
               </svg>
             </button>
@@ -244,6 +353,14 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     keywords?: string;
     summary?: string;
     meta?: string;
+    body?: string;
+  };
+  type GlossaryTerm = {
+    term: string;
+    aliases: string[];
+    answer: string;
+    relatedTitle: string;
+    relatedHref: string;
   };
 
   function initAssistant() {
@@ -294,6 +411,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       root.dataset.labFacts ??
         '{"name":"","description":"","publicationCount":0,"peopleCount":0,"areas":[],"recentPapers":[]}',
     );
+    const glossary: GlossaryTerm[] = JSON.parse(root.dataset.glossary ?? '[]');
     const pagefindBase = root.dataset.pagefindBase ?? '';
     const email = root.dataset.email ?? '';
     const author = root.dataset.author ?? '';
@@ -380,8 +498,9 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     // ── Suggested prompts — click to ask, RadarAI-style ────────────────────────
     const suggestedPrompts = [
       `What is the ${labFacts.name}?`,
-      'Who are the people in the lab?',
+      'What is the difference between AR, VR and MR?',
       'What research does the lab do?',
+      'Who are the people in the lab?',
       'How can I contact the lab?',
     ];
     function renderChips() {
@@ -416,11 +535,58 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
 
     // Question / filler words that shouldn't drive matching.
     const STOPWORDS = new Set([
-      'a', 'an', 'the', 'is', 'are', 'was', 'were', 'do', 'does', 'did', 'of', 'in', 'on',
-      'at', 'to', 'for', 'and', 'or', 'with', 'about', 'who', 'what', 'when', 'where', 'which',
-      'how', 'why', 'me', 'i', 'you', 'your', 'my', 'can', 'could', 'would', 'tell', 'show',
-      'find', 'give', 'any', 'some', 'there', 'their', 'have', 'has', 'this', 'that', 'from',
-      'by', 'it', 'lab', 'cdl',
+      'a',
+      'an',
+      'the',
+      'is',
+      'are',
+      'was',
+      'were',
+      'do',
+      'does',
+      'did',
+      'of',
+      'in',
+      'on',
+      'at',
+      'to',
+      'for',
+      'and',
+      'or',
+      'with',
+      'about',
+      'who',
+      'what',
+      'when',
+      'where',
+      'which',
+      'how',
+      'why',
+      'me',
+      'i',
+      'you',
+      'your',
+      'my',
+      'can',
+      'could',
+      'would',
+      'tell',
+      'show',
+      'find',
+      'give',
+      'any',
+      'some',
+      'there',
+      'their',
+      'have',
+      'has',
+      'this',
+      'that',
+      'from',
+      'by',
+      'it',
+      'lab',
+      'cdl',
     ]);
 
     function tokenize(s: string): string[] {
@@ -436,16 +602,26 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
         .map((c) => {
           const title = c.title.toLowerCase();
           const hay = `${title} ${(c.keywords ?? '').toLowerCase()}`;
-          const summary = (c.summary ?? '').toLowerCase();
+          const summary = `${(c.summary ?? '').toLowerCase()} ${(c.body ?? '').toLowerCase()}`;
           let score = 0;
           for (const t of terms) {
-            if (title.includes(t)) score += 3; // title hits weigh most
-            else if (hay.includes(t)) score += 1;
+            // Whole-word matches count for far more than substrings: searching
+            // "hand tracking" should not rank "handwriting" above a hand-tracking
+            // paper.
+            const word = new RegExp(`\\b${t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
+            if (word.test(title)) score += 4;
+            else if (title.includes(t)) score += 1.5;
+            else if (word.test(hay)) score += 1.5;
+            else if (hay.includes(t)) score += 0.5;
             // A summary hit is weak on its own but breaks ties sensibly and lets
             // topic questions ("hand tracking") reach papers that never say it
             // in the title.
-            if (summary.includes(t)) score += 0.5;
+            if (word.test(summary)) score += 0.75;
+            else if (summary.includes(t)) score += 0.2;
           }
+          // The six research-area pages are the canonical overview of each topic,
+          // so nudge them above any single paper that happens to share wording.
+          if (c.section === 'Research') score *= 1.4;
           return { c, score };
         })
         .filter((x) => x.score > 0)
@@ -457,7 +633,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     // Find the lab member a query is asking about. Returns the best name match and
     // whether every word of their name appears in the query (a confident full match).
     function findPerson(query: string): { person: PersonFact; full: boolean } | null {
-      const qTokens = new Set((query.toLowerCase().match(/[a-z0-9]+/g) ?? []));
+      const qTokens = new Set(query.toLowerCase().match(/[a-z0-9]+/g) ?? []);
       if (qTokens.size === 0) return null;
       let best: { person: PersonFact; matched: number; total: number } | null = null;
       for (const person of peopleFacts) {
@@ -516,6 +692,70 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     // the best-matching item, speak its summary as a short highlight, and only
     // then offer links underneath for readers who want the full page.
 
+    /**
+     * Match a "what is X?" question against the glossary. Longer terms are tried
+     * first so "mixed reality" wins over the bare alias "mr".
+     */
+    function findTerms(query: string): GlossaryTerm[] {
+      const q = ` ${query
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .replace(/\s+/g, ' ')} `;
+      const hits: { term: GlossaryTerm; len: number }[] = [];
+      for (const g of glossary) {
+        let bestLen = 0;
+        for (const alias of [g.term, ...g.aliases]) {
+          const a = alias
+            .toLowerCase()
+            .replace(/[^a-z0-9\s]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+          if (!a || !q.includes(` ${a} `)) continue;
+          bestLen = Math.max(bestLen, a.length);
+        }
+        if (bestLen > 0) hits.push({ term: g, len: bestLen });
+      }
+      // "What is the difference between AR, VR and MR?" legitimately matches three
+      // terms — answer them all, longest (most specific) match first.
+      return hits
+        .sort((a, b) => b.len - a.len)
+        .map((h) => h.term)
+        .slice(0, 3);
+    }
+
+    /**
+     * Pick the sentences from an item's text that actually answer the question,
+     * rather than always quoting the opening. Sentences are scored by how many of
+     * the query's words they contain; the best one is returned with its neighbour
+     * for context. Falls back to the stored summary when nothing matches.
+     */
+    function bestPassage(item: ContentItem, query: string): string {
+      const source =
+        item.body && item.body.length > (item.summary ?? '').length ? item.body : item.summary;
+      if (!source) return item.summary ?? '';
+      const terms = tokenize(query);
+      const sentences = source.split(/(?<=[.!?])\s+/).filter((s) => s.trim().length > 20);
+      if (terms.length === 0 || sentences.length === 0) return item.summary ?? source;
+
+      let bestIdx = -1;
+      let bestScore = 0;
+      sentences.forEach((s, i) => {
+        const low = s.toLowerCase();
+        const score = terms.reduce((acc, t) => acc + (low.includes(t) ? 1 : 0), 0);
+        if (score > bestScore) {
+          bestScore = score;
+          bestIdx = i;
+        }
+      });
+      if (bestIdx < 0) return item.summary ?? sentences[0];
+
+      // The matching sentence plus the following one, capped so answers stay short.
+      let out = sentences[bestIdx];
+      const next = sentences[bestIdx + 1];
+      if (next && (out + ' ' + next).length <= 320) out += ` ${next}`;
+      return out.trim();
+    }
+
     /** Article for a section name, so the lead sentence reads naturally. */
     function describeSection(section: string): string {
       switch (section) {
@@ -539,13 +779,14 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
      * Returns false when there's nothing worth speaking, so the caller can fall
      * back to a plain link list.
      */
-    function answerFromItem(item: ContentItem, related: ContentItem[]): boolean {
-      if (!item.summary) return false;
+    function answerFromItem(item: ContentItem, related: ContentItem[], query: string): boolean {
+      const passage = bestPassage(item, query);
+      if (!passage) return false;
 
       const lead = `${item.title} — ${describeSection(item.section)}.`;
       const parts = [lead];
       if (item.meta) parts.push(`(${item.meta})`);
-      parts.push(item.summary);
+      parts.push(passage);
       addBubble('bot', parts.join(' '), true);
 
       const links: { title: string; section?: string; href: string }[] = [
@@ -605,15 +846,43 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
         return 'answer';
       }
 
+      // Intent: a definition question ("what is AR?", "explain mixed reality").
+      // Answered immediately from the glossary; the lab page goes underneath.
+      // Runs before the person lookup so short names can't hijack a term, but
+      // only when the phrasing really is a definition request.
+      const asksDefinition =
+        /\b(what|whats|what's|define|definition|meaning|means|mean|explain|difference|stand for|about)\b/i.test(
+          query,
+        ) || query.trim().split(/\s+/).length <= 3;
+      // A bare "Mr Ramani" must not be read as a request to define "MR".
+      if (asksDefinition && !findPerson(query)) {
+        const terms = findTerms(query);
+        if (terms.length > 0) {
+          addBubble('bot', terms.map((t) => `${t.term}: ${t.answer}`).join('\n\n'), true);
+          const seen = new Set<string>();
+          const links: { title: string; section?: string; href: string }[] = [];
+          for (const t of terms) {
+            if (!t.relatedHref || seen.has(t.relatedHref)) continue;
+            seen.add(t.relatedHref);
+            links.push({
+              title: `How we work on this: ${t.relatedTitle}`,
+              section: 'Research',
+              href: t.relatedHref,
+            });
+          }
+          if (links.length) addLinks(links);
+          return 'answer';
+        }
+      }
+
       const navByLabel = (label: string) =>
         navItems.find((n) => n.label.toLowerCase() === label.toLowerCase());
 
       // Intent: a question about a specific lab member — answer directly.
       // Fires on a confident full-name match, or on any "who is / tell me about /
       // bio / profile" phrasing that also names someone in the lab.
-      const asksAboutPerson = /\bwho\b|tell me about|\bbio\b|\bprofile\b|\bwork(s|ing)?\s+on\b/i.test(
-        query,
-      );
+      const asksAboutPerson =
+        /\bwho\b|tell me about|\bbio\b|\bprofile\b|\bwork(s|ing)?\s+on\b/i.test(query);
       const personMatch = findPerson(query);
       if (personMatch && (personMatch.full || asksAboutPerson)) {
         answerPerson(personMatch.person);
@@ -625,7 +894,9 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       // the word "research".
       if (
         /\b(research|work|working|topic|area|focus|study|studies)\b/i.test(query) &&
-        /\b(what|which|kind|kinds|type|types|tell|describe|list|overview|areas?|about)\b/i.test(query) &&
+        /\b(what|which|kind|kinds|type|types|tell|describe|list|overview|areas?|about)\b/i.test(
+          query,
+        ) &&
         labFacts.areas.length > 0 &&
         !findPerson(query)
       ) {
@@ -640,7 +911,8 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
           .slice(0, mode === 'detailed' ? 6 : 4)
           .map((c) => ({ title: c.title, section: c.section, href: c.href }));
         const researchNav = navByLabel('Research') ?? navByLabel('Projects');
-        if (researchNav) areaLinks.push({ title: 'All research areas', section: '', href: researchNav.href });
+        if (researchNav)
+          areaLinks.push({ title: 'All research areas', section: '', href: researchNav.href });
         addLinks(areaLinks);
         return 'answer';
       }
@@ -653,7 +925,10 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
         !/\b(paper|publication|wrote|author)/i.test(query) &&
         peopleFacts.length > 0
       ) {
-        const names = peopleFacts.slice(0, 5).map((p) => p.name).join(', ');
+        const names = peopleFacts
+          .slice(0, 5)
+          .map((p) => p.name)
+          .join(', ');
         const more = peopleFacts.length > 5 ? `, and ${peopleFacts.length - 5} more` : '';
         addBubble(
           'bot',
@@ -666,7 +941,10 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       }
 
       // Intent: what/who is the lab — describe it and point to About.
-      if (/\b(what|who|tell|about|describe)\b/i.test(query) && /\b(lab|cdl|convergence|you|this|research)\b/i.test(query)) {
+      if (
+        /\b(what|who|tell|about|describe)\b/i.test(query) &&
+        /\b(lab|cdl|convergence|you|this|research)\b/i.test(query)
+      ) {
         if (labFacts.description) {
           const scale = labFacts.peopleCount
             ? ` We're ${labFacts.peopleCount} people with ${labFacts.publicationCount} publications.`
@@ -683,11 +961,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
         const recent = labFacts.recentPapers.length
           ? ` Recent ones include ${labFacts.recentPapers.join('; ')}.`
           : '';
-        addBubble(
-          'bot',
-          `The lab lists ${labFacts.publicationCount} publications.${recent}`,
-          true,
-        );
+        addBubble('bot', `The lab lists ${labFacts.publicationCount} publications.${recent}`, true);
         const pubs = navByLabel('Publications');
         if (pubs) addLinks([{ title: 'Publications', href: pubs.href }]);
         return 'answer';
@@ -706,8 +980,8 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       thinking.remove();
 
       // Preferred path: speak a highlight from the best match, links underneath.
-      const best = found.find((r) => r.summary);
-      if (best && answerFromItem(best, found)) return 'answer';
+      const best = found.find((r) => r.summary || r.body);
+      if (best && answerFromItem(best, found, query)) return 'answer';
 
       // Nothing had a written summary — fall back to a link list.
       const results = found.slice(0, mode === 'detailed' ? 8 : 4);
@@ -722,7 +996,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
 
       addBubble(
         'bot',
-        `Sorry, I don't have information about that. I can only answer questions about the Convergence Design Lab — our people, publications, research projects, and courses. Try rephrasing your question.`,
+        `I don't have anything on that yet. I answer from what's written on this site — our ${labFacts.peopleCount} lab members, ${labFacts.publicationCount} publications, ${labFacts.areas.length} research areas, and our courses — plus definitions of terms like AR, VR, MR, and geometric deep learning. Try naming a person, a paper, or a topic.`,
       );
       return 'none';
     }
@@ -996,12 +1270,11 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
     text-align: center;
     gap: 14px;
     padding: 40px 32px;
-    background:
-      radial-gradient(
-        circle at 50% 22%,
-        color-mix(in srgb, var(--purdue-gold) 22%, transparent) 0%,
-        transparent 62%
-      );
+    background: radial-gradient(
+      circle at 50% 22%,
+      color-mix(in srgb, var(--purdue-gold) 22%, transparent) 0%,
+      transparent 62%
+    );
   }
 
   #assistant-hero-badge {
@@ -1072,6 +1345,9 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   :global(.assistant-msg) {
     max-width: 100%;
     word-wrap: break-word;
+    /* Answers are set with textContent, so blank lines between definitions only
+       render as paragraph breaks if we preserve them. */
+    white-space: pre-line;
     /* each message animates in like an incoming text message */
     animation: assistant-pop 0.18s ease-out;
   }

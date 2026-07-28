@@ -1,0 +1,100 @@
+# Glossary — direct answers for the site assistant.
+#
+# The assistant has no AI model behind it; it can only say things that are
+# written down somewhere. This file is where "what is X?" answers live.
+#
+# Each entry:
+#   term:     the headword, shown in the answer
+#   aliases:  other spellings the visitor might type (matched case-insensitively)
+#   answer:   the immediate reply — keep it to 1–3 plain sentences
+#   related:  optional slug of a research area in src/content/projects, so the
+#             assistant can link "read more" to the matching lab page
+#
+# Add an entry whenever visitors ask something the site can't already answer.
+
+- term: Augmented Reality (AR)
+  aliases: [ar, augmented reality]
+  answer: >-
+    Augmented Reality overlays digital content — images, text, 3D models — on top of
+    the real world you can still see, usually through a headset, phone, or smart
+    glasses. The physical room stays visible; the virtual parts are added to it.
+  related: ar-vr-mr
+
+- term: Virtual Reality (VR)
+  aliases: [vr, virtual reality]
+  answer: >-
+    Virtual Reality replaces what you see with a fully computer-generated environment.
+    Wearing a VR headset, you no longer see the real room at all, and the scene updates
+    as you move your head and hands.
+  related: ar-vr-mr
+
+- term: Mixed Reality (MR)
+  aliases: [mr, mixed reality]
+  answer: >-
+    Mixed Reality goes a step beyond AR: virtual objects are not just drawn over the
+    real world, they are anchored to it and can be occluded by real surfaces and
+    interacted with as if they were physically present in the room.
+  related: ar-vr-mr
+
+- term: Extended Reality (XR)
+  aliases: [xr, extended reality, immersive technology, spatial computing]
+  answer: >-
+    XR is the umbrella term covering AR, VR, and MR together — any technology that
+    blends digital content with your perception of space. Spatial computing is a
+    closely related term for software that treats the room around you as its canvas.
+  related: ar-vr-mr
+
+- term: Human-Computer Interaction (HCI)
+  aliases: [hci, human computer interaction, human-computer interaction]
+  answer: >-
+    HCI is the research field that studies how people use computers and how to design
+    systems around human abilities and needs. It combines computer science, design,
+    and psychology, and it is the field most of this lab's work is published in.
+
+- term: Computer Vision
+  aliases: [computer vision, cv, machine vision]
+  answer: >-
+    Computer vision is teaching computers to interpret images and video — recognising
+    objects, tracking hands and bodies, estimating where things are in 3D space. It is
+    what lets an AR headset understand the room it is looking at.
+  related: ai-computer-vision
+
+- term: Large Language Model (LLM)
+  aliases: [llm, large language model, gpt, generative ai]
+  answer: >-
+    A large language model is an AI system trained on huge amounts of text to predict
+    and generate language. The lab uses LLMs to build coaching and tutoring agents that
+    give learners adaptive, conversational feedback.
+  related: ai-computer-vision
+
+- term: Geometric Deep Learning
+  aliases: [geometric deep learning, gdl, point cloud, point clouds, mesh learning, 3d deep learning]
+  answer: >-
+    Geometric deep learning trains neural networks directly on 3D data — point clouds,
+    meshes, and signed distance fields — instead of flat images. That makes it suited
+    to tasks like shape completion, part segmentation, and matching sketches to 3D models.
+  related: geometric-deep-learning
+
+- term: Human-Shape Interaction
+  aliases: [human shape interaction, human-shape interaction, sketch-based modeling, mid-air interaction]
+  answer: >-
+    Human-shape interaction is this lab's term for letting people create and reshape 3D
+    geometry with natural input — sketching, mid-air hand motion, pen and touch —
+    rather than typing parameters into menus.
+  related: human-shape-interaction
+
+- term: Digital Twin
+  aliases: [digital twin, digital twins]
+  answer: >-
+    A digital twin is a live virtual copy of a real machine, product, or process, kept in
+    sync with sensor data so it can be monitored, simulated, and optimised without
+    touching the physical thing.
+  related: smart-product-design
+
+- term: Design Learning
+  aliases: [design learning, design education, engineering design education]
+  answer: >-
+    Design learning is the study of how people learn to design, and how tools, curricula,
+    and communities can teach design skills at scale — from K-12 maker programmes to
+    AI-assisted design coaching in university courses.
+  related: design-learning
