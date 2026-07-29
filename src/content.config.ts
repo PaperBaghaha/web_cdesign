@@ -132,6 +132,12 @@ const people = defineCollection({
     importance: z.number().optional().default(999),
     /** 'current' | 'alumni' */
     group: z.enum(['current', 'alumni']).optional().default('current'),
+    /**
+     * Which block of the current roster a member belongs to. Graduate
+     * researchers are listed first, undergraduates in their own block below,
+     * separated by a rule. Ignored for alumni.
+     */
+    tier: z.enum(['grad', 'undergrad']).optional().default('grad'),
     /** Email address, shown on the profile page. */
     email: z.string().email().optional(),
     /** Alternate name spellings used in papers.bib (e.g. a maiden name). */

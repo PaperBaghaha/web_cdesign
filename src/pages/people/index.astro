@@ -30,6 +30,17 @@ if (leads.length === 0 && current.length > 0) leads = [current[0]];
 const leadIds = new Set(leads.map((p) => p.id));
 const members = current.filter((p) => !leadIds.has(p.id));
 
+// Undergraduates get their own block under a rule, so the graduate roster above
+// stays a like-for-like list. `members` still holds both, because the
+// click-to-open popup data is built from it.
+const gradMembers = members.filter((p) => p.data.tier !== 'undergrad');
+const undergradMembers = members.filter((p) => p.data.tier === 'undergrad');
+
+const rosterBlocks = [
+  { heading: null as string | null, list: gradMembers },
+  { heading: 'Undergraduate Researchers', list: undergradMembers },
+].filter((b) => b.list.length > 0);
+
 // Split a role on "·" so the first segment reads as a title eyebrow.
 const splitRole = (role: string) => {
   const parts = role.split('·').map((s) => s.trim());
@@ -192,53 +203,70 @@ const modalData = Object.fromEntries(
           })}
         </div>
 
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {members.map((person, i) => {
-            const pubs = publicationCount(person.data.name, bibEntries, person.data.aliases);
-            return (
-              <div
-                class="person-card text-center"
-                data-reveal
-                data-person-id={person.id}
-                role="button"
-                tabindex="0"
-                aria-haspopup="dialog"
-                aria-label={`View details for ${person.data.name}`}
-                style={`--reveal-delay: ${i * 0.04}s`}
-              >
-                <div class="avatar-wrap">
-                  {person.data.photo ? (
-                    <img
-                      src={withBase(person.data.photo)}
-                      alt={person.data.name}
-                      loading="lazy"
-                      width="120"
-                      height="120"
-                    />
-                  ) : (
-                    <div class="avatar-fallback" aria-hidden="true">
-                      {person.data.name.charAt(0)}
+        {/*
+          Two blocks from one copy of the card markup: graduate researchers, then
+          undergraduates under a rule. A block with nobody in it renders nothing,
+          so the undergraduate heading only appears once someone is listed.
+        */}
+        {rosterBlocks.map((block) => (
+          <Fragment>
+            {block.heading && (
+              <h3 class="roster-divider">
+                {block.heading}
+                <span class="roster-count">{block.list.length}</span>
+              </h3>
+            )}
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {block.list.map((person, i) => {
+                const pubs = publicationCount(person.data.name, bibEntries, person.data.aliases);
+                return (
+                  <div
+                    class="person-card text-center"
+                    data-reveal
+                    data-person-id={person.id}
+                    role="button"
+                    tabindex="0"
+                    aria-haspopup="dialog"
+                    aria-label={`View details for ${person.data.name}`}
+                    style={`--reveal-delay: ${i * 0.04}s`}
+                  >
+                    <div class="avatar-wrap">
+                      {person.data.photo ? (
+                        <img
+                          src={withBase(person.data.photo)}
+                          alt={person.data.name}
+                          loading="lazy"
+                          width="120"
+                          height="120"
+                        />
+                      ) : (
+                        <div class="avatar-fallback" aria-hidden="true">
+                          {person.data.name.charAt(0)}
+                        </div>
+                      )}
+                      {pubs > 0 && (
+                        <span class="pub-badge" title={`${pubs} publications`}>
+                          {pubs}
+                        </span>
+                      )}
                     </div>
-                  )}
-                  {pubs > 0 && (
-                    <span class="pub-badge" title={`${pubs} publications`}>
-                      {pubs}
-                    </span>
-                  )}
-                </div>
 
-                <h3 class="person-name">{person.data.name}</h3>
-                <p class="person-role">
-                  {person.data.role}
-                  {person.data.major && <span class="person-field"> · {person.data.major}</span>}
-                </p>
-                <span class="person-cta" aria-hidden="true">
-                  View details →
-                </span>
-              </div>
-            );
-          })}
-        </div>
+                    <h3 class="person-name">{person.data.name}</h3>
+                    <p class="person-role">
+                      {person.data.role}
+                      {person.data.major && (
+                        <span class="person-field"> · {person.data.major}</span>
+                      )}
+                    </p>
+                    <span class="person-cta" aria-hidden="true">
+                      View details →
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </Fragment>
+        ))}
       </section>
     )
   }
@@ -775,6 +803,36 @@ const modalData = Object.fromEntries(
   .person-card[data-person-id]:focus-visible {
     outline: 2px solid var(--global-theme-color);
     outline-offset: 3px;
+  }
+
+  /* Rule between roster blocks (e.g. above the undergraduate grid) */
+  .roster-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 2.75rem 0 1.5rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--global-divider-color);
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--global-text-color-light);
+  }
+
+  .roster-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.4rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--global-theme-color) 18%, transparent);
+    color: var(--global-theme-color);
+    font-size: 0.75rem;
+    letter-spacing: 0;
   }
 
   /* "View details →" call-to-action shown on each card */
