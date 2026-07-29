@@ -83,26 +83,6 @@ const glossary = ((yaml.load(glossaryRaw) ?? []) as GlossaryEntry[]).map((g) => 
   };
 });
 
-// Who built the site — see site.credit. The assistant is the only place this
-// appears; it answers both "who made this site" and "who is <name>".
-const creditProfile = site.credit.builder
-  ? {
-      name: site.credit.builder,
-      role: site.credit.role,
-      bio: site.credit.bio,
-      aliases: site.credit.aliases,
-      /** Reply to "who made this website?" — the bio would only repeat this. */
-      builtAnswer: `This website was designed and built by ${site.credit.builder}${site.credit.role ? `, ${site.credit.role}` : ''}.`,
-      /** Reply to "who is <name>?" or to the bare name. */
-      whoAnswer: [
-        `${site.credit.builder}${site.credit.role ? ` — ${site.credit.role}` : ''}.`,
-        site.credit.bio,
-      ]
-        .filter(Boolean)
-        .join(' '),
-    }
-  : null;
-
 const logoIcon = `${base}/assets/img/cdl-logo-icon.png`;
 const assistantName = 'CDL AI Assistant';
 const welcomeHeading = `Welcome to ${assistantName}! How can I help you today?`;
@@ -117,7 +97,6 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   data-people-facts={JSON.stringify(peopleFacts)}
   data-lab-facts={JSON.stringify(labFacts)}
   data-glossary={JSON.stringify(glossary)}
-  data-credit={JSON.stringify(creditProfile)}
   data-pagefind-base={base}
   data-email={site.author.email}
   data-author={site.author.name}
@@ -320,15 +299,6 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
         '{"name":"","description":"","publicationCount":0,"peopleCount":0,"areas":[],"recentPapers":[]}',
     );
     const glossary: GlossaryTerm[] = JSON.parse(root.dataset.glossary ?? '[]');
-    type Credit = {
-      name: string;
-      role: string;
-      bio: string;
-      aliases: string[];
-      builtAnswer: string;
-      whoAnswer: string;
-    };
-    const credit: Credit | null = JSON.parse(root.dataset.credit ?? 'null');
     const pagefindBase = root.dataset.pagefindBase ?? '';
     const email = root.dataset.email ?? '';
     const author = root.dataset.author ?? '';
@@ -754,48 +724,6 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       if (/^(how are you|hows it going|how do you do|whats up)$/.test(cleaned)) {
         addBubble('bot', `I'm good, thanks! How can I help you today?`);
         return 'smalltalk';
-      }
-
-      // Intent: who built this website. Answered only when asked — the credit
-      // appears nowhere else on the site. Needs both a maker verb and a word
-      // meaning "this website", so "who wrote this paper" doesn't trigger it.
-      // Matched by explicit phrasing rather than loose keywords: "design" and
-      // "build" are everyday words on a design-lab site, so "do you work on
-      // design?" must not be read as a question about the site's author.
-      const MAKER =
-        '(made|make|built|build|created|create|designed|design|developed|develop|coded|code|wrote|writes)';
-      const SITE = '(web ?site|site|web ?page|page|portfolio|this web ?site)';
-      const asksWhoBuiltSite = [
-        new RegExp(`\\bwho\\b[^?.!]{0,30}\\b${MAKER}\\b[^?.!]{0,20}\\b${SITE}\\b`, 'i'),
-        new RegExp(`\\bwho\\b[^?.!]{0,20}\\b${MAKER}\\s+(this|it|you)\\b`, 'i'),
-        /\bwho(\s+is|'s|s)?\s+(the\s+)?(web\s?)?(developer|designer|creator|builder|webmaster|author)\b/i,
-        /\bwho(\s+is|'s|s)?\s+behind\s+(this|the)\b/i,
-        new RegExp(`\\b${SITE}\\b[^?.!]{0,20}\\b(was\\s+)?${MAKER}\\s+by\\b`, 'i'),
-      ].some((re) => re.test(query));
-      if (credit && asksWhoBuiltSite) {
-        addBubble('bot', credit.builtAnswer, true);
-        return 'answer';
-      }
-
-      // Intent: the builder's name itself — "who is Dang Nguyen?", or just
-      // "dang nguyen" typed on its own. The full name is recognised anywhere in
-      // a question; a single-word alias only counts when it's the whole query,
-      // so an ordinary sentence that happens to contain the word can't trip it.
-      if (credit) {
-        const norm = query
-          .toLowerCase()
-          .replace(/[^a-z0-9\s]/g, ' ')
-          .replace(/\s+/g, ' ')
-          .trim();
-        const namesTheBuilder = [credit.name.toLowerCase(), ...credit.aliases].some((alias) => {
-          const a = alias.toLowerCase().trim();
-          if (!a) return false;
-          return a.includes(' ') ? ` ${norm} `.includes(` ${a} `) : norm === a;
-        });
-        if (namesTheBuilder) {
-          addBubble('bot', credit.whoAnswer, true);
-          return 'answer';
-        }
       }
 
       // Intent: contact / how to reach the author.
