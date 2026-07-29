@@ -270,8 +270,15 @@ export const site = {
   credit: {
     /** Name given in the answer. Leave empty to disable the response entirely. */
     builder: 'Dang Nguyen',
-    /** Optional extra sentence appended after the name. Leave empty to omit. */
-    note: '',
+    /** Title shown after the name, e.g. "Web developer & designer". */
+    role: 'Web developer and designer',
+    /** A sentence or two of profile, used when someone asks who this person is. */
+    bio: 'He designed and built this website — the layout, the visual design, the publication system, and this assistant.',
+    /**
+     * Other ways a visitor might type the name (lowercase). Typing any of these
+     * on its own, or asking "who is …", returns the profile.
+     */
+    aliases: ['dang nguyen', 'nguyen dang', 'dang', 'nguyen'],
   },
 
   // ─── Giscus comments ──────────────────────────────────────────────────────
