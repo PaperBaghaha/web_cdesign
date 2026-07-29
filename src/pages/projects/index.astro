@@ -114,6 +114,7 @@ const hasCategories = categories.length > 0;
   // makes this work while site.features.viewTransitions is off: with no
   // <ClientRouter /> on the page, astro:page-load never fires at all.
   initCards();
+  loadGithubStars();
   document.addEventListener('astro:page-load', () => {
     initCards();
     loadGithubStars();
