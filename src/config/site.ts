@@ -258,6 +258,22 @@ export const site = {
     assistant: true,
   },
 
+  // ─── Site credit ──────────────────────────────────────────────────────────
+  // Deliberately not rendered anywhere on the site. The assistant is the only
+  // surface that reads this, and only when a visitor asks who built the site or
+  // asks about this person by name — the roster pages stay lab members only.
+
+  credit: {
+    builder: 'Dang Nguyen',
+    role: 'Website contributor — web design and graphics for CDL',
+    bio: 'Built and designs the Convergence Design Lab website, covering the web front end and the lab’s graphics.',
+    email: 'nguyenbaodang382009@gmail.com',
+    /** LinkedIn profile URL. Leave empty to omit the link. */
+    linkedin: '',
+    /** Other spellings a visitor might type when asking about him. */
+    aliases: ['dang nguyen', 'nguyen bao dang', 'bao dang', 'dang'],
+  },
+
   // ─── Giscus comments ──────────────────────────────────────────────────────
   // Follow setup at https://giscus.app/ then fill in the values below.
 

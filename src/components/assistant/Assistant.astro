@@ -83,6 +83,19 @@ const glossary = ((yaml.load(glossaryRaw) ?? []) as GlossaryEntry[]).map((g) => 
   };
 });
 
+// ── Site credit — assistant-only ───────────────────────────────────────────────
+// Not part of the people collection on purpose: this is the site's builder, not a
+// lab member, so he appears nowhere on the roster. Only surfaced when a visitor
+// asks who made the site, or asks about him by name.
+const creditProfile = {
+  name: site.credit.builder,
+  role: site.credit.role,
+  bio: site.credit.bio.replace(/\s+/g, ' ').trim(),
+  email: site.credit.email,
+  linkedin: site.credit.linkedin,
+  aliases: site.credit.aliases.map((a) => a.toLowerCase()),
+};
+
 const logoIcon = `${base}/assets/img/cdl-logo-icon.png`;
 const assistantName = 'CDL AI Assistant';
 const welcomeHeading = `Welcome to ${assistantName}! How can I help you today?`;
@@ -97,6 +110,7 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   data-people-facts={JSON.stringify(peopleFacts)}
   data-lab-facts={JSON.stringify(labFacts)}
   data-glossary={JSON.stringify(glossary)}
+  data-credit={JSON.stringify(creditProfile)}
   data-pagefind-base={base}
   data-email={site.author.email}
   data-author={site.author.name}
@@ -299,6 +313,18 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
         '{"name":"","description":"","publicationCount":0,"peopleCount":0,"areas":[],"recentPapers":[]}',
     );
     const glossary: GlossaryTerm[] = JSON.parse(root.dataset.glossary ?? '[]');
+
+    type Credit = {
+      name: string;
+      role: string;
+      bio: string;
+      email: string;
+      linkedin: string;
+      aliases: string[];
+    };
+    const credit: Credit = JSON.parse(
+      root.dataset.credit ?? '{"name":"","role":"","bio":"","email":"","linkedin":"","aliases":[]}',
+    );
     const pagefindBase = root.dataset.pagefindBase ?? '';
     const email = root.dataset.email ?? '';
     const author = root.dataset.author ?? '';
@@ -550,6 +576,39 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       addLinks([{ title: `${p.name}'s profile`, href: p.href, section: 'People' }]);
     }
 
+    /**
+     * The site's builder. He isn't on the roster, so there's no profile page to
+     * link — the contact details are the whole answer.
+     */
+    function answerCredit() {
+      let msg = credit.name;
+      if (credit.role) msg += ` — ${credit.role}`;
+      msg += '.';
+      if (credit.bio) msg += ` ${credit.bio}`;
+      addBubble('bot', msg, true);
+      const links: { title: string; section?: string; href: string }[] = [];
+      if (credit.email) {
+        links.push({ title: credit.email, href: `mailto:${credit.email}`, section: 'Email' });
+      }
+      if (credit.linkedin) {
+        links.push({ title: 'LinkedIn', href: credit.linkedin, section: 'Profile' });
+      }
+      if (links.length) addLinks(links);
+    }
+
+    /** True when the query names the builder — he has no roster entry to match against. */
+    function mentionsCredit(query: string): boolean {
+      if (!credit.name) return false;
+      // Padded so an alias only matches whole words: "dang" must not fire on
+      // "dangerous" or "danger".
+      const q = ` ${query
+        .toLowerCase()
+        .replace(/[^a-z\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()} `;
+      return credit.aliases.some((a) => a.length >= 4 && q.includes(` ${a} `));
+    }
+
     async function search(query: string) {
       const local = localSearch(query);
 
@@ -724,6 +783,25 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       if (/^(how are you|hows it going|how do you do|whats up)$/.test(cleaned)) {
         addBubble('bot', `I'm good, thanks! How can I help you today?`);
         return 'smalltalk';
+      }
+
+      // Intent: who built the site. Runs before the contact and person routes so
+      // "who made this website" isn't swallowed by the lab-email answer.
+      if (
+        /\b(who|what|which)\b/i.test(query) &&
+        /\b(built|build|builds|made|make|makes|created?|creates|designed?|designs|developed?|develops|coded?|codes|wrote|maintains?|behind|author(ed)?)\b/i.test(
+          query,
+        ) &&
+        /\b(site|website|web\s?site|webpage|web\s?page|page|this)\b/i.test(query)
+      ) {
+        answerCredit();
+        return 'answer';
+      }
+
+      // Intent: asked about the builder by name.
+      if (mentionsCredit(query)) {
+        answerCredit();
+        return 'answer';
       }
 
       // Intent: contact / how to reach the author.
