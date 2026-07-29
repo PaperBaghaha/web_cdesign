@@ -402,6 +402,12 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
         const a = document.createElement('a');
         a.className = 'assistant-result';
         a.href = r.href;
+        // Off-site results open in a new tab, so a visitor doesn't lose the chat
+        // thread by following one. noopener/noreferrer per the usual precaution.
+        if (/^https?:/i.test(r.href)) {
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+        }
         const t = document.createElement('span');
         t.className = 'assistant-result-title';
         t.textContent = r.title;

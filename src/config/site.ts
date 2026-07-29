@@ -269,7 +269,7 @@ export const site = {
     bio: 'Built and designs the Convergence Design Lab website, covering the web front end and the lab’s graphics.',
     email: 'nguyenbaodang382009@gmail.com',
     /** LinkedIn profile URL. Leave empty to omit the link. */
-    linkedin: '',
+    linkedin: 'https://www.linkedin.com/in/dang-nguyen-434240289/',
     /**
      * Photo shown beside the answer, relative to `public/`. Leave empty to omit
      * the avatar — a missing file would otherwise render as a broken image.
