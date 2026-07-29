@@ -258,6 +258,22 @@ export const site = {
     assistant: true,
   },
 
+  // ─── Site credit ──────────────────────────────────────────────────────────
+  /**
+   * Who built this website. Deliberately not rendered anywhere on the site —
+   * there is no footer line and no About entry for it. The assistant states it
+   * only when a visitor explicitly asks who made / built / designed the site.
+   *
+   * Unlisted, not secret: like every other config value it ships in the page
+   * source, so anyone reading the HTML can find it.
+   */
+  credit: {
+    /** Name given in the answer. Leave empty to disable the response entirely. */
+    builder: 'Dang Nguyen',
+    /** Optional extra sentence appended after the name. Leave empty to omit. */
+    note: '',
+  },
+
   // ─── Giscus comments ──────────────────────────────────────────────────────
   // Follow setup at https://giscus.app/ then fill in the values below.
 
