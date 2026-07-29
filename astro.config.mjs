@@ -112,6 +112,7 @@ export default defineConfig({
         ],
         'fa-solid': [
           'envelope',
+          'copy',
           'file-pdf',
           'rss',
           'moon',

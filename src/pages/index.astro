@@ -1,5 +1,5 @@
 ---
-import SocialLinks from '@components/SocialLinks.astro';
+import { Icon } from 'astro-icon/components';
 import { site } from '@config/site';
 import Base from '@layouts/Base.astro';
 import { withBase } from '@utils/base';
@@ -165,8 +165,27 @@ const renderedAnnouncements = await Promise.all(
               <span class="stat-l">Years Active</span>
             </a>
           </div>
+          <!--
+            The contact address is spelled out rather than hidden behind a bare
+            envelope icon: a naked `mailto:` icon looks broken on any machine
+            with no mail client set up, since clicking it appears to do nothing.
+            The copy button is the fallback for exactly that case.
+          -->
           <div class="hero-social">
-            <SocialLinks />
+            <a class="hero-contact" href={`mailto:${site.socials.email}`}>
+              <Icon name="fa-solid:envelope" width={16} height={16} />
+              <span>{site.socials.email}</span>
+            </a>
+            <button
+              type="button"
+              class="hero-copy"
+              data-copy-email={site.socials.email}
+              aria-label="Copy email address"
+              title="Copy email address"
+            >
+              <Icon name="fa-solid:copy" width={14} height={14} />
+              <span class="hero-copy-label">Copy</span>
+            </button>
           </div>
         </div>
 
@@ -835,7 +854,44 @@ const renderedAnnouncements = await Promise.all(
     margin-top: 1.6rem;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     color: var(--color-silver);
+  }
+
+  .hero-contact,
+  .hero-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 7px 13px;
+    border: 1px solid var(--global-divider-color);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--global-text-color) 5%, transparent);
+    color: var(--global-text-color);
+    font-size: 0.9rem;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      border-color 0.15s,
+      background 0.15s,
+      color 0.15s;
+  }
+
+  .hero-contact:hover,
+  .hero-contact:focus-visible,
+  .hero-copy:hover,
+  .hero-copy:focus-visible {
+    border-color: var(--global-theme-color);
+    background: color-mix(in srgb, var(--global-theme-color) 12%, transparent);
+    color: var(--global-theme-color);
+  }
+
+  .hero-copy {
+    font-size: 0.8rem;
+    padding: 7px 11px;
+    color: var(--global-text-color-light);
   }
 
   /* ══ RESEARCH AREAS BAND ════════════════════════════════════════════════ */
@@ -1653,4 +1709,43 @@ const renderedAnnouncements = await Promise.all(
 
   initFeatTilt();
   document.addEventListener('astro:page-load', initFeatTilt);
+
+  // Copy the lab address to the clipboard. This is the path that works when the
+  // visitor has no mail client wired up, where the mailto: link does nothing at
+  // all and so reads as a broken button.
+  function initCopyEmail(): void {
+    document.querySelectorAll<HTMLButtonElement>('[data-copy-email]').forEach((btn) => {
+      if (btn.dataset.copyBound) return;
+      btn.dataset.copyBound = 'true';
+
+      const label = btn.querySelector<HTMLElement>('.hero-copy-label');
+      const original = label?.textContent ?? 'Copy';
+
+      btn.addEventListener('click', async () => {
+        const email = btn.dataset.copyEmail ?? '';
+        try {
+          await navigator.clipboard.writeText(email);
+          if (label) label.textContent = 'Copied';
+        } catch {
+          // Clipboard access can be refused (insecure origin, denied permission).
+          // Select the address instead so the visitor can copy it by hand.
+          const addr = document.querySelector('.hero-contact span');
+          if (addr) {
+            const range = document.createRange();
+            range.selectNodeContents(addr);
+            const sel = window.getSelection();
+            sel?.removeAllRanges();
+            sel?.addRange(range);
+          }
+          if (label) label.textContent = 'Select & copy';
+        }
+        window.setTimeout(() => {
+          if (label) label.textContent = original;
+        }, 1600);
+      });
+    });
+  }
+
+  initCopyEmail();
+  document.addEventListener('astro:page-load', initCopyEmail);
 </script>
