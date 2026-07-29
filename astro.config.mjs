@@ -194,6 +194,14 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      /**
+       * Vite rejects requests whose Host header it doesn't recognise, which
+       * makes a `cloudflared tunnel` preview answer 403 instead of serving the
+       * site. Allow the tunnel domains so a shared preview link works.
+       */
+      allowedHosts: ['.trycloudflare.com', '.ngrok-free.app', '.loca.lt'],
+    },
     resolve: {
       alias: {
         '@components': '/src/components',
