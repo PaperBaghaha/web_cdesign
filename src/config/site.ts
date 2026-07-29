@@ -270,6 +270,11 @@ export const site = {
     email: 'nguyenbaodang382009@gmail.com',
     /** LinkedIn profile URL. Leave empty to omit the link. */
     linkedin: '',
+    /**
+     * Photo shown beside the answer, relative to `public/`. Leave empty to omit
+     * the avatar — a missing file would otherwise render as a broken image.
+     */
+    photo: '/assets/img/credit/dang-nguyen.jpg',
     /** Other spellings a visitor might type when asking about him. */
     aliases: ['dang nguyen', 'nguyen bao dang', 'bao dang', 'dang'],
   },

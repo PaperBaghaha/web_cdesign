@@ -3,6 +3,8 @@ import type { NavItem } from '@config/site';
 import { site } from '@config/site';
 import { buildSearchIndex } from '@utils/searchIndex';
 import { getCollection } from 'astro:content';
+import { existsSync } from 'node:fs';
+
 import yaml from 'js-yaml';
 
 import glossaryRaw from '../../data/glossary.yml?raw';
@@ -87,12 +89,18 @@ const glossary = ((yaml.load(glossaryRaw) ?? []) as GlossaryEntry[]).map((g) => 
 // Not part of the people collection on purpose: this is the site's builder, not a
 // lab member, so he appears nowhere on the roster. Only surfaced when a visitor
 // asks who made the site, or asks about him by name.
+// The photo is checked on disk at build time rather than trusted from config: if
+// the file isn't there the avatar is dropped, instead of shipping a broken image.
+const creditPhotoExists =
+  !!site.credit.photo && existsSync(new URL(`../../../public${site.credit.photo}`, import.meta.url));
+
 const creditProfile = {
   name: site.credit.builder,
   role: site.credit.role,
   bio: site.credit.bio.replace(/\s+/g, ' ').trim(),
   email: site.credit.email,
   linkedin: site.credit.linkedin,
+  photo: creditPhotoExists ? `${base}${site.credit.photo}` : '',
   aliases: site.credit.aliases.map((a) => a.toLowerCase()),
 };
 
@@ -320,10 +328,12 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       bio: string;
       email: string;
       linkedin: string;
+      photo: string;
       aliases: string[];
     };
     const credit: Credit = JSON.parse(
-      root.dataset.credit ?? '{"name":"","role":"","bio":"","email":"","linkedin":"","aliases":[]}',
+      root.dataset.credit ??
+        '{"name":"","role":"","bio":"","email":"","linkedin":"","photo":"","aliases":[]}',
     );
     const pagefindBase = root.dataset.pagefindBase ?? '';
     const email = root.dataset.email ?? '';
@@ -585,7 +595,17 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
       if (credit.role) msg += ` — ${credit.role}`;
       msg += '.';
       if (credit.bio) msg += ` ${credit.bio}`;
-      addBubble('bot', msg, true);
+      const bubble = addBubble('bot', msg, true);
+      if (credit.photo) {
+        const img = document.createElement('img');
+        img.className = 'assistant-credit-photo';
+        img.src = credit.photo;
+        img.alt = credit.name;
+        img.width = 96;
+        img.height = 96;
+        img.loading = 'lazy';
+        bubble.prepend(img);
+      }
       const links: { title: string; section?: string; href: string }[] = [];
       if (credit.email) {
         links.push({ title: credit.email, href: `mailto:${credit.email}`, section: 'Email' });
@@ -1572,6 +1592,18 @@ const disclaimer = `${assistantName} is AI and can make mistakes. It only knows 
   }
 
   /* Copy action under substantive bot answers */
+  /* Avatar above the site-credit answer. Fixed square so a portrait or a
+     landscape crop both land as a circle rather than an oval. */
+  :global(.assistant-credit-photo) {
+    display: block;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 2px solid var(--global-divider-color);
+  }
+
   :global(.assistant-msg-actions) {
     margin-top: 8px;
     display: flex;
