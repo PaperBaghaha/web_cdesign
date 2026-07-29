@@ -1,12 +1,11 @@
 ---
 import type { NavItem } from '@config/site';
 import { site } from '@config/site';
-import { getAuthors, getTitle, getVenue, getYear, parseBibtex } from '@utils/bibtex';
+import { buildSearchIndex } from '@utils/searchIndex';
 import { getCollection } from 'astro:content';
 import yaml from 'js-yaml';
 
 import glossaryRaw from '../../data/glossary.yml?raw';
-import bibRaw from '../../data/papers.bib?raw';
 
 const base = site.base || '';
 
@@ -30,136 +29,24 @@ function flattenNav(items: NavItem[]) {
 
 const navItems = flattenNav(site.navbar.items);
 
-// ── Content index (built at build time; enables title/keyword search in dev too) ──
-// `summary` is what lets the assistant *answer* rather than merely link: it is a
-// short skim of the item, composed at build time. `meta` is a one-line factual
-// header (venue/year, term, role) shown before the skim.
-type SearchItem = {
-  title: string;
-  section: string;
-  href: string;
-  keywords: string;
-  summary?: string;
-  meta?: string;
-  /** Fuller page text. The assistant quotes the sentences that match the question. */
-  body?: string;
-};
-
-/** Trim prose down to a couple of sentences so answers stay skimmable. */
-function skim(text: string | undefined, maxChars = 260): string {
-  if (!text) return '';
-  const clean = text.replace(/\s+/g, ' ').trim();
-  if (clean.length <= maxChars) return clean;
-  const sentences = clean.split(/(?<=[.!?])\s/);
-  let out = '';
-  for (const s of sentences) {
-    if (out && (out + ' ' + s).length > maxChars) break;
-    out = out ? `${out} ${s}` : s;
-  }
-  if (!out) out = clean.slice(0, maxChars);
-  return out.length < clean.length ? `${out.replace(/[.,;:\s]+$/, '')}…` : out;
-}
-
-/**
- * Markdown body → plain sentences the assistant can quote. Strips the syntax that
- * would otherwise be read aloud as gibberish (code fences, images, link markup,
- * headings, HTML tags) and caps the length so the payload stays small.
- */
-function plainBody(md: string | undefined, maxChars = 900): string {
-  if (!md) return '';
-  return md
-    .replace(/```[\s\S]*?```/g, ' ') // fenced code
-    .replace(/`([^`]*)`/g, '$1') // inline code
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ') // images
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // links → their text
-    .replace(/<[^>]+>/g, ' ') // raw HTML
-    .replace(/^\s{0,3}#{1,6}\s+/gm, '') // headings
-    .replace(/^\s{0,3}[-*+]\s+/gm, '') // bullets
-    .replace(/[*_>]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, maxChars);
-}
-
-const posts = (await getCollection('posts'))
-  .filter((p) => !p.data.hidden && !p.data.draft)
-  .map((p): SearchItem => ({
-    title: p.data.title,
-    section: 'Blog',
-    href: `${base}/blog/${p.id}/`,
-    keywords: [...(p.data.tags ?? []), ...(p.data.categories ?? [])].join(' '),
-    summary: skim(p.data.description),
-    meta: p.data.date ? `Blog post, ${p.data.date.getFullYear()}` : 'Blog post',
-    body: plainBody(p.body),
-  }));
-
-const projects = (await getCollection('projects')).map((p): SearchItem => ({
-  title: p.data.title,
-  section: 'Research',
-  href: `${base}/projects/${p.id}/`,
-  keywords: p.data.category ?? '',
-  summary: skim(p.data.description),
-  meta: p.data.category ? `Research area — ${p.data.category}` : 'Research area',
-  body: plainBody(p.body),
-}));
-
-const teaching = (await getCollection('teaching')).map((t): SearchItem => ({
-  title: t.data.title,
-  section: 'Courses',
-  href: `${base}/teaching/`,
-  keywords: [t.data.term ?? '', t.data.code ?? ''].join(' ').trim(),
-  summary: skim(t.data.description),
-  meta: [t.data.code, t.data.term, t.data.institution].filter(Boolean).join(' · '),
-  body: plainBody(t.body),
-}));
-
-// ── Publications — every paper is answerable by title, authors, venue, year ──
-const publications = parseBibtex(bibRaw).map((entry): SearchItem => ({
-  title: getTitle(entry),
-  section: 'Publication',
-  href: `${base}/publications/${entry.key}/`,
-  keywords: [
-    getAuthors(entry),
-    getVenue(entry),
-    String(getYear(entry) || ''),
-    entry.fields.abbr ?? '',
-  ]
-    .filter(Boolean)
-    .join(' '),
-  summary: skim(entry.fields.abstract),
-  body: plainBody(entry.fields.abstract),
-  meta: [getAuthors(entry), getVenue(entry), String(getYear(entry) || '')]
-    .filter(Boolean)
-    .join(' · '),
-}));
-
-// ── People — lab members answerable by name and role/interests ──
-// Sorted by `importance` so the assistant names the PI and senior members first
-// when it introduces the team, rather than whoever is alphabetically first.
-const peopleEntries = (await getCollection('people'))
-  .filter((p) => !p.data.noPage)
-  .sort((a, b) => (a.data.importance ?? 999) - (b.data.importance ?? 999));
-
-const people = peopleEntries.map((p): SearchItem => ({
-  title: p.data.name,
-  section: 'People',
-  href: `${base}/people/${p.id}/`,
-  keywords: [p.data.role ?? '', ...(p.data.interests ?? [])].join(' '),
-  summary: skim(p.data.description),
-  meta: [p.data.role, p.data.major].filter(Boolean).join(' · '),
-  body: plainBody(p.body),
-}));
+// ── Content index — shared with the ⌘K search palette (src/utils/searchIndex.ts)
+// so the two can't drift. `summary`/`body` are what let the assistant *answer*
+// rather than merely link; `meta` is a one-line factual header.
+const siteIndex = await buildSearchIndex();
+const { publications, people, projects } = siteIndex;
+const contentItems = siteIndex.all;
 
 // Rich people facts — let the assistant answer "who is …" directly, not just link.
-const peopleFacts = peopleEntries.map((p) => ({
-  name: p.data.name,
-  role: p.data.role ?? '',
-  description: p.data.description ?? '',
-  interests: p.data.interests ?? [],
-  href: `${base}/people/${p.id}/`,
-}));
-
-const contentItems: SearchItem[] = [...publications, ...people, ...projects, ...posts, ...teaching];
+const peopleFacts = (await getCollection('people'))
+  .filter((p) => !p.data.noPage)
+  .sort((a, b) => (a.data.importance ?? 999) - (b.data.importance ?? 999))
+  .map((p) => ({
+    name: p.data.name,
+    role: p.data.role ?? '',
+    description: p.data.description ?? '',
+    interests: p.data.interests ?? [],
+    href: `${base}/people/${p.id}/`,
+  }));
 
 // ── Lab facts — short direct answers for common "what/who is this lab" questions ──
 const labFacts = {

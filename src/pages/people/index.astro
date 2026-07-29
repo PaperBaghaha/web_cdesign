@@ -232,7 +232,9 @@ const modalData = Object.fromEntries(
                   {person.data.role}
                   {person.data.major && <span class="person-field"> · {person.data.major}</span>}
                 </p>
-                <span class="person-cta" aria-hidden="true">View details →</span>
+                <span class="person-cta" aria-hidden="true">
+                  View details →
+                </span>
               </div>
             );
           })}
@@ -307,27 +309,26 @@ const modalData = Object.fromEntries(
             fill="none"
             stroke="currentColor"
             stroke-width="2"
-            stroke-linecap="round"
-          />
+            stroke-linecap="round"></path>
         </svg>
       </button>
       <div class="pm-head">
         <div class="pm-avatar">
           <img id="pm-photo" alt="" width="96" height="96" hidden />
-          <span id="pm-initial" class="pm-initial" aria-hidden="true" hidden />
-          <span id="pm-badge" class="pm-badge" hidden />
+          <span id="pm-initial" class="pm-initial" aria-hidden="true" hidden></span>
+          <span id="pm-badge" class="pm-badge" hidden></span>
         </div>
         <div class="pm-headtext">
-          <h2 class="pm-name" id="pm-name" />
-          <p class="pm-role" id="pm-role" />
+          <h2 class="pm-name" id="pm-name"></h2>
+          <p class="pm-role" id="pm-role"></p>
         </div>
       </div>
-      <p class="pm-desc" id="pm-desc" hidden />
+      <p class="pm-desc" id="pm-desc" hidden></p>
       <div class="pm-block" id="pm-projects-wrap" hidden>
         <p class="pm-label">Research areas</p>
-        <div class="pm-projects" id="pm-projects" />
+        <div class="pm-projects" id="pm-projects"></div>
       </div>
-      <div class="pm-links" id="pm-links" />
+      <div class="pm-links" id="pm-links"></div>
     </div>
   </div>
 
@@ -408,7 +409,17 @@ const modalData = Object.fromEntries(
     const projWrap = document.getElementById('pm-projects-wrap');
     const projEl = document.getElementById('pm-projects');
     const linksEl = document.getElementById('pm-links');
-    if (!photo || !initial || !badge || !nameEl || !roleEl || !descEl || !projWrap || !projEl || !linksEl)
+    if (
+      !photo ||
+      !initial ||
+      !badge ||
+      !nameEl ||
+      !roleEl ||
+      !descEl ||
+      !projWrap ||
+      !projEl ||
+      !linksEl
+    )
       return;
 
     let lastFocus: HTMLElement | null = null;
@@ -506,9 +517,9 @@ const modalData = Object.fromEntries(
       });
     });
 
-    modal.querySelectorAll('[data-modal-close]').forEach((el) =>
-      el.addEventListener('click', close),
-    );
+    modal
+      .querySelectorAll('[data-modal-close]')
+      .forEach((el) => el.addEventListener('click', close));
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && !modal.hidden) close();
     });

@@ -128,7 +128,27 @@ const items = site.navbar.items;
         })
       }
 
-      <button type="button" class="nav-ai-btn" data-assistant-open aria-label="Open CDL AI Assistant">
+      {
+        site.features.search && (
+          <button data-search-open type="button" class="nav-search" aria-label="Search this site">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="11" cy="11" r="7" />
+              <line x1="16.5" y1="16.5" x2="21" y2="21" />
+            </svg>
+            <span class="nav-search-label">Search</span>
+            <kbd class="nav-search-kbd">
+              <span class="nav-search-cmd">⌘</span>K
+            </kbd>
+          </button>
+        )
+      }
+
+      <button
+        type="button"
+        class="nav-ai-btn"
+        data-assistant-open
+        aria-label="Open CDL AI Assistant"
+      >
         <img src={`${site.base}/assets/img/cdl-logo-icon.png`} alt="" width="512" height="512" />
         <span>CDL AI</span>
       </button>
@@ -136,9 +156,29 @@ const items = site.navbar.items;
       <ThemeToggle />
     </div>
 
-    <!-- Mobile controls (AI + theme + hamburger) -->
+    <!-- Mobile controls (search + AI + theme + hamburger) -->
     <div class="flex items-center gap-2 md:hidden">
-      <button type="button" class="nav-ai-btn nav-ai-btn--compact" data-assistant-open aria-label="Open CDL AI Assistant">
+      {
+        site.features.search && (
+          <button
+            data-search-open
+            type="button"
+            class="nav-search nav-search--compact"
+            aria-label="Search this site"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="11" cy="11" r="7" />
+              <line x1="16.5" y1="16.5" x2="21" y2="21" />
+            </svg>
+          </button>
+        )
+      }
+      <button
+        type="button"
+        class="nav-ai-btn nav-ai-btn--compact"
+        data-assistant-open
+        aria-label="Open CDL AI Assistant"
+      >
         <img src={`${site.base}/assets/img/cdl-logo-icon.png`} alt="" width="512" height="512" />
       </button>
       <ThemeToggle />
@@ -286,6 +326,74 @@ const items = site.navbar.items;
   .nav-ai-btn--compact img {
     width: 26px;
     height: 26px;
+  }
+
+  /* ── Search bar ─────────────────────────────────────────────────────────
+     Looks like an input so visitors recognise it as search, but it's a button:
+     the actual field lives in the ⌘K palette it opens. */
+  .nav-search {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0.35rem;
+    padding: 5px 6px 5px 11px;
+    min-width: 190px;
+    border-radius: 999px;
+    border: 1px solid var(--global-divider-color);
+    background: color-mix(in srgb, var(--global-text-color) 5%, transparent);
+    color: var(--global-text-color-light);
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition:
+      border-color 0.18s ease,
+      background 0.18s ease,
+      color 0.18s ease;
+  }
+  .nav-search:hover,
+  .nav-search:focus-visible {
+    border-color: color-mix(in srgb, var(--global-theme-color) 70%, transparent);
+    background: color-mix(in srgb, var(--global-theme-color) 10%, transparent);
+    color: var(--global-text-color);
+  }
+  .nav-search svg {
+    width: 15px;
+    height: 15px;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  .nav-search-label {
+    flex: 1;
+    text-align: left;
+  }
+  .nav-search-kbd {
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    border: 1px solid var(--global-divider-color);
+    background: var(--global-bg-color);
+    font-family: inherit;
+    font-size: 0.7rem;
+    line-height: 1.4;
+    color: var(--global-text-color-light);
+  }
+  .nav-search-cmd {
+    font-size: 0.78rem;
+  }
+  /* Mobile: icon only, sized to match the other round controls. */
+  .nav-search--compact {
+    min-width: 0;
+    margin: 0;
+    padding: 6px;
+  }
+  .nav-search--compact svg {
+    width: 18px;
+    height: 18px;
   }
 
   /* ── Brand logo ─────────────────────────────────────────────────────── */
@@ -500,13 +608,18 @@ const items = site.navbar.items;
     navbarController = new AbortController();
     const { signal } = navbarController;
 
+    // ── Search hint reads ⌘K on Mac, Ctrl K everywhere else ──────────────
+    if (!navigator.platform.toUpperCase().includes('MAC')) {
+      document.querySelectorAll('.nav-search-cmd').forEach((el) => {
+        el.textContent = 'Ctrl ';
+      });
+    }
+
     // ── AI assistant launch buttons — tell the assistant to open ─────────
     document.querySelectorAll('[data-assistant-open]').forEach((btn) => {
-      btn.addEventListener(
-        'click',
-        () => window.dispatchEvent(new CustomEvent('assistant:open')),
-        { signal },
-      );
+      btn.addEventListener('click', () => window.dispatchEvent(new CustomEvent('assistant:open')), {
+        signal,
+      });
     });
 
     // ── Mobile hamburger ────────────────────────────────────────────────

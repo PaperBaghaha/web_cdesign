@@ -2,8 +2,8 @@
 import SocialLinks from '@components/SocialLinks.astro';
 import { site } from '@config/site';
 import Base from '@layouts/Base.astro';
-import { getBoolField, getTitle, getVenue, getYear, parseBibtex } from '@utils/bibtex';
 import { withBase } from '@utils/base';
+import { getBoolField, getTitle, getVenue, getYear, parseBibtex } from '@utils/bibtex';
 import { getCollection, render } from 'astro:content';
 
 import AboutContent from '../data/about.mdx';
@@ -178,18 +178,20 @@ const renderedAnnouncements = await Promise.all(
           <div class="geo-cross-v"></div>
           <div class="geo-arc"></div>
           <div class="geo-monogram">
-            {/* Three layers: the circle spins one way, the hexagon spins the
-                other way, and the hand sits still in the centre. */}
+            {
+              /* Three layers: the circle spins one way, the hexagon spins the
+                other way, and the hand sits still in the centre. */
+            }
             <svg class="geo-circle" viewBox="0 0 200 200" aria-hidden="true">
-              <circle cx="100" cy="100" r="94" fill="none" stroke="currentColor" stroke-width="3" />
+              <circle cx="100" cy="100" r="94" fill="none" stroke="currentColor" stroke-width="3"
+              ></circle>
             </svg>
             <svg class="geo-hex" viewBox="0 0 200 200" aria-hidden="true">
               <polygon
                 points="100,16 173,58 173,142 100,184 27,142 27,58"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="3"
-              />
+                stroke-width="3"></polygon>
             </svg>
             <img
               class="geo-hand"
@@ -356,7 +358,6 @@ const renderedAnnouncements = await Promise.all(
       </section>
     )
   }
-
 </Base>
 
 <style>
