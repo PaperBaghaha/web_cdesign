@@ -217,6 +217,10 @@ const jsonLd = {
       pre.appendChild(btn);
     });
   }
+  // Run now, and again after a View Transitions swap. The direct call is what
+  // makes this work while site.features.viewTransitions is off: with no
+  // <ClientRouter /> on the page, astro:page-load never fires at all.
+  addCopyButtons();
   document.addEventListener('astro:page-load', addCopyButtons);
 </script>
 
@@ -282,7 +286,18 @@ const jsonLd = {
         Astro renders mermaid code fences as <pre data-language="mermaid">, NOT pre.language-mermaid.
         On each page-load (hard or View Transitions), destroy any previous instance and re-render. */}
     <script is:inline>
-      document.addEventListener('astro:page-load', function () {
+      /* Runs now and after any View Transitions swap. Without the immediate run
+         this never executes while site.features.viewTransitions is off, because
+         no <ClientRouter /> is rendered and astro:page-load never fires. */
+      function onPageReady(fn) {
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', fn, { once: true });
+        } else {
+          fn();
+        }
+        document.addEventListener('astro:page-load', fn);
+      }
+      onPageReady(function () {
         import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs')
           .then(function (mod) {
             var mermaid = mod.default;
@@ -463,7 +478,18 @@ const jsonLd = {
         JSX template literals as real ES modules, so static ESM import won't execute.
         Dynamic import() inside is:inline works correctly and survives View Transitions. */}
     <script is:inline>
-      document.addEventListener('astro:page-load', function () {
+      /* Runs now and after any View Transitions swap. Without the immediate run
+         this never executes while site.features.viewTransitions is off, because
+         no <ClientRouter /> is rendered and astro:page-load never fires. */
+      function onPageReady(fn) {
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', fn, { once: true });
+        } else {
+          fn();
+        }
+        document.addEventListener('astro:page-load', fn);
+      }
+      onPageReady(function () {
         if (window.__pswpLightbox) {
           window.__pswpLightbox.destroy();
           window.__pswpLightbox = null;

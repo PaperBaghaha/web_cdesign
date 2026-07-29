@@ -214,6 +214,11 @@ const timezone = site.teaching.timezone;
     input.addEventListener('input', apply);
   }
 
+  // Run now, and again after a View Transitions swap. The direct call is what
+  // makes this work while site.features.viewTransitions is off: with no
+  // <ClientRouter /> on the page, astro:page-load never fires at all.
+  initCalendar();
+  initCourseSearch();
   document.addEventListener('astro:page-load', () => {
     initCalendar();
     initCourseSearch();
