@@ -130,9 +130,13 @@ const personJsonLd = isHome ? JSON.stringify({
     <link rel="canonical" href={canonicalURL} />
     <title>{pageTitle}</title>
 
-    <!-- Favicon -->
-    <link rel="icon" href={`${site.base}/assets/img/cdl-logo-icon.png`} type="image/png" />
-    <link rel="apple-touch-icon" href={`${site.base}/assets/img/cdl-logo-icon.png`} />
+    <!--
+      Favicon — a round, transparent-cornered crop of the logo. The full logo is
+      a line drawing on an opaque white square with wide padding, which at 16px
+      reads as a white box with a smudge in it rather than as the mark.
+    -->
+    <link rel="icon" href={`${site.base}/favicon.png`} type="image/png" />
+    <link rel="apple-touch-icon" href={`${site.base}/apple-touch-icon.png`} />
 
     <!-- Fonts are self-hosted via Fontsource (imported in global.css) — no FOUT -->
 
