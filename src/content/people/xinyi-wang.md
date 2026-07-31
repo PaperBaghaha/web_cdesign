@@ -1,8 +1,8 @@
 ---
 name: 'Xinyi Wang'
-role: "Master's Student"
+role: 'PhD Student'
 major: 'Industrial Engineering'
 photo: '/assets/img/people/xinyi-wang.jpg'
-importance: 20
+importance: 19
 group: current
 ---
