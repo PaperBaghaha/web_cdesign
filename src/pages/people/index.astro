@@ -81,6 +81,7 @@ const modalData = Object.fromEntries(
         ? `https://scholar.google.com/citations?user=${person.data.scholar}`
         : null,
       github: person.data.github ? `https://github.com/${person.data.github}` : null,
+      linkedin: person.data.linkedin ?? null,
       pubs: publicationCount(person.data.name, bibEntries, person.data.aliases),
       href: profileHref(person) ?? null,
     },
@@ -193,6 +194,11 @@ const modalData = Object.fromEntries(
                         rel="noopener noreferrer"
                       >
                         GitHub
+                      </a>
+                    )}
+                    {person.data.linkedin && (
+                      <a href={person.data.linkedin} target="_blank" rel="noopener noreferrer">
+                        LinkedIn
                       </a>
                     )}
                     {person.data.email && <a href={`mailto:${person.data.email}`}>Email</a>}
@@ -412,6 +418,7 @@ const modalData = Object.fromEntries(
     website: string | null;
     scholar: string | null;
     github: string | null;
+    linkedin: string | null;
     pubs: number;
     href: string | null;
   };
@@ -515,6 +522,7 @@ const modalData = Object.fromEntries(
       if (p.website) linksEl.appendChild(makeLink(p.website, 'Website', true));
       if (p.scholar) linksEl.appendChild(makeLink(p.scholar, 'Scholar', true));
       if (p.github) linksEl.appendChild(makeLink(p.github, 'GitHub', true));
+      if (p.linkedin) linksEl.appendChild(makeLink(p.linkedin, 'LinkedIn', true));
       if (p.email) linksEl.appendChild(makeLink(`mailto:${p.email}`, 'Email', false));
 
       lastFocus = document.activeElement as HTMLElement;

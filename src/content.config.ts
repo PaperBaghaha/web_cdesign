@@ -124,6 +124,8 @@ const people = defineCollection({
     website: z.string().url().optional(),
     /** GitHub username. */
     github: z.string().optional(),
+    /** LinkedIn profile URL. */
+    linkedin: z.string().url().optional(),
     /** Google Scholar user ID. */
     scholar: z.string().optional(),
     /** ORCID ID. */

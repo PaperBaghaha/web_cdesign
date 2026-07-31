@@ -150,6 +150,13 @@ const jsonLd = {
           )
         }
         {
+          person.data.linkedin && (
+            <a href={person.data.linkedin} target="_blank" rel="noopener noreferrer">
+              LinkedIn
+            </a>
+          )
+        }
+        {
           person.data.orcid && (
             <a
               href={`https://orcid.org/${person.data.orcid}`}
