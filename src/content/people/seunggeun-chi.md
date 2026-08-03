@@ -3,7 +3,6 @@ name: 'Seunggeun Chi'
 role: 'PhD Student'
 major: 'Electrical and Computer Engineering'
 photo: '/assets/img/people/seunggeun-chi.jpg'
-website: 'https://sgchi.github.io/'
 github: 'sgchi'
 description: 'Computer-vision researcher on human skeleton-based action recognition, human pose/motion estimation and generation, and 3D human-object interaction reconstruction.'
 interests:

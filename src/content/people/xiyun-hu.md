@@ -3,6 +3,7 @@ name: 'Xiyun Hu'
 role: 'PhD Student'
 major: 'Mechanical Engineering'
 photo: '/assets/img/people/xiyun-hu.jpg'
+linkedin: 'https://www.linkedin.com/in/davidhu2020'
 scholar: 'ES8F-OMAAAAJ'
 description: 'PhD student in mechanical engineering (robotics) working on HCI in AR/VR/MR/XR and mechatronics, including in-situ parametric 3D modeling for personal fabrication.'
 interests:
