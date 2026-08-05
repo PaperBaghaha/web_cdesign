@@ -88,7 +88,9 @@ async function main(): Promise<void> {
   const targets = entries.filter((e) => e.fields.google_scholar_id && e.fields.doi);
 
   if (targets.length === 0) {
-    console.log('No entries with both google_scholar_id and doi found in papers.bib — nothing to update.');
+    console.log(
+      'No entries with both google_scholar_id and doi found in papers.bib — nothing to update.',
+    );
     return;
   }
 

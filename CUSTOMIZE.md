@@ -621,7 +621,6 @@ image: '2023-10-16-asme-briefing.jpg' # bare filename → /assets/img/news/, or 
 alt: 'ASME and IEEE logos'
 excerpt: 'ASME joined IEEE and the U.S. Senate AI Caucus to discuss workforce needs…'
 ---
-
 Full article body goes here. HTML and Markdown are both supported, and images can
 point at local files under /assets/img/news/content/.
 ```

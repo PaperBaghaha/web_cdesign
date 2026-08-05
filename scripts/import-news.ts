@@ -274,7 +274,9 @@ async function main() {
   }
 
   console.log(`Wrote ${posts.length} announcement files.`);
-  console.log(`Downloaded ${thumbsOk}/${posts.length} thumbnails + ${inlineDownloaded} inline images.`);
+  console.log(
+    `Downloaded ${thumbsOk}/${posts.length} thumbnails + ${inlineDownloaded} inline images.`,
+  );
 }
 
 main().catch((err) => {

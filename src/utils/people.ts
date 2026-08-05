@@ -128,6 +128,41 @@ export function publicationsByPerson(
   });
 }
 
+/** The minimum shape `labAuthors` needs from a people-collection entry. */
+export interface AuthorCandidate {
+  id: string;
+  name: string;
+  aliases?: string[];
+}
+
+/**
+ * The reverse of `publicationsByPerson`: which lab members wrote this paper.
+ *
+ * Returned in the order the names appear in the author list, so first author
+ * stays first, and de-duplicated by id in case an alias also matches.
+ *
+ * @param authors BibTeX author strings for one entry.
+ * @param people  Candidates from the people collection.
+ */
+export function labAuthors<T extends AuthorCandidate>(authors: string[], people: T[]): T[] {
+  const parsed = authors.map(splitName);
+  const seen = new Set<string>();
+  const out: T[] = [];
+
+  for (const author of parsed) {
+    for (const person of people) {
+      if (seen.has(person.id)) continue;
+      const names = [person.name, ...(person.aliases ?? [])].map(splitName);
+      if (names.some((n) => isSamePerson(author, n))) {
+        seen.add(person.id);
+        out.push(person);
+      }
+    }
+  }
+
+  return out;
+}
+
 /** Count publications per person — used for the badge on the people index. */
 export function publicationCount(
   personName: string,

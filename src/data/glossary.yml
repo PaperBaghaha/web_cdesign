@@ -68,7 +68,8 @@
   related: ai-computer-vision
 
 - term: Geometric Deep Learning
-  aliases: [geometric deep learning, gdl, point cloud, point clouds, mesh learning, 3d deep learning]
+  aliases:
+    [geometric deep learning, gdl, point cloud, point clouds, mesh learning, 3d deep learning]
   answer: >-
     Geometric deep learning trains neural networks directly on 3D data — point clouds,
     meshes, and signed distance fields — instead of flat images. That makes it suited
@@ -76,7 +77,8 @@
   related: geometric-deep-learning
 
 - term: Human-Shape Interaction
-  aliases: [human shape interaction, human-shape interaction, sketch-based modeling, mid-air interaction]
+  aliases:
+    [human shape interaction, human-shape interaction, sketch-based modeling, mid-air interaction]
   answer: >-
     Human-shape interaction is this lab's term for letting people create and reshape 3D
     geometry with natural input — sketching, mid-air hand motion, pen and touch —

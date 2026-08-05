@@ -92,7 +92,8 @@ const glossary = ((yaml.load(glossaryRaw) ?? []) as GlossaryEntry[]).map((g) => 
 // The photo is checked on disk at build time rather than trusted from config: if
 // the file isn't there the avatar is dropped, instead of shipping a broken image.
 const creditPhotoExists =
-  !!site.credit.photo && existsSync(new URL(`../../../public${site.credit.photo}`, import.meta.url));
+  !!site.credit.photo &&
+  existsSync(new URL(`../../../public${site.credit.photo}`, import.meta.url));
 
 const creditProfile = {
   name: site.credit.builder,

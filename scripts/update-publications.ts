@@ -173,11 +173,7 @@ function normaliseTitle(title: string): string {
 
 /** Escape the handful of characters that would corrupt a BibTeX braced value. */
 function escapeBibValue(value: string): string {
-  return value
-    .replace(/[{}]/g, '')
-    .replace(/\\/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return value.replace(/[{}]/g, '').replace(/\\/g, '').replace(/\s+/g, ' ').trim();
 }
 
 function sleep(ms: number): Promise<void> {
@@ -288,7 +284,9 @@ async function runImport(opts: Options, entries: BibEntry[]): Promise<MergeStats
     throw new Error(`No BibTeX entries found in ${opts.importFile}`);
   }
 
-  console.log(`\nImporting ${incoming.length} entr${incoming.length === 1 ? 'y' : 'ies'} from ${opts.importFile}\n`);
+  console.log(
+    `\nImporting ${incoming.length} entr${incoming.length === 1 ? 'y' : 'ies'} from ${opts.importFile}\n`,
+  );
 
   // Index existing entries by normalised title so we match on content, not key.
   const byTitle = new Map<string, BibEntry>();
@@ -487,7 +485,11 @@ async function fetchCrossref(title: string, year: number): Promise<RemoteMeta | 
     const isProceedings = item.type === 'proceedings-article';
 
     return {
-      type: isProceedings ? 'inproceedings' : item.type === 'journal-article' ? 'article' : undefined,
+      type: isProceedings
+        ? 'inproceedings'
+        : item.type === 'journal-article'
+          ? 'article'
+          : undefined,
       doi: item.DOI,
       venue: item['container-title']?.[0],
       venueField: isProceedings ? 'booktitle' : 'journal',
@@ -496,7 +498,11 @@ async function fetchCrossref(title: string, year: number): Promise<RemoteMeta | 
       issue: item.issue,
       pages: item.page?.replace(/-/g, '--'),
       // Crossref abstracts arrive as JATS XML — strip the tags.
-      abstract: item.abstract?.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() || undefined,
+      abstract:
+        item.abstract
+          ?.replace(/<[^>]+>/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim() || undefined,
       url: item.DOI ? `https://doi.org/${item.DOI}` : undefined,
     };
   } catch {

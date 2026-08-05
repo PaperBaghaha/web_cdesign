@@ -14,6 +14,8 @@ import {
   parseBibtex,
 } from '@utils/bibtex';
 import { resolvePreview, resolveVideo } from '@utils/media';
+import { labAuthors } from '@utils/people';
+import { getCollection } from 'astro:content';
 import yaml from 'js-yaml';
 
 import citationsRaw from '../../data/citations.yml?raw';
@@ -58,6 +60,31 @@ const altmetricField = entry.fields.altmetric;
 const dimensionsField = entry.fields.dimensions;
 const pdfDir = withBase(site.publications.pdfDir);
 const scholarUserId = site.socials.scholar_userid ?? '';
+
+/*
+  Lab members credited on this paper, in author order. Only people who have a
+  profile page are shown: the point of the section is to let a reader jump from
+  a paper to the person, so an entry with nowhere to go would be a dead card.
+  External co-authors are already linked inline in the byline by linkAuthors().
+*/
+const roster = await getCollection('people', (p) => !p.data.noPage);
+// Split the raw BibTeX field rather than reusing getAuthors(), which returns
+// one comma-joined display string — splitting that back apart would be
+// ambiguous for any name that legitimately contains a comma.
+const authorList = (entry.fields.author ?? '')
+  .split(/\s+and\s+/i)
+  .map((a) => a.trim())
+  .filter(Boolean);
+const paperAuthors = labAuthors(
+  authorList,
+  roster.map((p) => ({
+    id: p.id,
+    name: p.data.name,
+    aliases: p.data.aliases,
+    photo: p.data.photo,
+    role: p.data.role,
+  })),
+);
 
 // Hero media — a teaser image and/or a video, both optional.
 const previewSrc = resolvePreview(entry.fields.preview, withBase(site.publications.previewDir));
@@ -450,6 +477,39 @@ const breadcrumbLd = {
         )
       }
 
+      {
+        paperAuthors.length > 0 && (
+          <section class="pub-section">
+            <h2>Lab authors</h2>
+            <ul class="pub-authors">
+              {paperAuthors.map((person) => (
+                <li>
+                  <a href={withBase(`/people/${person.id}/`)} class="pub-author">
+                    {person.photo ? (
+                      <img
+                        src={withBase(person.photo)}
+                        alt={person.name}
+                        width="64"
+                        height="64"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span class="pub-author-initial" aria-hidden="true">
+                        {person.name.charAt(0)}
+                      </span>
+                    )}
+                    <span class="pub-author-text">
+                      <span class="pub-author-name">{person.name}</span>
+                      {person.role && <span class="pub-author-role">{person.role}</span>}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
       <section class="pub-section">
         <h2>Citation</h2>
         <pre class="bibtex-block"><code>{bibtexBlock}</code></pre>
@@ -597,6 +657,83 @@ const breadcrumbLd = {
 
   .pub-section p {
     line-height: 1.7;
+  }
+
+  /* ── Lab authors ──────────────────────────────────────────────────────── */
+
+  .pub-authors {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pub-author {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--global-divider-color);
+    border-radius: 12px;
+    color: inherit;
+    text-decoration: none;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .pub-author:hover {
+    border-color: var(--global-theme-color);
+    background-color: var(--global-card-bg-color);
+  }
+
+  .pub-author img,
+  .pub-author-initial {
+    flex: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  /* Stand-in for the three members who have no headshot yet, so the row still
+     lines up instead of collapsing to text width. */
+  .pub-author-initial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--global-card-bg-color);
+    border: 1px solid var(--global-divider-color);
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--global-text-color-light);
+  }
+
+  .pub-author-text {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+  }
+
+  .pub-author-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  /* The PI's title runs to four lines at this width, which stretched the whole
+     grid row. Two lines is enough to identify the role; the profile page has
+     it in full. */
+  .pub-author-role {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font-size: 0.72rem;
+    line-height: 1.35;
+    color: var(--global-text-color-light);
   }
 
   .bibtex-block {

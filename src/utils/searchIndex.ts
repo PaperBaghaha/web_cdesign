@@ -74,81 +74,71 @@ export type SiteIndex = {
 export async function buildSearchIndex(): Promise<SiteIndex> {
   const base = site.base || '';
 
-  const publications = parseBibtex(bibRaw).map(
-    (entry): SearchItem => ({
-      title: getTitle(entry),
-      section: 'Publication',
-      href: `${base}/publications/${entry.key}/`,
-      keywords: [
-        getAuthors(entry),
-        getVenue(entry),
-        String(getYear(entry) || ''),
-        entry.fields.abbr ?? '',
-      ]
-        .filter(Boolean)
-        .join(' '),
-      summary: skim(entry.fields.abstract),
-      body: plainBody(entry.fields.abstract),
-      meta: [getAuthors(entry), getVenue(entry), String(getYear(entry) || '')]
-        .filter(Boolean)
-        .join(' · '),
-    }),
-  );
+  const publications = parseBibtex(bibRaw).map((entry): SearchItem => ({
+    title: getTitle(entry),
+    section: 'Publication',
+    href: `${base}/publications/${entry.key}/`,
+    keywords: [
+      getAuthors(entry),
+      getVenue(entry),
+      String(getYear(entry) || ''),
+      entry.fields.abbr ?? '',
+    ]
+      .filter(Boolean)
+      .join(' '),
+    summary: skim(entry.fields.abstract),
+    body: plainBody(entry.fields.abstract),
+    meta: [getAuthors(entry), getVenue(entry), String(getYear(entry) || '')]
+      .filter(Boolean)
+      .join(' · '),
+  }));
 
   // Sorted by `importance` so the PI and senior members lead any roster.
   const peopleEntries = (await getCollection('people'))
     .filter((p) => !p.data.noPage)
     .sort((a, b) => (a.data.importance ?? 999) - (b.data.importance ?? 999));
 
-  const people = peopleEntries.map(
-    (p): SearchItem => ({
-      title: p.data.name,
-      section: 'People',
-      href: `${base}/people/${p.id}/`,
-      keywords: [p.data.role ?? '', p.data.major ?? '', ...(p.data.interests ?? [])].join(' '),
-      summary: skim(p.data.description),
-      meta: [p.data.role, p.data.major].filter(Boolean).join(' · '),
-      body: plainBody(p.body),
-    }),
-  );
+  const people = peopleEntries.map((p): SearchItem => ({
+    title: p.data.name,
+    section: 'People',
+    href: `${base}/people/${p.id}/`,
+    keywords: [p.data.role ?? '', p.data.major ?? '', ...(p.data.interests ?? [])].join(' '),
+    summary: skim(p.data.description),
+    meta: [p.data.role, p.data.major].filter(Boolean).join(' · '),
+    body: plainBody(p.body),
+  }));
 
-  const projects = (await getCollection('projects')).map(
-    (p): SearchItem => ({
-      title: p.data.title,
-      section: 'Research',
-      href: `${base}/projects/${p.id}/`,
-      keywords: p.data.category ?? '',
-      summary: skim(p.data.description),
-      meta: p.data.category ? `Research area — ${p.data.category}` : 'Research area',
-      body: plainBody(p.body),
-    }),
-  );
+  const projects = (await getCollection('projects')).map((p): SearchItem => ({
+    title: p.data.title,
+    section: 'Research',
+    href: `${base}/projects/${p.id}/`,
+    keywords: p.data.category ?? '',
+    summary: skim(p.data.description),
+    meta: p.data.category ? `Research area — ${p.data.category}` : 'Research area',
+    body: plainBody(p.body),
+  }));
 
   const posts = (await getCollection('posts'))
     .filter((p) => !p.data.hidden && !p.data.draft)
-    .map(
-      (p): SearchItem => ({
-        title: p.data.title,
-        section: 'Blog',
-        href: `${base}/blog/${p.id}/`,
-        keywords: [...(p.data.tags ?? []), ...(p.data.categories ?? [])].join(' '),
-        summary: skim(p.data.description),
-        meta: p.data.date ? `Blog post, ${p.data.date.getFullYear()}` : 'Blog post',
-        body: plainBody(p.body),
-      }),
-    );
+    .map((p): SearchItem => ({
+      title: p.data.title,
+      section: 'Blog',
+      href: `${base}/blog/${p.id}/`,
+      keywords: [...(p.data.tags ?? []), ...(p.data.categories ?? [])].join(' '),
+      summary: skim(p.data.description),
+      meta: p.data.date ? `Blog post, ${p.data.date.getFullYear()}` : 'Blog post',
+      body: plainBody(p.body),
+    }));
 
-  const teaching = (await getCollection('teaching')).map(
-    (t): SearchItem => ({
-      title: t.data.title,
-      section: 'Courses',
-      href: `${base}/teaching/`,
-      keywords: [t.data.term ?? '', t.data.code ?? ''].join(' ').trim(),
-      summary: skim(t.data.description),
-      meta: [t.data.code, t.data.term, t.data.institution].filter(Boolean).join(' · '),
-      body: plainBody(t.body),
-    }),
-  );
+  const teaching = (await getCollection('teaching')).map((t): SearchItem => ({
+    title: t.data.title,
+    section: 'Courses',
+    href: `${base}/teaching/`,
+    keywords: [t.data.term ?? '', t.data.code ?? ''].join(' ').trim(),
+    summary: skim(t.data.description),
+    meta: [t.data.code, t.data.term, t.data.institution].filter(Boolean).join(' · '),
+    body: plainBody(t.body),
+  }));
 
   return {
     publications,
