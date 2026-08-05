@@ -222,7 +222,7 @@ const modalData = Object.fromEntries(
                 <span class="roster-count">{block.list.length}</span>
               </h3>
             )}
-            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="people-grid grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
               {block.list.map((person, i) => {
                 const pubs = publicationCount(person.data.name, bibEntries, person.data.aliases);
                 return (
@@ -793,8 +793,15 @@ const modalData = Object.fromEntries(
     }
   }
 
+  /* Every card is the same height regardless of how long the name or major
+     runs, so rows line up instead of stepping. The content column is pinned to
+     the top and the CTA pushed to the bottom by the auto margin below. */
   .person-card {
-    padding: 1.75rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    padding: 1.5rem 0.9rem 1.25rem;
     border: 1px solid var(--global-divider-color);
     border-radius: 16px;
     background: var(--global-card-bg-color);
@@ -846,7 +853,10 @@ const modalData = Object.fromEntries(
   /* "View details →" call-to-action shown on each card */
   .person-cta {
     display: inline-block;
-    margin-top: 0.6rem;
+    /* auto pins the CTA to the bottom of the flex card, so cards whose major
+       wraps to two lines still line their CTA up with their neighbours'. */
+    margin-top: auto;
+    padding-top: 0.6rem;
     font-size: 0.68rem;
     font-weight: 600;
     letter-spacing: 0.02em;

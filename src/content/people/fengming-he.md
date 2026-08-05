@@ -1,6 +1,7 @@
 ---
 name: 'Fengming He'
 role: 'PhD Student'
+linkedin: 'https://www.linkedin.com/in/fengminghe/'
 major: 'Electrical and Computer Engineering'
 website: 'https://www.fengminghe.com/'
 scholar: '10WPau0AAAAJ'

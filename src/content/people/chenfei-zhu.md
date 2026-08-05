@@ -1,6 +1,7 @@
 ---
 name: 'Chenfei Zhu'
 role: 'PhD Student'
+linkedin: 'https://www.linkedin.com/in/chenfeizhu'
 major: 'Mechanical Engineering'
 photo: '/assets/img/people/chenfei-zhu.jpg'
 website: 'https://chenfei-zhu.github.io/'
