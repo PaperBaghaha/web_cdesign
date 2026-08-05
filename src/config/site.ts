@@ -48,7 +48,7 @@ export const site = {
     name: 'Convergence Design Lab',
 
     /** Short email address (used in social links). */
-    email: 'cdesign-lab@purdue.edu',
+    email: 'ramani@purdue.edu',
 
     /** Path to profile photo. Place image in public/assets/img/. */
     avatar: '/assets/img/cdl-logo-icon.png',
@@ -80,7 +80,7 @@ export const site = {
   //   bluesky_handle, medium_username, cv_pdf, rss_icon
 
   socials: {
-    email: 'cdesign-lab@purdue.edu',
+    email: 'ramani@purdue.edu',
     x_username: undefined as string | undefined,
     linkedin_username: undefined as string | undefined,
     github_username: undefined as string | undefined,

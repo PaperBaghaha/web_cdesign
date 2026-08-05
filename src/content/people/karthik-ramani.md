@@ -3,7 +3,7 @@ name: 'Karthik Ramani'
 role: 'Principal Investigator · Donald W. Feddersen Distinguished Professor of Mechanical Engineering'
 photo: '/assets/img/people/karthik-ramani.jpg'
 description: 'Directs the Convergence Design Lab at Purdue University.'
-email: 'cdesign-lab@purdue.edu'
+email: 'ramani@purdue.edu'
 website: 'https://engineering.purdue.edu/ME/People/ptProfile?resource_id=12331'
 scholar: 'AUPTVF0AAAAJ'
 interests:

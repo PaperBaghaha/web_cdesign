@@ -527,7 +527,11 @@ const personJsonLd = isHome ? JSON.stringify({
 
           document.querySelectorAll('[data-reveal]:not(.revealed)').forEach((el) => {
             const r = el.getBoundingClientRect();
-            if (r.top < vh - 40 && r.bottom > 0) el.classList.add('revealed');
+            // No `r.bottom > 0` check: an element scrolled completely PAST the
+            // top of the viewport would never match it and would stay hidden
+            // forever. That happens on a restored scroll position, an anchor
+            // jump, or a back-button navigation.
+            if (r.top < vh - 40) el.classList.add('revealed');
           });
 
           document
@@ -555,6 +559,16 @@ const personJsonLd = isHome ? JSON.stringify({
           window.addEventListener('scroll', sweep, { passive: true, signal });
           window.addEventListener('resize', sweep, { passive: true, signal });
           sweep();
+          // Images and webfonts settle after first paint and shift layout, so
+          // sweep again once the page has fully loaded.
+          window.addEventListener('load', sweep, { once: true, signal });
+          // Last resort: content must never be permanently invisible because an
+          // animation didn't fire. After 3s, show anything still hidden.
+          window.setTimeout(() => {
+            document
+              .querySelectorAll('[data-reveal]:not(.revealed)')
+              .forEach((el) => el.classList.add('revealed'));
+          }, 3000);
         }
 
         // ── Navbar shadow once scrolled ─────────────────────────────────
