@@ -1,10 +1,10 @@
 ---
+import { existsSync } from 'node:fs';
+
 import type { NavItem } from '@config/site';
 import { site } from '@config/site';
 import { buildSearchIndex } from '@utils/searchIndex';
 import { getCollection } from 'astro:content';
-import { existsSync } from 'node:fs';
-
 import yaml from 'js-yaml';
 
 import glossaryRaw from '../../data/glossary.yml?raw';

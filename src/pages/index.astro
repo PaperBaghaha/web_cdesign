@@ -1,10 +1,10 @@
 ---
-import { Icon } from 'astro-icon/components';
 import { site } from '@config/site';
 import Base from '@layouts/Base.astro';
 import { withBase } from '@utils/base';
 import { getBoolField, getTitle, getVenue, getYear, parseBibtex } from '@utils/bibtex';
 import { getCollection, render } from 'astro:content';
+import { Icon } from 'astro-icon/components';
 
 import AboutContent from '../data/about.mdx';
 import bibRaw from '../data/papers.bib?raw';
@@ -166,27 +166,35 @@ const renderedAnnouncements = await Promise.all(
             </a>
           </div>
           <!--
-            The contact address is spelled out rather than hidden behind a bare
-            envelope icon: a naked `mailto:` icon looks broken on any machine
-            with no mail client set up, since clicking it appears to do nothing.
-            The copy button is the fallback for exactly that case.
+            Only rendered when socials.email is set. The hero is the most
+            prominent spot on the site, so it should carry a shared lab address
+            or nothing — not an individual's personal mailbox.
+
+            When it is shown, the address is spelled out rather than hidden
+            behind a bare envelope icon: a naked `mailto:` icon looks broken on
+            any machine with no mail client set up, since clicking it appears to
+            do nothing. The copy button is the fallback for exactly that case.
           -->
-          <div class="hero-social">
-            <a class="hero-contact" href={`mailto:${site.socials.email}`}>
-              <Icon name="fa-solid:envelope" width={16} height={16} />
-              <span>{site.socials.email}</span>
-            </a>
-            <button
-              type="button"
-              class="hero-copy"
-              data-copy-email={site.socials.email}
-              aria-label="Copy email address"
-              title="Copy email address"
-            >
-              <Icon name="fa-solid:copy" width={14} height={14} />
-              <span class="hero-copy-label">Copy</span>
-            </button>
-          </div>
+          {
+            site.socials.email && (
+              <div class="hero-social">
+                <a class="hero-contact" href={`mailto:${site.socials.email}`}>
+                  <Icon name="fa-solid:envelope" width={16} height={16} />
+                  <span>{site.socials.email}</span>
+                </a>
+                <button
+                  type="button"
+                  class="hero-copy"
+                  data-copy-email={site.socials.email}
+                  aria-label="Copy email address"
+                  title="Copy email address"
+                >
+                  <Icon name="fa-solid:copy" width={14} height={14} />
+                  <span class="hero-copy-label">Copy</span>
+                </button>
+              </div>
+            )
+          }
         </div>
 
         <!-- Geo right -->

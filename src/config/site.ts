@@ -80,7 +80,16 @@ export const site = {
   //   bluesky_handle, medium_username, cv_pdf, rss_icon
 
   socials: {
-    email: 'ramani@purdue.edu',
+    /**
+     * Shared lab inbox, shown in the homepage hero and as the envelope icon
+     * in the footer. Left unset on purpose: the front page is the most public
+     * surface on the site, so it should carry a group address that anyone in
+     * the lab can answer — not an individual's personal mailbox. Fill this in
+     * once the lab has such an address and both spots light up automatically.
+     * Dr. Ramani's own address stays on his profile and the About page, which
+     * are the pages a visitor goes to when they specifically want him.
+     */
+    email: undefined as string | undefined,
     x_username: undefined as string | undefined,
     linkedin_username: undefined as string | undefined,
     github_username: undefined as string | undefined,
