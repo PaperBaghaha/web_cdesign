@@ -481,7 +481,7 @@ const breadcrumbLd = {
         paperAuthors.length > 0 && (
           <section class="pub-section">
             <h2>Lab authors</h2>
-            <ul class="pub-authors">
+            <ul class="pub-people">
               {paperAuthors.map((person) => (
                 <li>
                   <a href={withBase(`/people/${person.id}/`)} class="pub-author">
@@ -661,7 +661,10 @@ const breadcrumbLd = {
 
   /* ── Lab authors ──────────────────────────────────────────────────────── */
 
-  .pub-authors {
+  /* Named `pub-people`, not `pub-authors`: that class is already taken by the
+     plain byline paragraph above the title. Reusing it made this grid rule win
+     on cascade order and split the byline into five columns. */
+  .pub-people {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
     gap: 0.75rem;
