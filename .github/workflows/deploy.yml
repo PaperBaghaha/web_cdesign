@@ -32,12 +32,13 @@ jobs:
         run: yarn build
         env:
           # Deployment config is env-first.
-          # Forks should set these as repository variables in Settings → Secrets and variables → Actions.
+          # Repository variables (Settings → Secrets and variables → Actions) override
+          # the fallbacks, but setting those needs admin rights, so the fallbacks below
+          # are the values this repo actually deploys with.
           # ASTRO_SITE: site origin, e.g. https://username.github.io
           # ASTRO_BASE: project-page base path, e.g. /repo-name (leave empty for user/org pages)
-          # The fallbacks below are only for this template repository's own deployment.
-          ASTRO_SITE: ${{ vars.ASTRO_SITE || 'https://dadangnh.github.io' }}
-          ASTRO_BASE: ${{ vars.ASTRO_BASE || '/as-folio' }}
+          ASTRO_SITE: ${{ vars.ASTRO_SITE || 'https://paperbaghaha.github.io' }}
+          ASTRO_BASE: ${{ vars.ASTRO_BASE || '/web_cdesign' }}
 
       - name: Commit updated citations.yml
         run: |
